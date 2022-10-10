@@ -1,0 +1,508 @@
+<!-- start:source.tmpl.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+		<title>libSignOffline.js</title>
+		<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
+		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="css/prism.min.css">
+		<link type="text/css" rel="stylesheet" href="css/template.min.css">
+		<script type="text/javascript">
+			window.TEMPLATE_OPTIONS = {"includeDate":true,"dateFormat":"Do MMM YYYY","systemName":"KRAKEN App API","systemSummary":"A Bootstrap and Handlebars based template for JSDoc3.","systemLogo":"","systemColor":"","navMembers":[{"kind":"class","title":"Classes","summary":"All documented classes."},{"kind":"external","title":"Externals","summary":"All documented external members."},{"kind":"global","title":"Globals","summary":"All documented globals."},{"kind":"mixin","title":"Mixins","summary":"All documented mixins."},{"kind":"interface","title":"Interfaces","summary":"All documented interfaces."},{"kind":"module","title":"Modules","summary":"All documented modules."},{"kind":"namespace","title":"Namespaces","summary":"All documented namespaces."},{"kind":"tutorial","title":"Tutorials","summary":"All available tutorials."}],"footer":"","copyright":"FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.","linenums":true,"collapseSymbols":true,"inverseNav":true,"inlineNav":false,"outputSourceFiles":true,"sourceRootPath":null,"disablePackagePath":true,"outputSourcePath":false,"showTableOfContents":true,"showAccessFilter":true,"analytics":null,"methodHeadingReturns":true,"sort":"linenum, longname, version, since","search":true,"favicon":null,"stylesheets":[],"scripts":[],"monospaceLinks":false,"cleverLinks":false,"theme":"cosmo","default":{"outputSourceFiles":true,"includeDate":true}};
+			window.DOCLET_TOC_ENABLED = false;
+			window.DOCLET_AFILTER_ENABLED = false;
+		</script>
+</head>
+<body>
+	<!-- start:navbar.hbs -->
+	<header class="navbar navbar-default navbar-fixed-top navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="index.html">
+					KRAKEN App API
+				</a>
+				<!-- displayed on small devices -->
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="navbar-collapse collapse" id="topNavigation">
+				<ul class="nav navbar-nav">
+								<li class="dropdown">
+									<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Globals<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+											<li><a href="global.html#crlUpdateRequest">crlUpdateRequest</a></li>
+											<li><a href="global.html#crlUpdateResponse">crlUpdateResponse</a></li>
+											<li><a href="global.html#Message">Message</a></li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a href="list_class.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+											<li><a href="AgreementContract.html">AgreementContract</a></li>
+											<li><a href="CAServices.html">CAServices</a></li>
+											<li><a href="DataContract.html">DataContract</a></li>
+											<li><a href="Grpc.html">Grpc</a></li>
+											<li><a href="OffchainDB.html">OffchainDB</a></li>
+											<li><a href="Query.html">Query</a></li>
+											<li><a href="UserContract.html">UserContract</a></li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a href="list_module.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+											<li><a href="module-libBlockListener.html">libBlockListener</a></li>
+											<li><a href="module-libSignOffline.html">libSignOffline</a></li>
+											<li><a href="module-libUtil.html">libUtil</a></li>
+											<li><a href="module-liCrypto.html">liCrypto</a></li>
+									</ul>
+								</li>
+				</ul>
+					<!-- start:lunr-search-navbar.hbs -->
+					<form class="navbar-form navbar-right" role="search">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Search" id="lunr-search-input">
+							<div class="input-group-btn">
+								<button class="btn btn-default" id="lunr-search-submit">
+									<i class="glyphicon glyphicon-search"></i>
+								</button>
+							</div>
+						</div>
+					</form>
+					<!-- start:lunr-search-navbar.hbs -->		</div>
+		</div>
+	</header>
+	<!-- end:navbar.hbs -->		<div class="page-header">
+			<div class="container">
+				<span class="kind">source</span>
+				<h1><span class="name">libSignOffline.js</span></h1>
+			</div>
+		</div>
+	<div class="container content">
+		<div class="row">
+			<div class="col-md-12 main-content">
+		<section class="source-section">
+			<article></article>
+			<pre class="prettyprint source language-javascript line-numbers"><code class="language-javascript">/**
+ * Copyright Lynkeus 2021. All Rights Reserved.
+ *
+ * @file Implementation of offline transaction signing
+ * @module libSignOffline
+ * @author Alexandros Tragkas
+ */
+
+'use strict';
+
+const TYPE = 'SignOffline';
+
+const Util = require('./libUtil');
+const { Client, User } = require('fabric-common');
+const { Wallets } = require('fabric-network');
+const { KEYUTIL } = require('jsrsasign');
+const fabproto6 = require('fabric-protos');
+const fs = require('fs');
+require('dotenv').config();
+
+const includes = require('array-includes');
+const crypto = require('crypto');
+const elliptic = require('elliptic');
+const util = require('util');
+const path = require('path');
+const walletPath = path.join(process.env.WALLET_PATH);
+const revokedCertificates = path.resolve(process.env.REVOKED_CERTS_PATH)
+
+const logger = Util.getLogger(TYPE);
+
+const clientID = process.env.CLIENT;
+
+function _preventMalleability(sig) {
+	const halfOrder = elliptic.curves.p256.n.shrn(1);
+	if (sig.s.cmp(halfOrder) === 1) {
+		const bigNum = elliptic.curves.p256.n;
+		sig.s = bigNum.sub(sig.s);
+	}
+	return sig;
+}
+
+function getValidEndorsementResponse(endorsementResponses) {
+	return endorsementResponses.find((endorsementResponse) => endorsementResponse.endorsement);
+}
+
+function newEndorsementError(proposalResponse) {
+	let _a, _b;
+	const errorInfos = [];
+	for (const error of proposalResponse.errors) {
+		const errorInfo = {
+			peer: (_a = error === null || error === void 0 ? void 0 : error.connection) === null || _a === void 0 ? void 0 : _a.name,
+			status: 'grpc',
+			message: error.message
+		};
+		errorInfos.push(errorInfo);
+	}
+	for (const endorsement of proposalResponse.responses) {
+		const errorInfo = {
+			peer: (_b = endorsement === null || endorsement === void 0 ? void 0 : endorsement.connection) === null || _b === void 0 ? void 0 : _b.name,
+			status: endorsement.response.status,
+			message: endorsement.response.message
+		};
+		errorInfos.push(errorInfo);
+	}
+	const messages = ['No valid responses from any peers. Errors:'];
+	for (const errorInfo of errorInfos) {
+		messages.push(util.format('peer=%s, status=%s, message=%s', errorInfo.peer, errorInfo.status, errorInfo.message));
+	}
+
+	// return messages;
+	let error = new Error();
+	error.message = errorInfos;
+	return error;
+}
+
+function getResponsePayload(proposalResponse) {
+	const validEndorsementResponse = getValidEndorsementResponse(proposalResponse.responses);
+	if (!validEndorsementResponse) {
+		const error = newEndorsementError(proposalResponse);
+		throw error;
+	}
+	return validEndorsementResponse.response.payload;
+}
+
+// Construct an Identity context
+async function getIdentityContext(name, userIdentity) {
+	const user = User.createUser(
+		name,
+		null,
+		userIdentity.mspId,
+		userIdentity.credentials.certificate,
+		userIdentity.credentials.privateKey);
+
+	// Signer UserIdentityContext
+	const client = new Client('IDX client');
+	const userIdx = client.newIdentityContext(user);
+	return userIdx;
+}
+
+/**
+ * Sign a transaction manually
+ *
+ */
+function signTransaction(signerCtx, proposalBytes) {
+	const method = 'signTransaction';
+	logger.start(method);
+
+	const hashAlgo = 'sha256';
+	try {
+		const hash = crypto.createHash(hashAlgo);
+		hash.update(proposalBytes);
+		const digest = hash.digest('hex');
+		const privateKeyPEM = signerCtx.credentials.privateKey;
+		const { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM); // convert the pem encoded key to hex encoded private key
+		const EC = elliptic.ec;
+		const ecdsaCurve = elliptic.curves.p256;
+		const ecdsa = new EC(ecdsaCurve);
+		const signKey = ecdsa.keyFromPrivate(prvKeyHex, 'hex');
+		let sig = ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
+		sig = _preventMalleability(sig);
+		const signature = Buffer.from(sig.toDER());
+
+		logger.debug('%s - transaction signed', method);
+		return signature;
+	} catch(e) {
+		logger.error('%s - %s', method, e.message);
+		throw e;
+	}
+}
+
+async function buildSignEndorsement(signer, transaction, endorsement) {
+	const method = 'buildSignEndorsement';
+	logger.start(method);
+
+	try {
+
+		const signerCtx = signer.signerCtx;
+		const signerIdentity = signer.signerIdentity;
+
+		// Build proposal
+		const proposalBytes = endorsement.build(signerCtx, transaction);
+
+		// Sign proposal
+		const signature = signTransaction(signerIdentity, proposalBytes);
+
+		// Sign endorsement
+		endorsement.sign(signature);
+
+		logger.debug('%s - proposal ready to send to peers', method);
+		return endorsement;
+	} catch(e) {
+		logger.error('%s - %s', method, e.message);
+		throw e;
+	}
+}
+
+/* Send to endorsing peers */
+async function sendEndorsement(endorsement, channel) {
+	const method = 'sendEndorsement';
+	logger.start(method);
+
+	try {
+		const proposalSendRequest = {};
+		proposalSendRequest.requestTimeout = 30000;
+
+		// Set endorsers
+		proposalSendRequest.targets = Array.from(channel.getEndorsers().values());
+
+		// Send endorsement
+		const proposalResponses = await endorsement.send(proposalSendRequest);
+
+		logger.debug('%s - transaction endorsed with proposal response: %s', method, getResponsePayload(proposalResponses).toString());
+		return { proposalResponses, endorsement };
+	} catch(e) {
+		logger.error('%s - %s', method, e.message[0].message);
+		// logger.error(e);
+		throw e;
+	}
+	// Construct request
+}
+
+async function buildSignCommit(signer, endorsement) {
+	const method = 'buildSignCommit';
+	logger.start(method);
+
+	try {
+		const signerCtx = signer.signerCtx;
+
+		const commit = endorsement.newCommit();
+		commit.build(signerCtx);
+		commit.sign(signerCtx);
+
+		logger.debug('%s - commit ready to send to orderers', method);
+		return commit;
+	} catch (e) {
+		logger.error('%s - %s', method, e.message);
+		throw e;
+	}
+}
+
+async function sendCommit(commit, channel) {
+	const method = 'sendCommit';
+	logger.start(method);
+
+	try {
+		// Construct request
+		const commitSendRequest = {};
+		commitSendRequest.requestTimeout = 30000;
+
+		// Set committers (orderers)
+		commitSendRequest.targets = Array.from(channel.getCommitters().values());
+		const commitResponse = await commit.send(commitSendRequest);
+
+		logger.debug('%s - commit sent, obtained response %j: ', method, commitResponse);
+		return commitResponse;
+	} catch (e) {
+		logger.error('%s - %s', method, e.message);
+		throw e;
+	}
+
+}
+
+/**
+ * Get { Endorsement } instance
+ *
+ *
+ *
+ */
+async function getChannelCtx(clientID, channelID, chaincodeID) {
+	const method = 'getChannelCtx';
+	logger.start(method);
+
+	const gateway = await Util.connectGateway(clientID);
+	const channel = gateway.client.channels.get(channelID);
+	logger.debug('%s - : %s', method, channel );
+	const endorsement = channel.newEndorsement(chaincodeID);
+
+	return { channel, endorsement } ;
+}
+
+async function getEndorsementPayload(endorsement, channel) {
+	const method = 'getEndorsementPayload';
+	logger.start(method);
+
+	const endorsementResponse = await sendEndorsement(endorsement, channel);
+	const proposalResponses = endorsementResponse.proposalResponses;
+	endorsement = endorsementResponse.endorsement;
+
+	const transactionResult = getResponsePayload(proposalResponses).toString();
+
+	return { endorsement, transactionResult } ;
+}
+
+async function getSignerCtx(signerID, walletPath) {
+	const method = 'getSignerCtx';
+	logger.start(method);
+	logger.debug('%s - signerID: %s', method, signerID);
+
+	/* User Imports file ... */
+
+	/* Handle to get credentials in an .id format */
+	const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+	const signerIdentity = await wallet.get(signerID);
+	if (!signerIdentity) {
+		throw new Error('Identity not found in wallet');
+	}
+	const signerCtx = await getIdentityContext(signerID, signerIdentity);
+
+	return { signerCtx, signerIdentity };
+}
+
+/**
+ * Create, Sign and Commit transaction
+ *
+ *
+ */
+async function sendTransaction(signerID, transaction, channelID, chaincodeID) {
+	const method = 'sendTransaction';
+	logger.info('%s - Creating transaction %s with SignerID: ', method, transaction.fcn, signerID);
+
+	let gateway = null;
+
+	try {
+		/* Backend
+		*
+		*/
+		const channelCtx = await getChannelCtx(clientID, channelID, chaincodeID);
+		const channel = channelCtx.channel;
+		let endorsement = channelCtx.endorsement;
+
+		/* Browser
+		*
+		*/
+		// Get Signer CTX
+		const signer = await getSignerCtx(signerID, walletPath);
+
+		// Create Transaction (Build and sign endorsement)
+		endorsement = await buildSignEndorsement(signer, transaction, endorsement);
+
+		/* Backend
+		*
+		*/
+		// Check for expired certificate 
+		// const signatureHeader = decodeSignatureHeader(endorsement._action.header.signature_header)
+		// const certificate = signatureHeader.creator.id_bytes.toString()
+		// if (isRevoked(certificate)) {
+		// 	throw new Error('Certificate is revoked.')
+		// }
+
+		// Gather endorsements
+		const endorsementPayload = await getEndorsementPayload(endorsement, channel);
+		const transactionResult = endorsementPayload.transactionResult;
+		const signed_endorsement = endorsementPayload.endorsement;
+
+		/* Browser
+		*
+		*/
+		// Build and sign commit
+		const commit = await buildSignCommit(signer, signed_endorsement);
+
+		/* Backend
+		*
+		*/
+		// Send commit
+		const commitResponse = await sendCommit(commit, channel);
+
+		if (commitResponse.status === 'SUCCESS') {
+			logger.info('%s - Transaction committed successfully', method);
+			logger.debug('%s - Transaction result: ', method, transactionResult);
+			return transactionResult;
+		} else {
+			logger.error('%s - failed to commit transaction', method);
+			return commitResponse;
+		}
+
+	} catch(e) {
+		// logger.error('%s - ', method, e.message);
+		throw e;
+	} finally {
+		if (gateway) {gateway.disconnect();}
+	}
+
+}
+
+/**
+ * Check if a certificate exists in local file as revoked
+ * 
+ * @param {String} certificate A PEM encoded certificate
+ * @returns {Bool} True if revoked, else false
+ * */
+function isRevoked(certificate) {
+	const data = fs.readFileSync(revokedCertificates)
+	let revokedCerts = (JSON.parse(data)).revokedCerts;
+	return includes(revokedCerts, certificate)
+}
+
+function decodeSignatureHeader(signatureHeaderBuf) {
+	const signature_header = {};
+	const signatureHeaderProto = fabproto6.common.SignatureHeader.decode(signatureHeaderBuf);
+	signature_header.creator = decodeIdentity(signatureHeaderProto.creator);
+	signature_header.nonce = signatureHeaderProto.nonce;
+
+	return signature_header;
+}
+
+function decodeIdentity(identityBuf) {
+	const identity = {};
+	try {
+		const identityProto = fabproto6.msp.SerializedIdentity.decode(identityBuf);
+		identity.mspid = identityProto.mspid;
+		identity.id_bytes = identityProto.id_bytes;
+	} catch (err) {
+		logger.error('Failed to decode the identity: %s', (err.stack ? err.stack : err));
+	}
+
+	return identity;
+}
+module.exports = {
+	sendTransaction,
+	getIdentityContext
+};</code></pre>
+		</section>
+			</div>
+		</div>
+	</div>
+	<footer>
+				<div class="copyright">FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.</div>
+			<div class="generated-by">Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on 10th Oct 2021 using the <a href="https://github.com/steveush/foodoc">FooDoc template</a>.</div>
+	</footer>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/clipboard.min.js"></script>
+	<script src="js/prism.min.js"></script>
+	<script src="js/template.min.js"></script>
+		<!-- start:lunr-search-modal.hbs -->
+		<div class="modal fade" id="lunr-search-modal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Search results</h4>
+					</div>
+					<div class="modal-body" id="lunr-search-body">
+					</div>
+					<div class="modal-footer" id="lunr-search-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div>
+		<!-- end:lunr-search-modal.hbs -->		<script src="js/lunr.min.js"></script>
+	
+</body>
+</html>
+<!-- end:source.tmpl.hbs -->

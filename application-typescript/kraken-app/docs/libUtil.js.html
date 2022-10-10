@@ -1,0 +1,508 @@
+<!-- start:source.tmpl.hbs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+		<title>libUtil.js</title>
+		<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
+		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="css/prism.min.css">
+		<link type="text/css" rel="stylesheet" href="css/template.min.css">
+		<script type="text/javascript">
+			window.TEMPLATE_OPTIONS = {"includeDate":true,"dateFormat":"Do MMM YYYY","systemName":"KRAKEN App API","systemSummary":"A Bootstrap and Handlebars based template for JSDoc3.","systemLogo":"","systemColor":"","navMembers":[{"kind":"class","title":"Classes","summary":"All documented classes."},{"kind":"external","title":"Externals","summary":"All documented external members."},{"kind":"global","title":"Globals","summary":"All documented globals."},{"kind":"mixin","title":"Mixins","summary":"All documented mixins."},{"kind":"interface","title":"Interfaces","summary":"All documented interfaces."},{"kind":"module","title":"Modules","summary":"All documented modules."},{"kind":"namespace","title":"Namespaces","summary":"All documented namespaces."},{"kind":"tutorial","title":"Tutorials","summary":"All available tutorials."}],"footer":"","copyright":"FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.","linenums":true,"collapseSymbols":true,"inverseNav":true,"inlineNav":false,"outputSourceFiles":true,"sourceRootPath":null,"disablePackagePath":true,"outputSourcePath":false,"showTableOfContents":true,"showAccessFilter":true,"analytics":null,"methodHeadingReturns":true,"sort":"linenum, longname, version, since","search":true,"favicon":null,"stylesheets":[],"scripts":[],"monospaceLinks":false,"cleverLinks":false,"theme":"cosmo","default":{"outputSourceFiles":true,"includeDate":true}};
+			window.DOCLET_TOC_ENABLED = false;
+			window.DOCLET_AFILTER_ENABLED = false;
+		</script>
+</head>
+<body>
+	<!-- start:navbar.hbs -->
+	<header class="navbar navbar-default navbar-fixed-top navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="index.html">
+					KRAKEN App API
+				</a>
+				<!-- displayed on small devices -->
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="navbar-collapse collapse" id="topNavigation">
+				<ul class="nav navbar-nav">
+								<li class="dropdown">
+									<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Globals<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+											<li><a href="global.html#crlUpdateRequest">crlUpdateRequest</a></li>
+											<li><a href="global.html#crlUpdateResponse">crlUpdateResponse</a></li>
+											<li><a href="global.html#Message">Message</a></li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a href="list_class.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+											<li><a href="AgreementContract.html">AgreementContract</a></li>
+											<li><a href="CAServices.html">CAServices</a></li>
+											<li><a href="DataContract.html">DataContract</a></li>
+											<li><a href="Grpc.html">Grpc</a></li>
+											<li><a href="OffchainDB.html">OffchainDB</a></li>
+											<li><a href="Query.html">Query</a></li>
+											<li><a href="UserContract.html">UserContract</a></li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a href="list_module.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+											<li><a href="module-libBlockListener.html">libBlockListener</a></li>
+											<li><a href="module-libSignOffline.html">libSignOffline</a></li>
+											<li><a href="module-libUtil.html">libUtil</a></li>
+											<li><a href="module-liCrypto.html">liCrypto</a></li>
+									</ul>
+								</li>
+				</ul>
+					<!-- start:lunr-search-navbar.hbs -->
+					<form class="navbar-form navbar-right" role="search">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Search" id="lunr-search-input">
+							<div class="input-group-btn">
+								<button class="btn btn-default" id="lunr-search-submit">
+									<i class="glyphicon glyphicon-search"></i>
+								</button>
+							</div>
+						</div>
+					</form>
+					<!-- start:lunr-search-navbar.hbs -->		</div>
+		</div>
+	</header>
+	<!-- end:navbar.hbs -->		<div class="page-header">
+			<div class="container">
+				<span class="kind">source</span>
+				<h1><span class="name">libUtil.js</span></h1>
+			</div>
+		</div>
+	<div class="container content">
+		<div class="row">
+			<div class="col-md-12 main-content">
+		<section class="source-section">
+			<article></article>
+			<pre class="prettyprint source language-javascript line-numbers"><code class="language-javascript">/**
+ * Copyright Lynkeus 2020. All Rights Reserved.
+ *
+ * @file Helper functions
+ * @module libUtil
+ * @author Alexandros Tragkas
+ */
+
+'use strict';
+
+const TYPE = 'Util';
+
+/* Dependencies */
+const winston  = require('winston');
+const config = winston.config;
+const process = require('process');
+const {Gateway, Wallets, DefaultEventHandlerStrategies} = require('fabric-network');
+const path = require('path');
+const fs = require('fs');
+const yaml = require('js-yaml');
+require('dotenv').config();
+
+/* Env */
+const walletPath = path.join(process.env.WALLET_PATH);
+const ccpPath = path.resolve(process.env.CCP_PATH);
+
+function fromBuffer(obj) {
+	return JSON.stringify(obj);
+}
+
+/**
+ * Error handler for contract API
+ *
+ * @param {Error} e The error object
+ * @param {String} method The function's name
+ */
+function handleError(e, method) {
+	logger.error('%s - %s', method, e.message);
+	return e;
+}
+
+/**
+ * Stringify JSON
+ *
+ * @param {Object} input
+ * @returns {String} Stringified JSON
+ */
+function prettyJSONString(input) {
+	if (!(input.toString())) {return '';}
+	return JSON.stringify(input, null , 2);
+}
+
+/**
+ * Connect to gateway
+ *
+ * @param {String} userID The user identity to connect
+ * @returns {Gateway} gateway The gateway instance
+ */
+async function connectGateway(userID) {
+	const method = 'connectGateway';
+	logger.start(method);
+
+	try {
+
+		// Load the network config
+		const fileExists = fs.existsSync(ccpPath);
+		if (!fileExists) {
+			throw new Error(`Connection profile path not found at file: ${ccpPath}`);
+		}
+
+		// Load .yaml config
+		const ccpYaml = fs.readFileSync(ccpPath);
+		const ccp = yaml.load(ccpYaml);
+
+		const wallet = await Wallets.newFileSystemWallet(walletPath);
+
+		const gateway = new Gateway();
+		const gatewayOptions = {
+			eventHandlerOptions: {
+				strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ANYFORTX
+			},
+			wallet,
+			identity: userID,
+			clientTlsIdentity: userID,
+			discovery: {enabled: true, asLocalhost: true}
+		};
+
+		await gateway.connect(ccp, gatewayOptions);
+
+		logger.debug('%s - gateway connected', method);
+		return gateway;
+
+	} catch(e) {
+		logger.error('%s - ', method, e);
+		// throw new Error(e);
+	}
+
+}
+
+/**
+ * Get all methods of an object
+ *
+ * @param {Object} The object to get methods of
+ */
+function getMethods(obj) {
+  let properties = new Set()
+  let currentObj = obj
+  do {
+    Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
+  } while ((currentObj = Object.getPrototypeOf(currentObj)))
+  return [...properties.keys()].filter(item => typeof obj[item] === 'function')
+}
+
+/**
+ * Perform a sleep -- asynchronous wait
+ * @param ms the time in milliseconds to sleep for
+ */
+function sleep(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Parse input to JSON
+ *
+ * @param {Buffer} input Buffer to parse
+ * @returns {Object} input as JSON
+ */
+function prettyJSON(input) {
+	if (input.toString()) {
+		return JSON.parse(input);
+	}
+
+	return null;
+}
+
+/**
+ * @classdec Implementation of a Queue
+ * 
+ * @ignore
+ * @class Queue
+ */
+class Queue
+{
+
+	constructor() {
+		this.order = 0;
+		this.items = [];
+	}
+
+	/**
+	 * Add to queue
+	 */
+	push(element) {
+		// if (this.mutexLock) {
+		// 	await sleep(0.1);
+		// 	if (!this.mutexLock) {
+		// 		this.mutexLock = true;
+		this.items.push(this.order);
+		this.order++;
+		// this.mutexLock = false;
+		return this.order - 1;
+		// }
+		// }
+		// console.log(length);
+		// adding element to the queue
+		// return this.items.push(element);
+	}
+
+	/**
+	 * Remove from queue
+	 */
+	pop() {
+		// removing element from the queue
+		// returns underflow when called
+		// on empty queue
+		if(this.isEmpty())
+		{return -1;}
+		return this.items.shift();
+	}
+
+	/**
+	 * Get front element
+	 */
+	front() {
+		// returns the Front element of
+		// the queue without removing it.
+		if(this.isEmpty())
+		{return -1;}
+		return this.items[0];
+	}
+
+	/**
+	 * Query emptiness of queue
+	 */
+	isEmpty() {
+		// return true if the queue is empty.
+		return this.items.length === 0;
+	}
+
+	/**
+	 * Get number of elements
+	 */
+	count() {
+		// return length of queue.
+		return this.items.length;
+	}
+
+	/**
+	 * Print elements
+	 */
+	printQueue() {
+		let str = ' ';
+		for(let i = 0; i &lt; this.items.length; i++)
+		{str += this.items[i];}
+
+		return str;
+	}
+}
+
+/**
+ * Checks if input is JSON
+ *
+ * @param {} input The input to check
+ * @returns {Bool} True if JSON, else false
+ */
+function IsJsonString(input) {
+	try {
+		JSON.parse(input);
+	} catch (e) {
+		return false;
+	}
+	return true;
+}
+
+function convertTime(UNIX_timestamp){
+	let a = new Date(UNIX_timestamp);
+	let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	let year = a.getFullYear();
+	let month = months[a.getMonth()];
+	let date = a.getDate();
+	let hour = a.getHours().toString().padStart(2, '0');
+	let min = a.getMinutes().toString().padStart(2, '0');
+	let sec = a.getSeconds().toString().padStart(2, '0');
+	let time = date + '-' + month + '-' + year + ' ' + hour + ':' + min + ':' + sec ;
+	return time;
+}
+
+function getLogger(TYPE) {
+
+	/* Logging levels */
+	let configLevels = {
+		levels: {
+			fatal: -1,
+			error: 0,
+			info: 1,
+			warn: 2,
+			data: 3,
+			debug: 4,
+			verbose: 5,
+			silly: 6,
+		},
+		colors: {
+			error: 'red',
+			info: 'blue',
+			debug: 'cyan',
+			warn: 'yellow',
+			data: 'grey',
+			verbose: 'green',
+			silly: 'magenta',
+			fatal: 'redBG'
+		}
+	};
+
+	let APP_LOGGING = process.env.APP_LOGGING;
+	let logger;
+
+	let transportOptions = {
+		timestamp: function() {
+			return convertTime(Date.now());
+		},
+		formatter: function(options) {
+			// - Return string will be passed to logger.
+			// - Optionally, use options.colorize(options.level, &lt;string>) to
+			//   colorize output based on the log level.
+			return options.timestamp() + ' ' +
+        config.colorize(options.level, options.level.toUpperCase() + ' ' + '[' + logger.type + ']' + ' ' + '- ') +
+        (options.message ? options.message : '') +
+        (options.meta &amp;&amp; Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
+		}
+	};
+
+	let consoleFormatter = function(options) {
+		// - Return string will be passed to logger.
+		// - Optionally, use options.colorize(options.level, &lt;string>) to
+		//   colorize output based on the log level.
+		// options.colorize = true;
+		// console.log(options)
+		return options.timestamp() + ' ' +
+        config.colorize(options.level, options.level.toUpperCase() + ' ' + '[' + logger.type + ']' + ' ' + '- ') +
+        (options.message ? options.message : '') +
+        (options.meta &amp;&amp; Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
+	};
+
+	let fileFormatter = function(options) {
+		// - Return string will be passed to logger.
+		// - Optionally, use options.colorize(options.level, &lt;string>) to
+		//   colorize output based on the log level.
+		return (options.timestamp() + ' ' + options.level.toUpperCase() + ' ' + '[' + logger.type + ']' + ' ' + '- ' +
+        (options.message ? options.message : '') +
+        (options.meta &amp;&amp; Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' ));
+	};
+
+	let options = {
+		levels: configLevels.levels,
+		colors: configLevels.colors,
+		method: '',
+		type: ''
+	};
+
+	let transports = [];
+
+	if (APP_LOGGING){
+		APP_LOGGING = JSON.parse(APP_LOGGING);
+
+		for (const level of Object.keys(APP_LOGGING)) {
+			transportOptions.name = level + APP_LOGGING[level];
+			transportOptions.level = level;
+			if (APP_LOGGING[level] !== 'console') {
+				transportOptions.filename = APP_LOGGING[level];
+				transportOptions.json = false;
+				// options.colors = false;
+				transportOptions.formatter = fileFormatter;
+				transports.push(new (winston.transports.File)(transportOptions));
+			} else {
+				// options.colors = configLevels.colors;
+				transportOptions.filename = '';
+				transportOptions.json = false;
+				transportOptions.formatter = consoleFormatter;
+				transports.push(new (winston.transports.Console)(transportOptions));
+			}
+			// console.log(level);
+		}
+	} else {
+		transports = [
+			new (winston.transports.Console)(transportOptions)
+		];
+	}
+
+	options.transports = transports;
+
+	logger = new (winston.Logger)(options);
+
+	logger.start = function(method) {
+		logger.debug('%s - start', method);
+	};
+
+	logger.setType = function(type) {
+		logger.type = type;
+	};
+
+	logger.setLevel = function(level) {
+		logger.level = level;
+	};
+
+	logger.setType(TYPE);
+	return logger;
+}
+
+/* Logging */
+const logger = getLogger(TYPE);
+
+module.exports = {
+	IsJsonString,
+	sleep,
+	prettyJSON,
+	prettyJSONString,
+	connectGateway,
+	Queue,
+	fromBuffer,
+	getLogger,
+	handleError
+};</code></pre>
+		</section>
+			</div>
+		</div>
+	</div>
+	<footer>
+				<div class="copyright">FooDoc Copyright © 2016 The contributors to the JSDoc3 and FooDoc projects.</div>
+			<div class="generated-by">Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on 10th Oct 2021 using the <a href="https://github.com/steveush/foodoc">FooDoc template</a>.</div>
+	</footer>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/clipboard.min.js"></script>
+	<script src="js/prism.min.js"></script>
+	<script src="js/template.min.js"></script>
+		<!-- start:lunr-search-modal.hbs -->
+		<div class="modal fade" id="lunr-search-modal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Search results</h4>
+					</div>
+					<div class="modal-body" id="lunr-search-body">
+					</div>
+					<div class="modal-footer" id="lunr-search-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div>
+		<!-- end:lunr-search-modal.hbs -->		<script src="js/lunr.min.js"></script>
+	
+</body>
+</html>
+<!-- end:source.tmpl.hbs -->

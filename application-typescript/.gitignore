@@ -1,0 +1,12 @@
+node_modules/
+wallet/
+channel-artifacts/
+msp/
+configs
+nextblock
+*.log
+identities
+scripts/
+mpcApp
+lynkeusRegistrar
+key.js
