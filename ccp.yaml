@@ -7,115 +7,118 @@ client:
     timeout:
       peer:
         endorser: '300'
+
 channels:
   kraken:
     orderers:
+      - orderer0.lynkeusorderer.domain.com
       - orderer0.texorderer.domain.com
       - orderer1.texorderer.domain.com
-      - orderer0.lynkeusorderer.domain.com
     peers:
-      - peer0.tex.domain.com
       - peer0.lynkeus.domain.com
-      - peer1.tex.domain.com
       - peer1.lynkeus.domain.com
+      - peer0.tex.domain.com
+      - peer1.tex.domain.com
 
 organizations:
-  tex:
-    mspid: TexMSP
-    peers:
-      - peer0.tex.domain.com
-      - peer1.tex.domain.com
-    certificateAuthorities:
-      - ca_tex
-
   lynkeus:
     mspid: LynkeusMSP
-    peers:
+    peers:  
       - peer0.lynkeus.domain.com
       - peer1.lynkeus.domain.com
     certificateAuthorities:
       - ca_lynkeus
-
-orderers:
-  orderer0.texorderer.domain.com:
-    url: grpcs://localhost:9051
-    grpcOptions:
-      ssl-target-name-override: orderer0.texorderer.domain.com
-      hostnameOverride: orderer0.texorderer.domain.com
-      grpc.keepalive_timeout_ms: 20000
-    tlsCACerts:
-      path: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer0.texorderer.domain.com/tls/tlscacerts/ca.crt
-
-  orderer1.texorderer.domain.com:
-    url: grpcs://localhost:9061
-    grpcOptions:
-      ssl-target-name-override: orderer1.texorderer.domain.com
-      hostnameOverride: orderer1.texorderer.domain.com
-      grpc.keepalive_timeout_ms: 20000
-    tlsCACerts:
-      path: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer1.texorderer.domain.com/tls/tlscacerts/ca.crt
-
-  orderer0.lynkeusorderer.domain.com:
-    url: grpcs://localhost:9071
-    grpcOptions:
-      ssl-target-name-override: orderer0.lynkeusorderer.domain.com
-      hostnameOverride: orderer0.lynkeusorderer.domain.com
-      grpc.keepalive_timeout_ms: 20000
-    tlsCACerts:
-      path: ../organizations/ordererOrganizations/lynkeusorderer.domain.com/orderers/orderer0.lynkeusorderer.domain.com/tls/tlscacerts/ca.crt
-
-
-peers:
-  peer0.tex.domain.com:
-    url: grpcs://localhost:7070
-    tlsCACerts:
-      path: ../organizations/peerOrganizations/tex.domain.com/peers/peer0.tex.domain.com/tls/tlscacerts/ca.crt
-    grpcOptions:
-      hostnameOverride: peer0.tex.domain.com
-      grpc.keepalive_timeout_ms: 20000
-      ssl-target-name-override: peer0.tex.domain.com
-
-  peer1.tex.domain.com:
-    url: grpcs://localhost:7080
-    tlsCACerts:
-      path: ../organizations/peerOrganizations/tex.domain.com/peers/peer1.tex.domain.com/tls/tlscacerts/ca.crt
-    grpcOptions:
-      hostnameOverride: peer1.tex.domain.com
-      grpc.keepalive_timeout_ms: 20000
-      ssl-target-name-override: peer1.tex.domain.com
-  
+  tex:
+    mspid: TexMSP
+    peers:  
+      - peer0.tex.domain.com
+      - peer1.tex.domain.com
+    certificateAuthorities:
+      - ca_tex
+peers:  
   peer0.lynkeus.domain.com:
-    url: grpcs://localhost:8080
+    url: grpcs://20.123.159.122:7070
     tlsCACerts:
-      path: ../organizations/peerOrganizations/lynkeus.domain.com/peers/peer0.lynkeus.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/lynkeus.domain.com/mspConfig/tlscacerts/ca.crt
     grpcOptions:
       hostnameOverride: peer0.lynkeus.domain.com
       grpc.keepalive_timeout_ms: 20000
       ssl-target-name-override: peer0.lynkeus.domain.com
 
+  
   peer1.lynkeus.domain.com:
-    url: grpcs://localhost:8090
+    url: grpcs://40.115.61.72:7070
     tlsCACerts:
-      path: ../organizations/peerOrganizations/lynkeus.domain.com/peers/peer1.lynkeus.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/lynkeus.domain.com/mspConfig/tlscacerts/ca.crt
     grpcOptions:
       hostnameOverride: peer1.lynkeus.domain.com
       grpc.keepalive_timeout_ms: 20000
       ssl-target-name-override: peer1.lynkeus.domain.com
 
-
-certificateAuthorities:
-  ca_tex:
-    url: https://localhost:7055
-    caName: ca_tex
+  
+  peer0.tex.domain.com:
+    url: grpcs://20.4.76.222:7070
     tlsCACerts:
-      path: ../organizations/fabric-ca/tex/fabric-ca-client-tex/tls-root-cert/tls-ca-cert.pem
-    httpOptions:
-      verify: true
-      
+      path: ../organizations/peerOrganizations/tex.domain.com/mspConfig/tlscacerts/ca.crt
+    grpcOptions:
+      hostnameOverride: peer0.tex.domain.com
+      grpc.keepalive_timeout_ms: 20000
+      ssl-target-name-override: peer0.tex.domain.com
+
+  
+  peer1.tex.domain.com:
+    url: grpcs://20.101.106.73:7070
+    tlsCACerts:
+      path: ../organizations/peerOrganizations/tex.domain.com/mspConfig/tlscacerts/ca.crt
+    grpcOptions:
+      hostnameOverride: peer1.tex.domain.com
+      grpc.keepalive_timeout_ms: 20000
+      ssl-target-name-override: peer1.tex.domain.com
+
+orderers:  
+  orderer0.lynkeusorderer.domain.com:
+    url: grpcs://20.23.253.97:9051
+    grpcOptions:
+      ssl-target-name-override: orderer0.lynkeusorderer.domain.com
+      hostnameOverride: orderer0.lynkeusorderer.domain.com
+      grpc.keepalive_timeout_ms: 20000
+    tlsCACerts:
+      path: ../organizations/ordererOrganizations/lynkeusorderer.domain.com/mspConfig/tlscacerts/ca.crt
+
+  
+  orderer0.texorderer.domain.com:
+    url: grpcs://20.224.127.217:9051
+    grpcOptions:
+      ssl-target-name-override: orderer0.texorderer.domain.com
+      hostnameOverride: orderer0.texorderer.domain.com
+      grpc.keepalive_timeout_ms: 20000
+    tlsCACerts:
+      path: ../organizations/ordererOrganizations/texorderer.domain.com/mspConfig/tlscacerts/ca.crt
+
+  
+  orderer1.texorderer.domain.com:
+    url: grpcs://13.80.52.99:9051
+    grpcOptions:
+      ssl-target-name-override: orderer1.texorderer.domain.com
+      hostnameOverride: orderer1.texorderer.domain.com
+      grpc.keepalive_timeout_ms: 20000
+    tlsCACerts:
+      path: ../organizations/ordererOrganizations/texorderer.domain.com/mspConfig/tlscacerts/ca.crt
+
+certificateAuthorities:  
   ca_lynkeus:
-    url: https://localhost:8055
+    url: https://20.224.189.91:7055
     caName: ca_lynkeus
     tlsCACerts:
-      path: ../organizations/fabric-ca/lynkeus/fabric-ca-client-lynkeus/tls-root-cert/tls-ca-cert.pem
+      path: ../organizations/peerOrganizations/lynkeus.domain.com/mspConfig/tlscacerts/ca.crt
     httpOptions:
       verify: true
+  
+  ca_tex:
+    url: https://20.101.138.179:7055
+    caName: ca_tex
+    tlsCACerts:
+      path: ../organizations/peerOrganizations/tex.domain.com/mspConfig/tlscacerts/ca.crt
+    httpOptions:
+      verify: true
+

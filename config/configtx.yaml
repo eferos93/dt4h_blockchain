@@ -63,7 +63,7 @@ Organizations:
         # and peers may to connect to to push transactions and receive blocks respectively.
         OrdererEndpoints:
             - orderer0.texorderer.domain.com:9051
-            - orderer1.texorderer.domain.com:9061
+            - orderer1.texorderer.domain.com:9051
 
     # SampleOrg defines an MSP using the sampleconfig. It should never be used
     # in production but may be used as a template for other definitions.
@@ -113,7 +113,7 @@ Organizations:
         # OrdererEndpoints is a list of all orderers this org runs which clients
         # and peers may to connect to to push transactions and receive blocks respectively.
         OrdererEndpoints:
-            - orderer0.lynkeusorderer.domain.com:9071
+            - orderer0.lynkeusorderer.domain.com:9051
 
 
     - &Tex
@@ -252,7 +252,7 @@ Organizations:
         # the genesis block in the Application section context.
         AnchorPeers:
             - Host: peer0.lynkeus.domain.com
-              Port: 8080
+              Port: 7070
 
 ################################################################################
 #
@@ -519,11 +519,11 @@ Orderer: &OrdererDefaults
               ClientTLSCert: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer0.texorderer.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer0.texorderer.domain.com/tls/signcerts/cert.pem
             - Host: orderer1.texorderer.domain.com
-              Port: 9062
+              Port: 9052
               ClientTLSCert: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer1.texorderer.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer1.texorderer.domain.com/tls/signcerts/cert.pem
             - Host: orderer0.lynkeusorderer.domain.com
-              Port: 9072
+              Port: 9052
               ClientTLSCert: ../organizations/ordererOrganizations/lynkeusorderer.domain.com/orderers/orderer0.lynkeusorderer.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/lynkeusorderer.domain.com/orderers/orderer0.lynkeusorderer.domain.com/tls/signcerts/cert.pem
 
@@ -644,7 +644,7 @@ Profiles:
                     - *TexUsers
                     - *LynkeusUsers
 
-    AthLynkChannel:
+    MarketplaceChannel:
         <<: *ChannelDefaults
         Consortium: BasicConsortium
         Application:
