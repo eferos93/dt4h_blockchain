@@ -42,7 +42,7 @@ const (
 )
 
 const (
-	AUTOMATED_DECISION_MAKING = "automated"
+	AUTOMATED_DECISION_MAKING = "Automated"
 )
 
 var AUTHORIZED_MSPS = []string{"LynkeusMSP", "TexMSP"}

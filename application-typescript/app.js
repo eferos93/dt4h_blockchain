@@ -72,7 +72,7 @@ async function main() {
 			await ca.importMSP('lynkeusRegistrar', true);
 			await ca.importMSP('texRegistrar', true);
 			await ca.importMSP('peer0Lynkeus', false);
-			fs.writeFileSync(process.env.BLOCK_PATH, '0');
+			// fs.writeFileSync(process.env.BLOCK_PATH, '0');
 			// await offchainDB.initDB();
 			// console.log('Identities Imported');
 		}
