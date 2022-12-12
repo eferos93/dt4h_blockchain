@@ -16,7 +16,8 @@ import * as _ from 'lodash';
 /* Local */
 import { OffchainDB } from './libReplicateDB';
 import { getLogger } from './libUtil';
-import { User, Product, Agreement } from './interfaces';
+import { IUser, IProduct, IAgreement } from './interfaces';
+import { UserModel } from './models';
 
 /* Logging */
 const logger = getLogger(TYPE);
@@ -26,176 +27,119 @@ const logger = getLogger(TYPE);
  * 
  * @class
  * */
-export class Query {
+export class Query extends OffchainDB {
 
-	offchainDB: OffchainDB;
 
 	/**
 	 * @constructor
 	 */
-	constructor(offDB: OffchainDB) {
-		this.offchainDB = offDB
+	constructor() {
+		super()
 	}
 
-	/**
-	* Get all agreements from DB
-	*
-	* @returns {Array} Array of Agreement Objects
-	*/
-	async queryAgreements(): Promise<Array<Agreement>> {
-		try {
-			let res = await this.offchainDB.readAgreements();
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
 
-	/**
-	 * Get all users from DB
-	 *
-	 * @returns {Users[]} Array of User Objects
-	 */
-	async queryUsers(): Promise<Array<User>> {
-		try {
-			let res = await this.offchainDB.readUsers();
+    /**
+     * Fetch all products from database
+     * joined with the owner's data
+     *
+     * @returns {Array} Array of products populated with owner
+     */
+    async getCatalogue(userID, query={}, page=1, limit=30) {
+        const method = 'getCatalogue';
+        logger.start(method);
+    	
+   //  	return await this.col
+   //  		.find(query, limit)
+   //  		.populate({ path: 'owner', model: UserModel }
+			// .skip((page-1) * limit)
+   //  		.limit(limit)
+		const buyer = await this.users.get(userID);
+		if (!buyer) return filteredData
 
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
 
-	}
+        return await this.products.col.aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'owner',
+                    foreignField: '_id',
+                    as: 'seller'
+                }
+            },
+            {
+                $unwind: '$seller'
+            },
+            {
+            	$match: {
+            		$and: [
+	            		'policy.purposes': {
+	            			$in: buyer.purposes
+		            	}
+            		]
+            	}
+            },
+            {
+                $project: {
+                    // owner: 0,
+                    _id: 0,
+                    // validTo: '$seller.validTo',
+                    // 'seller.type': 0,
+                    // 'seller.org': 0,
+                    // "seller.seller": '$seller.username',
+                    // 'seller.isOrg': 0,
+                    // 'seller.isBuyer': 0,
+                    // 'seller.purposes': 0,
+                    // 'seller.username': 0,
+                    // 'seller.id': 0,
+                    // 'seller._id': 0,
+                    // 'seller.__v': 0,
+                    // 'seller.mspid': 0,
+                    // 'seller.certKey': 0
+                }
+            }
+        ])
+    }
 
-	/**
-	 * Get specific user by ID from DB
-	 *
-	 * @returns {Agreement} The User
-	 */
-	async queryUserByID(userID: string): Promise<User> {
-		try {
-			let data = await this.offchainDB.readUserData(userID);
 
-			return data;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-
-	}
-
-	/**
-	 * Get all products from DB
-	 *
-	 * @returns {Product[]} Array of Product Objects
-	 */
-	async queryProducts(): Promise<Array<Product>> {
-		try {
-			let res = await this.offchainDB.readProducts();
-
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
-
-	/**
-	 * Get product details by ID from DB
-	 *
-	 * @param {String} productID The ID (hash) of the product
-	 * @returns {Product} The Product
-	 */
-	async queryProductByID(productID: string): Promise<Product> {
-		try {
-			let res = await this.offchainDB.readProductData(productID);
-
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
-
-	/**
-	 * Query products by User
-	 *
-	 * @param {String} userID The user's ID
-	 * @returns {Product[]} Array of Product Objects
-	 */
-	async queryProductsByUser(userID: string): Promise<Array<Product>> {
-		try {
-			let filter = { owner: userID };
-			let res = await this.offchainDB.readProductsByFilter(filter);
-
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
-
-	/**
-	 * Get catalogue (All products + expiration date)
-	 *
-	 * @returns {Array} Array of Product Objects
-	 */
-	async queryCatalogue(): Promise<Array<Product>> {
-		try {
-			let res = await this.offchainDB.readCatalogue();
-
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
-
-	/**
-	 * Match purposes buyer to policy
-	 *
-	 * @param {Array<string>} buyerPurpose Buyer's purposes of buying
-	 * @param {Array<string>} dataPurpose  Product's policy purposes
-	 * @returns {Boolean} True if purposes match, else false
-	 */
-	matchPurpose(buyerPurpose: Array<string>, dataPurpose: Array<string>): boolean {
-		try {
-			const result = !_.isEmpty(_.intersection(buyerPurpose, dataPurpose));
-			return result;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
+	// *
+	//  * Match purposes buyer to policy
+	//  *
+	//  * @param {Array<string>} buyerPurpose Buyer's purposes of buying
+	//  * @param {Array<string>} dataPurpose  IProduct's policy purposes
+	//  * @returns {Boolean} True if purposes match, else false
+	 
+	// matchPurpose(buyerPurpose: Array<string>, dataPurpose: Array<string>): boolean {
+	// 	try {
+	// 		const result = !_.isEmpty(_.intersection(buyerPurpose, dataPurpose));
+	// 		return result;
+	// 	} catch (e: any) {
+	// 		logger.error(e);
+	// 		throw e;
+	// 	}
+	// }
 
 	/**
 	 * Filtering algorithm
 	 *
 	 * @param {String} userID The ID of the user
-	 * @returns {Product[]} Array of Product Objects matched to purposes
+	 * @returns {IProduct[]} Array of IProduct Objects matched to purposes
 	 */
-	async queryFilteredProducts(userID: string): Promise<Array<Product> | Error> {
+	async queryFilteredProducts(userID: string): Promise<Array<IProduct> | Error> {
 		const method = 'queryFilteredProducts';
 		logger.start(method);
 
 		let filteredData: any = [];
 
 		try {
-			const buyer = await this.queryUserByID(userID);
+			const buyer = await this.users.get(userID);
 			logger.debug('%s - ', method, buyer);
 
-			// if (!buyer) {
-			// 	throw new Error('User `${userID}` does not exist.')
-			// } 
+			if (!buyer) return filteredData
 
-			if (buyer.isBuyer === false) {
-				throw new Error('User is not a registered buyer');
-			}
+			// let query = {    }
 
-			// TODO: filter products with seller's certificate
-			const products = await this.queryCatalogue();
+			// TODO: filter products with seller's data
+			const products = await this.getCatalogue();
 			logger.debug('%s - Total Products Count: ', method, products.length)
 
 			products.forEach((product: any, index: any) => {
@@ -228,23 +172,23 @@ export class Query {
 		}
 	}
 
-	/**
-	 * Queries the history of transactions for a specific product
-	 * 
-	 * @param {String} productID The product's ID (hash)
-	 * @returns {Array} Array of Agreement Objects 
-	 * */
-	async queryTransactionHistoryForProduct(productID: string) {
-		try {
-			const filter = { productID: productID }
-			let res = await this.offchainDB.readTransactionsByFilter(filter);
+	// /**
+	//  * Queries the history of transactions for a specific product
+	//  * 
+	//  * @param {String} productID The product's ID (hash)
+	//  * @returns {Array} Array of IAgreement Objects 
+	//  * */
+	// async queryTransactionHistoryForProduct(productID: string) {
+	// 	try {
+	// 		const filter = { productID: productID }
+	// 		let res = await this.offchainDB.readTransactionsByFilter(filter);
 
-			return res;
-		} catch (e: any) {
-			logger.error(e);
-			throw e;
-		}
-	}
+	// 		return res;
+	// 	} catch (e: any) {
+	// 		logger.error(e);
+	// 		throw e;
+	// 	}
+	// }
 
 }
 

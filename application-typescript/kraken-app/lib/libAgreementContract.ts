@@ -1,7 +1,7 @@
 /**
  * Copyright Lynkeus 2021. All Rights Reserved.
  *
- * @file A library implementing the API for the smart contract Agreement
+ * @file A library implementing the API for the smart contract IAgreement
  * @author Alexandros Tragkas
  */
 
@@ -11,7 +11,7 @@ const TYPE = 'AgreementContract';
 
 /* Dependencies */
 import { connectGateway, prettyJSON, getLogger } from './libUtil';
-import { Agreement, AgreementStatus } from './interfaces';
+import { IAgreement, AgreementStatus } from './interfaces';
 
 /* Constants */
 const agreementContract = 'AgreementContract';
@@ -23,7 +23,7 @@ const getAgreementTx = 'GetAgreement';
 const logger = getLogger(TYPE);
 
 /**
- * @classdesc API for the Agreement contract 
+ * @classdesc API for the IAgreement contract 
  * 
  * @class
  */
@@ -53,7 +53,7 @@ export class AgreementContract {
 	 */
 	handleError(e: any, method: string) {
 		logger.error('%s - ', method, e.message);
-		return e;
+		throw e;
 	}
 
 	/**
@@ -94,7 +94,7 @@ export class AgreementContract {
 	 * @param {String} transactionID The agreement's ID
 	 * @returns {Object} The agreement if found
 	 */
-	async getAgreement(clientID: string, transactionID: string): Promise<Agreement> {
+	async getAgreement(clientID: string, transactionID: string): Promise<IAgreement> {
 		const method = 'getAgreement';
 		logger.start(method);
 
@@ -122,9 +122,9 @@ export class AgreementContract {
 	 * Get All agreements
 	 *
 	 * @param {String} clientID The client's ID
-	 * @returns {Agreement[]} Array of agreements
+	 * @returns {IAgreement[]} Array of agreements
 	 */
-	async getAgreements(clientID: string): Promise<Array<Agreement>> {
+	async getAgreements(clientID: string): Promise<Array<IAgreement>> {
 		const method = 'getAgreements';
 		logger.start(method);
 

@@ -1,7 +1,7 @@
 /**
  * Copyright Lynkeus 2020. All Rights Reserved.
  *
- * @file A library implementing the API for the smart contract User Credentials
+ * @file A library implementing the API for the smart contract IUser Credentials
  * @author Alexandros Tragkas
  */
 
@@ -17,7 +17,7 @@ import {
 	getLogger,
 } from './libUtil';
 
-import { User } from './interfaces';
+import { IUser } from './interfaces';
 import { sendTransaction } from './libSignOffline';
 
 /* Constants */
@@ -32,7 +32,7 @@ const getAllUsersTx = 'GetAllUsers';
 const logger = getLogger(TYPE);
 
 /**
- * @classdesc API for the User Credentials contract 
+ * @classdesc API for the IUser Credentials contract 
  * 
  * @class
  */
@@ -61,7 +61,7 @@ export class UserContract {
 	 */
 	handleError(e: any, method: string) {
 		logger.error('%s - ', method, e.message);
-		return e;
+		throw e;
 	}
 
 	/**
@@ -69,10 +69,10 @@ export class UserContract {
 	 * Smart contract transaction
 	 *
 	 * @param {String} userID The user's ID
-	 * @param {User} User The User object
+	 * @param {IUser} IUser The IUser object
 	 * @returns null on success, else error
 	 */
-	async createUser(userID: string, User: User) {
+	async createUser(userID: string, IUser: IUser) {
 		const method = 'createUser';
 		logger.start(method);
 
@@ -84,11 +84,11 @@ export class UserContract {
 			// const network = await gateway.getNetwork(this.channelID);
 			// const contract = network.getContract(this.chaincodeID, userContract);
 
-			const transaction = { fcn: userContract + ':' + createUserTx, args: [prettyJSONString(User)] };
+			const transaction = { fcn: userContract + ':' + createUserTx, args: [prettyJSONString(IUser)] };
 			res = await sendTransaction(userID, transaction, this.channelID, this.chaincodeID);
 			logger.debug('%s - transaction response: %s', method, res);
 
-			// await contract.submitTransaction(createUserTx, prettyJSONString(User));
+			// await contract.submitTransaction(createUserTx, prettyJSONString(IUser));
 		} catch (e) {
 			res = this.handleError(e, method);
 		}
@@ -103,10 +103,10 @@ export class UserContract {
 	 * Smart contract transaction
 	 *
 	 * @param {String} userID The user's ID
-	 * @param {User} User The User object
+	 * @param {IUser} IUser The IUser object
 	 * @returns null on success, else error
 	 */
-	async updateUser(userID: string, User: User) {
+	async updateUser(userID: string, IUser: IUser) {
 		const method = 'updateUser';
 		logger.start(method);
 
@@ -118,11 +118,11 @@ export class UserContract {
 			// const network = await gateway.getNetwork(this.channelID);
 			// const contract = network.getContract(this.chaincodeID, userContract);
 
-			const transaction = { fcn: userContract + ':' + updateUserTx, args: [prettyJSONString(User)] };
+			const transaction = { fcn: userContract + ':' + updateUserTx, args: [prettyJSONString(IUser)] };
 			res = await sendTransaction(userID, transaction, this.channelID, this.chaincodeID);
 			logger.debug('%s - transaction response: %s', method, res);
 
-			// await contract.submitTransaction(updateUserTx, prettyJSONString(User));
+			// await contract.submitTransaction(updateUserTx, prettyJSONString(IUser));
 
 		} catch (e) {
 			res = this.handleError(e, method);
@@ -139,9 +139,9 @@ export class UserContract {
 	 *
 	 * @param {String} userID The user's ID
 	 * @param {String} username The username to query
-	 * @returns {User} The User Object on success, else error
+	 * @returns {IUser} The IUser Object on success, else error
 	 */
-	async readUser(userID: string, username: string): Promise<User> {
+	async readUser(userID: string, username: string): Promise<IUser> {
 		const method = 'readUser';
 		logger.start(method);
 
@@ -208,7 +208,7 @@ export class UserContract {
 	 * @param {String} clientID The client's ID
 	 * @returns {Object} Array of user objects
 	 */
-	async getUsers(clientID: string): Promise<Array<User>> {
+	async getUsers(clientID: string): Promise<Array<IUser>> {
 		const method = 'getUsers';
 		// logger.start(method);
 

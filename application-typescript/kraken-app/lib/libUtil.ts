@@ -100,7 +100,7 @@ export async function connectGateway(userID: string) {
 
 	} catch (e: any) {
 		logger.error('%s - ', method, e);
-		throw new Error(e);
+		throw e
 	}
 
 }

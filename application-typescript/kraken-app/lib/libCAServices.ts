@@ -327,7 +327,7 @@ export class CAServices {
 	 * @param {String} csr 			The Certificate Signing Request (CSR) for offline key gen
 	 * @returns {Number | FabricCAServices.IEnrollResponse}  0 on success, -1 on failure
 	 */
-	async enrollAppUser(appUserID: string, secret: string, csr?: string): Promise<number | FabricCAServices.IEnrollResponse> {
+	async enrollAppUser(appUserID: string, secret: string, csr?: string): Promise<X509Identity | FabricCAServices.IEnrollResponse> {
 		const method = 'enrollAppUser';
 		logger.start(method);
 		logger.debug('%s - ', method);
@@ -379,10 +379,10 @@ export class CAServices {
 					type: 'X.509',
 				};
 
+				logger.info('%s - User %s enrolled successfully without CSR', method, appUserID);
 				await wallet.put(appUserID, x509Identity);
 
-				logger.info('%s - User %s enrolled successfully without CSR', method, appUserID);
-				return 0;
+				return x509Identity;
 			}
 
 		} catch (e: any) {

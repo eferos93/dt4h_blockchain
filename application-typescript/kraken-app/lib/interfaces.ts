@@ -14,8 +14,27 @@ export interface EX509Identity extends X509Identity {
 	version?: number;
 }
 
+export interface IUser {
+	type: string,
+	id: string,
+	username: string,
+	isOrg: boolean,
+	org: Org,
+	isBuyer: boolean,
+	purposes: Array<string>,
+	validTo: number,
+	approvedOrgs?: Array<string>,
+	[key: string]: any
+}
+
+export interface IInventory {
+	owner: string,
+	productID: string,
+	[key: string]: any
+}
+
 // Agreement Declaration
-export interface Agreement {
+export interface IAgreement {
 	type: string,
 	txID: string,
 	productType: string,
@@ -24,6 +43,22 @@ export interface Agreement {
 	price: number,
 	status: string,
 	timestamp: number,
+	[key: string]: any
+}
+
+export interface IProduct {
+	type: string,
+	owner: string,
+	id: string,
+	name: string,
+	price: number,
+	desc: string,
+	productType?: string,
+	policy: Policy,
+	timestamp: number,
+	escrow?: string,
+	curations?: Array<string>,
+	productIDs?: Array<string>,
 	[key: string]: any
 }
 
@@ -41,25 +76,7 @@ export interface Policy {
 	protectionType: string,
 	secondUseConsent: boolean,
 	transferToCountry: boolean,
-	storagePeriod: number,
-	recipientType: Array<string>,
-	approvedUsers?: Array<string>,
-	approvedOrgs?: Array<string>,
-	automated?: Array<string>
-}
-
-export interface Product {
-	name: string,
-	price: number,
-	desc: string,
-	sector: string,
-	productType?: string,
-	policy: Policy,
-	timestamp: number,
-	escrow?: string,
-	curations?: Array<string>,
-	productIDs?: Array<string>,
-	[key: string]: any
+	storagePeriod: number
 }
 
 export interface BuyerParameters {
@@ -75,18 +92,7 @@ export interface Org {
 	active: boolean
 }
 
-export interface User {
-	type: string,
-	id: string,
-	username: string,
-	isOrg: boolean,
-	org: Org,
-	isBuyer: boolean,
-	purposes: Array<string>,
-	validTo: number,
-	approvedOrgs?: Array<string>,
-	[key: string]: any
-}
+
 
 export interface ReenrollResponse {
 	certificate: string,

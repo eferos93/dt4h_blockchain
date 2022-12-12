@@ -36,31 +36,17 @@ var offchainDB = new OffchainDB();
  */
 async function handleTransactionData(transactionData: any, blockNum: number) {
 	const method = 'handleTransactionData';
-	// logger.start(method);
 
 	try {
-		// CERTIFICATE OF TRANSACTION CREATOR
-		const creator = transactionData.actions[0].header.creator;
-		// console.log(`    - submitted by: ${creator.mspid}-${creator.id_bytes.toString('UTF-8')}`);
-
 		// TRANSACTION PROPOSAL RESPONSE PAYLOAD
-		// console.log(transactionData.actions[0].payload)
 		const transactionPayload = transactionData.actions[0].payload.action.proposal_response_payload;
-		// console.log(transactionPayload);
 		const eventName = transactionPayload.extension.events.event_name;
-		// console.log(transactionPayload.extension);
+		
 		// RESPONSE STATUS OF TRANSACTION
 		const response = transactionPayload.extension.response;
-		// console.log("%j", response);
-		// const readSet = transactionPayload.extension.results.ns_rwset[1].rwset.reads[1];
-		// const writeSet = transactionPayload.extension.results.ns_rwset[1].rwset.writes[0].value;
 
 		// EVENT RESULT
 		let eventResult = transactionPayload.extension.events.payload;
-		// eventResult = Buffer.concat([eventResult, Buffer.from(transactionData.timestamp, 'utf8')]);
-		// console.log(eventResult.timestamp)
-		// console.log('Request result: ', Util.prettyJSON(eventResult));
-		// console.log('        Trigger some other function...', Util.prettyJSON(eventResult));
 
 		// console.info('Transaction event result');
 		if (eventResult.toString() === null ||
@@ -73,11 +59,11 @@ async function handleTransactionData(transactionData: any, blockNum: number) {
 			return;
 		}
 
-		// logger.debug('%s - passing event to DB: ', method, eventName);
-		await offchainDB.eventHandler(eventName, eventResult);
+		logger.info('%s - passing event to DB: ', method, eventName);
+		return await offchainDB.eventHandler(eventName, eventResult);
 		// const chaincode = transactionData.actions[0].payload.chaincode_proposal_payload.input.chaincode_spec;
 	} catch(e: any) {
-		logger.fatal('%s - ', method, e.message);
+		logger.error('%s - ', method, e.message);
 	}
 }
 
@@ -95,7 +81,9 @@ export async function createBlockListener(userID: string, channelID: string) {
 
 	try {
 		
-		await offchainDB.openConnection();
+		// await offchainDB.connect();
+		let users = await offchainDB.users.getAll()
+
 		const gateway = await Util.connectGateway(userID);
 		logger.debug('%s - %s - %s ', method, userID, channelID);
 		const network = await gateway.getNetwork(channelID);
@@ -108,7 +96,7 @@ export async function createBlockListener(userID: string, channelID: string) {
 			for (let transEvent of transEvents) {
 				if (transEvent.isValid){
 					transEvent.transactionData.timestamp = timestamp;
-					handleTransactionData(transEvent.transactionData, blockNum);
+					await handleTransactionData(transEvent.transactionData, blockNum);
 				}
 			}
 
@@ -141,15 +129,14 @@ export async function removeBlockListener(userID: string, channelID: string, lis
 
 	const gateway = await Util.connectGateway(userID);
 	try {
-		await offchainDB.closeConnection();
+		// await offchainDB.disconnect();
 		const network = await gateway.getNetwork(channelID);
 
-		await network.removeBlockListener(listener);
+		return await network.removeBlockListener(listener);
 	} catch(e) {
 		logger.error('%s - ', method, e);
 	} finally {
 		if(gateway) {gateway.disconnect()}
-		
 	}
 }
 

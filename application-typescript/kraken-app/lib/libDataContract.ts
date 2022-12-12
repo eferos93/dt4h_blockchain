@@ -12,7 +12,7 @@ const TYPE = 'DataContract';
 /* Dependencies */
 import { connectGateway, prettyJSONString, prettyJSON, getLogger } from './libUtil'
 import { sendTransaction } from './libSignOffline';
-import { Product, BuyerParameters } from './interfaces';
+import { IProduct, BuyerParameters } from './interfaces';
 
 /* Constants */
 const dataContract = 'DataContract';
@@ -56,7 +56,8 @@ export class DataContract {
 	 */
 	handleError(e: any, method: string) {
 		logger.error('%s - ', method, e.message);
-		return e;
+		// return e;
+		throw e
 	}
 
 	/**
@@ -64,10 +65,10 @@ export class DataContract {
 	 * Create a product
 	 *
 	 * @param {String} userID  The user's ID
-	 * @param {Object} Product The product object
+	 * @param {Object} IProduct The product object
 	 * @returns {String} productID on success, else error
 	 */
-	async createProduct(userID: string, Product: Product) {
+	async createProduct(userID: string, IProduct: IProduct) {
 		const method = 'createProduct';
 		logger.start(method);
 
@@ -79,11 +80,11 @@ export class DataContract {
 			// const network = await gateway.getNetwork(this.channelID);
 			// const contract = network.getContract(this.chaincodeID, dataContract);
 
-			const transaction = {fcn: dataContract + ':' + createProductTx, args: [prettyJSONString(Product)]};
+			const transaction = {fcn: dataContract + ':' + createProductTx, args: [prettyJSONString(IProduct)]};
 			res = await sendTransaction(userID, transaction, this.channelID, this.chaincodeID);
 			logger.debug('%s - transaction response: %s', method, res);
 
-			// res = await contract.submitTransaction(createProductTx, prettyJSONString(Product));
+			// res = await contract.submitTransaction(createProductTx, prettyJSONString(IProduct));
 			// res = res.toString();
 		} catch(e: any) {
 			res = this.handleError(e, method);
@@ -99,10 +100,10 @@ export class DataContract {
 	 * Updates an existing product
 	 *
 	 * @param {String} userID  The user's ID
-	 * @param {Object} Product The product object
+	 * @param {Object} IProduct The product object
 	 * @returns {Error} null on success, else error
 	 */
-	async updateProduct(userID: string, Product: Product) {
+	async updateProduct(userID: string, IProduct: IProduct) {
 		const method = 'updateProduct';
 		logger.start(method);
 
@@ -110,7 +111,7 @@ export class DataContract {
 
 		try {
 
-			const transaction = {fcn: dataContract + ':' + updateProductTx, args: [prettyJSONString(Product)]};
+			const transaction = {fcn: dataContract + ':' + updateProductTx, args: [prettyJSONString(IProduct)]};
 			res = await sendTransaction(userID, transaction, this.channelID, this.chaincodeID);
 
 		} catch(e: any) {
@@ -126,9 +127,9 @@ export class DataContract {
 	 *
 	 * @param {String} userID
 	 * @param {String} productID The productID (hash)
-	 * @returns {Object} Product if exists
+	 * @returns {Object} IProduct if exists
 	 */
-	async readProduct(userID: string, productID: string): Promise<Product> {
+	async readProduct(userID: string, productID: string): Promise<IProduct> {
 		const method = 'readProduct';
 		logger.start(method);
 
@@ -171,7 +172,7 @@ export class DataContract {
 		logger.start(method);
 
 		let res = null;
-
+		
 		try {
 
 			const transaction = {fcn: dataContract + ':' + buyProductTx, args: [productID, prettyJSONString(buyerParams)]};

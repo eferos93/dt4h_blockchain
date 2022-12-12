@@ -230,6 +230,7 @@ async function sendCommit(commit: Commit, channel: Channel) {
 	}
 
 }
+exports.sendCommit = sendCommit
 
 /**
  * Get { Endorsement } instance
@@ -250,6 +251,7 @@ export async function getChannelCtx(clientID: string, channelID: string, chainco
 	return { channel, endorsement };
 }
 
+
 async function getEndorsementPayload(endorsement: Endorsement, channel: Channel) {
 	const method = 'getEndorsementPayload';
 	logger.start(method);
@@ -262,6 +264,7 @@ async function getEndorsementPayload(endorsement: Endorsement, channel: Channel)
 
 	return { endorsement, transactionResult };
 }
+exports.getEndorsementPayload = getEndorsementPayload
 
 async function getSignerCtx(signerID: string, walletPath: string) {
 	const method = 'getSignerCtx';
