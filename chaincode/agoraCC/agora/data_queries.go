@@ -34,11 +34,11 @@ func (s *DataContract) GetAllProducts(ctx TransactionContextInterface) ([]*Produ
 			return nil, fmt.Errorf("%s: %v", method, err)
 		}
 
-		var product *Product
-		err = json.Unmarshal(queryResponse.Value, &product)
+		product, err := s.parseProductBytes(queryResponse.Value)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %v", method, err)
 		}
+
 		products = append(products, product)
 	}
 
@@ -49,13 +49,13 @@ func (s *DataContract) GetAllProducts(ctx TransactionContextInterface) ([]*Produ
 
 // }
 
+
 // getProduct fetch a product
 func (s *DataContract) getProduct(ctx TransactionContextInterface, productID string) (*Product, error) {
 	method := "getProduct"
 
 	key := s.makeProductKey(ctx, productID)
 	productBytes, err := ctx.GetStub().GetState(key)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
 	}
@@ -64,12 +64,47 @@ func (s *DataContract) getProduct(ctx TransactionContextInterface, productID str
 		return nil, fmt.Errorf("%s: Product %s does not exist", method, productID)
 	}
 
-	var product *Product
-	err = json.Unmarshal(productBytes, &product)
-
+	product, err := s.parseProductBytes(productBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
 	}
+
+	return product, nil
+}
+
+
+// Parse product bytes based on the current version
+func (s *DataContract) parseProductBytes(productBytes []byte) (*Product, error) {
+	method := "parseProduct"
+
+	// Unmarshal to a map to check version and values
+	mapping, err := getMapping(productBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	version, ok := mapping["_v"].(float64)
+	if !ok {
+		return nil, fmt.Errorf("%s - error decoding product version", method)
+	}
+
+	if version == CURRENT_PRODUCT_VERSION {
+		fmt.Printf("%s - Latest Version: %v", method, version)
+		
+		// Change value here
+		// mapping["_v"] = 1
+		// mapping["desc"] = "Test desc change"
+		productBytes, err = json.Marshal(mapping)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var product *Product
+	err = json.Unmarshal(productBytes, &product)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %v", method, err)
+	}	
 
 	return product, nil
 }

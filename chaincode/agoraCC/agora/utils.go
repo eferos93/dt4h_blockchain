@@ -152,17 +152,37 @@ func assertCallerBelongsToOrg(ctx TransactionContextInterface) (*User, error) {
 	return orgUser, nil
 }
 
+// Get Doc Version
+func getDocVersion(b []byte) (int64) {
+	method := "parseVersion"
 
-// // Get date of birth from args
-// func getDOB(day, month, year string) time.Time {
-// 	yy, _ := strconv.Atoi(year)
-// 	mm, _ := strconv.Atoi(month)
-// 	dd, _ := strconv.Atoi(day)
-// 	dob := time.Date(yy, time.Month(mm), dd, 0, 0, 0, 0, time.UTC)
-// 	return dob
-// }
+	m := make(map[string]interface{})
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return -1
+	}
 
-// // Get age from date of birth
-// func getAge(dob time.Time) int {
-// 	return age.Age(dob)
-// }
+	for k, v := range m { 
+		fmt.Printf("%s - key[%s] value[%s]\n", method, k, v)
+	}
+
+	val, ok := m["_v"].(int64)
+	if ok && val == 0 {
+		fmt.Printf("%s - Version: 0", method)
+	}
+
+	return val
+}
+
+func getMapping(b []byte) (map[string]interface{}, error) {
+
+	m := make(map[string]interface{})
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range m { 
+		fmt.Printf("key[%s] value[%s]\n", k, v)
+	}
+	return m, nil
+}

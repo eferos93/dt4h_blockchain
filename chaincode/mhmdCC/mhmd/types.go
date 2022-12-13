@@ -51,8 +51,8 @@ var PURPOSES = []string{"marketing", "publicly_funded_research", "private_resear
 var PROTECTIONS = []string{"Anonymization", "Encryption", "SMPC"}
 var PRODUCT_SECTOR = []string{HEALTH, EDUCATION}
 var PRODUCT_TYPES = []string{BATCH, ANALYTICS, STREAMS}
-var EDUCATIONAL_INSTITUTION_TYPES = []string{"hr_agencies", "private_companies", "public_institutions", "public_research_centers", "public_research_institutions"}
-var HEALTH_INSTITUTION_TYPES = []string{"publicHospitals", "privateHospitals", "privateResearch", "publicResearch", "governments", "privateCompanies", "other"}
+var INSTITUTION_TYPES = []string{"public_hospitals", "private_hospitals", "private_research_centers", "public_research_centers", "governments", "other", "public_institutions", "public_research_institutions", "hr_agencies", "private_companies", "private_institutions"}
+
 var AUTOMATED_DECISION_MAKING_CONSEQUENCES = []string{"automated_placing", "hiring_assessments", "clinical_risks_assessment", "diagnostic_or_treatment"}
 
 type RevokedCertificate struct {
@@ -164,8 +164,7 @@ func (o *Org) initOrg() {
 func (o Org) validateOrgArgs() error {
 	method := "validateOrgArgs"
 
-	INSTITUTIONS := append(HEALTH_INSTITUTION_TYPES, EDUCATIONAL_INSTITUTION_TYPES...)
-	if !_in(o.InstType, INSTITUTIONS){
+	if !_in(o.InstType, INSTITUTION_TYPES){
 		return fmt.Errorf("%s - Undefined institution value: %s", method, o.InstType)
 	}
 

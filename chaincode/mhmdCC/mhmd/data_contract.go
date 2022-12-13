@@ -147,9 +147,9 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 
 	// Validate Institution types 
 	if product.Sector == HEALTH && product.ProductType == ANALYTICS {
-		err = validateValues(product.Policy.RecipientType, HEALTH_INSTITUTION_TYPES)
+		err = validateValues(product.Policy.RecipientType, INSTITUTION_TYPES)
 	} else if product.Sector == EDUCATION {
-		err = validateValues(product.Policy.RecipientType, EDUCATIONAL_INSTITUTION_TYPES)
+		err = validateValues(product.Policy.RecipientType, INSTITUTION_TYPES)
 	}
 	if err != nil {
 		return fmt.Errorf("ValidationError: %v", err)

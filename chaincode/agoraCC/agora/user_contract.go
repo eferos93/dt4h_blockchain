@@ -30,6 +30,7 @@ func (s *UserContract) CreateUser(ctx TransactionContextInterface, userStr strin
 	log.Printf("%+v", user)
 	/* Assign fabric ID */
 	user.ObjectType = USER_OBJECT_TYPE
+	user.Version = CURRENT_USER_VERSION
 	userID, _ := ctx.GetClientIdentity().GetID()
 	user.ID = userID
 	user.MspID, _ = ctx.GetClientIdentity().GetMSPID()
@@ -95,6 +96,7 @@ func (s *UserContract) UpdateUser(ctx TransactionContextInterface, userStr strin
 
 	/* Assign fabric ID */
 	user.ObjectType = USER_OBJECT_TYPE
+	user.Version = CURRENT_USER_VERSION
 	user.ID = ctx.GetData().ID
 	user.Username = ctx.GetData().Username
 	user.MspID, _ = ctx.GetClientIdentity().GetMSPID()
@@ -127,31 +129,7 @@ func (s *UserContract) UpdateUser(ctx TransactionContextInterface, userStr strin
 	return nil
 }
 
-// ReadUser Fetch a user by username. Returns nil if doesn't exist
-func (s *UserContract) ReadUser(ctx TransactionContextInterface, username string) (*User, error) {
-	method := "ReadUser"
-	log.Printf("%s - start\n", method)
 
-	userBytes, err := s.getUserJSON(ctx, username)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read world state")
-	}
-
-	if userBytes == nil {
-		return nil, nil
-	}
-
-	var user *User
-	err = json.Unmarshal(userBytes, &user)
-
-	if err != nil {
-		return nil, fmt.Errorf("%s: %v", method, err)
-	}
-
-	log.Printf("%s - end\n", method)
-
-	return user, nil
-}
 
 // DeleteUser (self, owner only)
 // Username arg is not used yet, left for future admin implementation
@@ -400,7 +378,7 @@ func (s *UserContract) validateCUD(ctx TransactionContextInterface, user *User, 
 		return fmt.Errorf("%s: Username length must be more than 4", method)
 	}
 
-	userBytes, err := s.getUserJSON(ctx, user.Username)
+	userBytes, err := s.getUserBytes(ctx, user.Username)
 	if err != nil {
 		return fmt.Errorf("%s - failed to read from world state", method)
 	}
@@ -545,18 +523,6 @@ func (s *UserContract) makeUserKey(ctx TransactionContextInterface, username str
 	return key
 }
 
-// getUserJSON Fetch user from world state
-func (s *UserContract) getUserJSON(ctx TransactionContextInterface, username string) ([]byte, error) {
-	method := "getUserJSON"
-
-	key := s.makeUserKey(ctx, username)
-	userJSON, err := ctx.GetStub().GetState(key)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %v", method, err)
-	}
-
-	return userJSON, nil
-}
 
 /*
  *** **************** ****

@@ -11,6 +11,10 @@ import (
 	// "github.com/zmap/zcrypto/x509/pkix"
 )
 
+// Versioning
+const CURRENT_PRODUCT_VERSION = 0
+const CURRENT_USER_VERSION = 0
+
 const TRUE = "true"
 const FALSE = "false"
 const EMPTY_STR = ""
@@ -54,6 +58,7 @@ var PRODUCT_TYPES = []string{BATCH, ANALYTICS, STREAMS}
 var EDUCATIONAL_INSTITUTION_TYPES = []string{"HrAgencies", "PrivateCompanies", "PublicInstitutions", "PublicResearchCenters", "PublicResearchInstitutions"}
 var HEALTH_INSTITUTION_TYPES = []string{"PublicHospitals", "PrivateHospitals", "PrivateResearch", "PublicResearch", "Governments", "PrivateCompanies", "Other"}
 var AUTOMATED_DECISION_MAKING_CONSEQUENCES = []string{"AutomatedPlacing", "HiringAssessment", "ClinicalResearchAssessment", "DiagnosticOrTreatment"}
+var INSTITUTION_TYPES = []string{"public_hospitals", "private_hospitals", "private_research_centers", "public_research_centers", "governments", "other", "public_institutions", "public_research_institutions", "hr_agencies", "private_companies", "private_institutions"}
 
 type RevokedCertificate struct {
 	ObjectType 	string `json:"type"`
@@ -133,6 +138,8 @@ type User struct {
 
 	// Active status
 	Active		bool	`json:"active"`
+
+	Version		int64 	`json:"_v" metadata:",optional"`
 }
 
 type OrgData struct {
@@ -222,6 +229,8 @@ type Product struct {
 
 	// In case of a Data Union
 	// ProductIDs []string `json:"productIDs,omitempty" metadata:",optional"`
+	Version		int64 	`json:"_v" metadata:",optional"`
+
 
 }
 
@@ -257,6 +266,9 @@ type Policy struct {
 
 	// Automated Decision Making Consequences
 	AutomatedDecisionMaking []string `json:"automated,omitempty" metadata:",optional"`
+
+	Version		int64 	`json:"_v" metadata:",optional"`
+
 }
 
 // {
@@ -303,6 +315,7 @@ type Agreement struct {
 	Price         float64 `json:"price"`
 	Status        string  `json:"status"`
 	Timestamp     int64   `json:"timestamp"`
+	Version		int64 	`json:"_v" metadata:",optional"`
 }
 
 type ProductHistoryQueryResult struct {

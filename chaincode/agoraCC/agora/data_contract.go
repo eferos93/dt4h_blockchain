@@ -28,6 +28,7 @@ func (s *DataContract) CreateProduct(ctx TransactionContextInterface, productStr
 
 	product.Owner = ctx.GetData().Username
 	product.ObjectType = PRODUCT_OBJECT_TYPE
+	product.Version = CURRENT_PRODUCT_VERSION
 
 	/* Assign ID to product */
 	ID, err := s.createProductID(ctx, product.Owner)
@@ -37,7 +38,6 @@ func (s *DataContract) CreateProduct(ctx TransactionContextInterface, productStr
 
 	product.ID = ID
 	log.Printf("%s:  ProductID: %s\n", method, product.ID)
-	log.Println()
 
 	// Timestamp in Unix Nanoseconds
 	timestamp, err := ctx.GetStub().GetTxTimestamp()
@@ -222,6 +222,7 @@ func (s *DataContract) UpdateProduct(ctx TransactionContextInterface, productStr
 
 	product.ObjectType = PRODUCT_OBJECT_TYPE
 	product.Owner = ctx.GetData().Username
+	product.Version = CURRENT_PRODUCT_VERSION
 
 	if err := s.putProductState(ctx, product, 1); err != nil {
 		return fmt.Errorf("%s: %v", method, err)
@@ -519,6 +520,54 @@ func (s *DataContract) makeProductKey(ctx TransactionContextInterface, productID
 	return key
 }
 
-func (s *DataContract) Test() {
+func (s *DataContract) Test(ctx TransactionContextInterface, productID string)  (*Product, error) {
+	method := "test"
+
 	log.Println("Testing...")
+
+	key := s.makeProductKey(ctx, productID)
+	productBytes, err := ctx.GetStub().GetState(key)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %v", method, err)
+	}
+
+	if productBytes == nil {
+		return nil, fmt.Errorf("%s: Product %s does not exist", method, productID)
+	}	
+
+	m := make(map[string]interface{})
+	err = json.Unmarshal(productBytes, &m)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %v", method, err)
+	}
+
+	fmt.Printf("%s: %v", method, m)
+	s.DecodeMapping(m)
+	
+	var product *Product
+	err = json.Unmarshal(productBytes, &product)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %v", method, err)
+	}
+
+	return product, nil
+
+}
+
+func (s *DataContract) DecodeMapping(m map[string]interface{})  {
+	method := "DecodeMapping"
+
+	for k, v := range m { 
+		fmt.Printf("%s - key[%s] value[%s]\n", method, k, v)
+	}
+
+	if val := m["_v"].(float64); val == 0 {
+		fmt.Printf("%s - Version: 0", method)
+	}
+
+	// fmt.Printf("%s: %s")
+
 }
