@@ -470,9 +470,9 @@ func (s *UserContract) validateCUD(ctx TransactionContextInterface, user *User, 
 	// Member of Organization 
 	if user.IsMemberOf != EMPTY_STR {
 		// DEV COMMENT START
-		// if user.IsOrg {
-		// 	return fmt.Errorf("%s - Cannot be both member and organization (IsMemberOf, IsOrg)", method)
-		// }
+		if user.IsOrg {
+			return fmt.Errorf("%s - Cannot be both member and organization (IsMemberOf, IsOrg)", method)
+		}
 		// DEV END
 
 		// user.Org.initOrg()

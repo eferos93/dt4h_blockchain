@@ -83,7 +83,7 @@ func (s *DataContract) parseProductBytes(productBytes []byte) (*Product, error) 
 		return nil, err
 	}
 
-	version, ok := mapping["_v"].(float64)
+	version, ok := mapping[VERSION_FIELD].(float64)
 	if !ok {
 		return nil, fmt.Errorf("%s - error decoding product version", method)
 	}
@@ -92,7 +92,7 @@ func (s *DataContract) parseProductBytes(productBytes []byte) (*Product, error) 
 		fmt.Printf("%s - Latest Version: %v", method, version)
 		
 		// Change value here
-		// mapping["_v"] = 1
+		// mapping[VERSION_FIELD] = 1
 		// mapping["desc"] = "Test desc change"
 		productBytes, err = json.Marshal(mapping)
 		if err != nil {

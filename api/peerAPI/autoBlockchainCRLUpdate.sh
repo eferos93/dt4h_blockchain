@@ -30,7 +30,7 @@ invokeUpdateCRL() {
 		CRL_STRING+="${line}\\n"
 	done < "$CRL_PATH"
 
-	funcCall='{"Args":["ManagementContract:Getrevoke","'"${CRL_STRING}"\"]}
+	funcCall='{"Args":["ManagementContract:UpdateCRL","'"${CRL_STRING}"\"]}
 
 	./peer.sh invoke -x "${funcCall}" -n peer0.${ORG_NAME}.domain.com
 }

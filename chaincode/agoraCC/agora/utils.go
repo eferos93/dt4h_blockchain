@@ -166,7 +166,7 @@ func getDocVersion(b []byte) (int64) {
 		fmt.Printf("%s - key[%s] value[%s]\n", method, k, v)
 	}
 
-	val, ok := m["_v"].(int64)
+	val, ok := m[VERSION_FIELD].(int64)
 	if ok && val == 0 {
 		fmt.Printf("%s - Version: 0", method)
 	}

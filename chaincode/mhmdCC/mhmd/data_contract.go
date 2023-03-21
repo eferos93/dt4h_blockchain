@@ -246,9 +246,9 @@ func (s *DataContract) BuyProduct(ctx TransactionContextInterface, productID str
 	}
 
 	// Reject if owner tries to buy own product
-	// if ctx.GetData().Username == product.Owner {
-	// 	return EMPTY_STR, fmt.Errorf("%s:  User %s is owner of this product: %s", method, ctx.GetData().Username, productID)
-	// }
+	if ctx.GetData().Username == product.Owner {
+		return EMPTY_STR, fmt.Errorf("%s:  User %s is owner of this product: %s", method, ctx.GetData().Username, productID)
+	}
 
 	// Check if seller has exired certificate
 	seller, err := userContract.ReadUser(ctx, product.Owner)

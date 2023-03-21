@@ -21,6 +21,12 @@ Additionally, a backend code is provided in Typescript with various functionalit
 
 ### Installation
 
+If on local machine:
+```bash
+./tools.sh setup
+```
+
+If on a remote VM:
 See beginning of DEPLOY.md for prerequisites installation
 
 ### Starting the network

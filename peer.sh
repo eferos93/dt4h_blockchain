@@ -34,6 +34,10 @@ usage() {
 	echo -e "  start \t\t Start a node, peer/orderer"
 	echo -e "  crlupdate \t\t Compute channel CRL configuration update for OrgMSP"
 	echo -e "  autocrlupdate \t\t Continuously update Org's CRL and commit Channel Update"
+	echo -e "  addOrdererTLSCertsUpdate \t\t Create configuration update for Orderer TLS Certificate"
+	echo -e "  computeUpdate \t\t Create new updated configuration"
+	echo -e "  invoke \t\t Invoke a chaincode function"
+	echo -e "  updateBlockchainRevokedCertificates \t\t Calls ManagementContract:UpdateCRL to store CRL"
 	echo -e ""
 	echo -e "Flags:"
 	echo -e "  -n --peer \t\tPeer to set for operation in full name, e.g. peer0.org.domain.com"
@@ -60,6 +64,7 @@ usage() {
 	echo -e "  ./peer.sh addorgupdate -O Org3MSP" 
 	echo -e "  ./peer.sh updateanchorpeers -o org1 -O Org1MSP"
 	echo -e "  ./peer.sh autocrlupdate -o org1"
+	echo -e "  ./peer.sh invoke -x \'{"Args":["UserContract:ReadUser", "Alex"]}\'"
 
 	echo -e ""
 }

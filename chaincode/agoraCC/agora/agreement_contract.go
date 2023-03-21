@@ -200,12 +200,12 @@ func (s *AgreementContract) UpdateAgreement(ctx TransactionContextInterface, txI
 	log.Printf("%s - start\n", method)
 
 	// Check if caller belongs to the Organization as a non User
+	// Should be non User MSP
 	mspID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return fmt.Errorf("%s: %v", method, err)
 	}
 
-	// Should be non User MSP
 	if !isAuthorizedMSP(mspID) {
 		return fmt.Errorf("%s - Not authorized to change agreement state", method)
 	}
@@ -222,7 +222,7 @@ func (s *AgreementContract) UpdateAgreement(ctx TransactionContextInterface, txI
 	}
 
 	// Check if input status has correct value
-	if !_in(status, AGREEMENT_STATUS ) {
+	if !_in(status, AGREEMENT_STATUS) {
 		return fmt.Errorf("%s - Wrong value for status", method)
 	}
 

@@ -1,21 +1,26 @@
 #!/bin/bash
 
-export STAGE=prod
+export STAGE=dev
+
+export FABRIC_HOME=${PWD}
 
 # Profile used from configtx.yaml
-export CHANNEL_PROFILE=MarketplaceChannel
+export CHANNEL_PROFILE=AthLynkChannel
+
+# Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium
 
 # Set ORDERER global variables 
-# export ORDERER_IP="$(getent hosts orderer0.lynkeusorderer.domain.com |  tr -s ' ' | cut -d " " -f 1)"
-export ORDERER_HOSTNAME=orderer0.lynkeusorderer.domain.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/lynkeusorderer.domain.com/mspConfig/tlscacerts/ca.crt
+# export ORDERER_IP="$(getent hosts orderer0.ordererorg.domain.com |  tr -s ' ' | cut -d " " -f 1)"
 
 if [ ${STAGE} == 'dev' ]; then
   export ORDERER=localhost:9051
 else
-  export ORDERER=orderer0.lynkeusorderer.domain.com:9051
+  export ORDERER=orderer0.texorderer.domain.com:9051
 fi
+
+export ORDERER_HOSTNAME=orderer0.texorderer.domain.com
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/texorderer.domain.com/mspConfig/tlscacerts/ca.crt
 
 ################## THIS SECTION SHOULD BE CONFIGURED BY NETWORK ADMINISTRATOR #########################
 ################## MANDATORY PARAMETERS TO CONFIGURE ##########################
@@ -27,8 +32,7 @@ fi
 ################## ORDERERPW ##########################
 ################## ADMINPW ##########################
 
-
-# User Input 
+# User Input
 [[ -z $ORGS ]] && export ORGS="tex lynkeus texorderer lynkeusorderer"
 [[ -z $PEER_ORGS ]] && export PEER_ORGS="tex lynkeus"
 [[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="texorderer lynkeusorderer"
@@ -36,18 +40,22 @@ export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
 export COUCHDB_PORTS=("5100" "5200" "6100" "6200")
 
-# For CCP Generation
-export CCP_PEER_PORT=7070
-export CCP_ORDERER_PORT=9051
-export CCP_CA_PORT=7055
-
 setPorts() {
   org=$1
-
-  PEER_PORT=7070
-  if [ "$org" == "texorderer" ] || [ "$org" == "lynkeusorderer" ]; then
-      PEER_PORT=9051
-      CLUSTER_PORT=9052
+  declare -Ag PORT_MAP
+  if [ "$org" == "tex" ]; then
+    PORT_MAP[peer0]=7070
+    PORT_MAP[peer1]=7080
+  elif [ "$org" == "lynkeus" ]; then
+    PORT_MAP[peer0]=8080
+    PORT_MAP[peer1]=8090
+  elif [ "$org" == "texorderer" ]; then
+    PORT_MAP[orderer0]=9051
+    PORT_MAP[orderer1]=9061
+  elif [ "$org" == "lynkeusorderer" ]; then
+    PORT_MAP[orderer0]=9071
+  elif [ "$org" == "org3" ]; then
+    PORT_MAP[peer0]=10070
   fi
 }
 
@@ -68,7 +76,7 @@ setPeer() {
 
   # Check config existence
   if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
-    printWarn "Missing configuration for ${nodeID}-${org}."
+    printWarn "Missing configuration for ${NODE_ID}-${org}."
     # exit 1
   fi
 
@@ -86,7 +94,7 @@ setPeer() {
   export CORE_PEER_TLS_CERT=${PEER_HOME}/tls/signcerts/cert.pem
   export CORE_PEER_TLS_KEY=${PEER_HOME}/tls/keystore/key.pem
   
-  export CORE_PEER_ADDRESS=${nodeID}.${org}.domain.com:$PEER_PORT
+  export CORE_PEER_ADDRESS=${hostname}:${PORT_MAP[$nodeID]}
 
   # MSP (Need Admin to join channel)
   export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
@@ -96,11 +104,19 @@ setPeer() {
 # Set endorsing peers
 setPeers() {
 
-  peer0tex="--peerAddresses peer0.tex.domain.com:${CCP_PEER_PORT}"
-  peer1tex="--peerAddresses peer1.tex.domain.com:${CCP_PEER_PORT}"
+  if [ ${STAGE} == 'dev' ]; then
+    peer0tex="--peerAddresses localhost:7070"
+    peer1tex="--peerAddresses localhost:7080"
 
-  peer0lyn="--peerAddresses peer0.lynkeus.domain.com:${CCP_PEER_PORT}"
-  peer1lyn="--peerAddresses peer1.lynkeus.domain.com:${CCP_PEER_PORT}"
+    peer0lyn="--peerAddresses localhost:8080"
+    peer1lyn="--peerAddresses localhost:8090"
+  else
+    peer0tex="--peerAddresses peer0.tex.domain.com:7070"
+    peer1tex="--peerAddresses peer1.tex.domain.com:7070"
+
+    peer0lyn="--peerAddresses peer0.lynkeus.domain.com:7070"
+    peer1lyn="--peerAddresses peer1.lynkeus.domain.com:7070"
+  fi
 
   export TLS_ROOTCERT_TEX=${FABRIC_HOME}/organizations/peerOrganizations/tex.domain.com/mspConfig/tlscacerts/ca.crt
   export TLS_ROOTCERT_LYN=${FABRIC_HOME}/organizations/peerOrganizations/lynkeus.domain.com/mspConfig/tlscacerts/ca.crt
@@ -115,29 +131,42 @@ setPeers() {
 setParams() {
   org=$1
 
-  # export myIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
-  tlsHost="$(getent hosts tlsca_${org} |  tr -s ' ' | cut -d " " -f 1)"
-  caHost="$(getent hosts ca_${org} |  tr -s ' ' | cut -d " " -f 1)"
-
-  ##### CA  PORTS #####
-  tlsPort=7054
-  caPort=7055
-  tlsOpsPort=7040
-
-  ##### PEER PORTS #####
-  peerPort=7070
-
-  ##### ORG TYPE #####
   typeOfOrg=peer
-  if [ "$org" == "lynkeusorderer" ] || [ "$org" == "texorderer" ]; then
+  if [ "$org" == "tex" ]; then
+    caPort=7055
+    tlsPort=7054
+    peerPort=7070
+    endorsingPeerPort=7080
+    tlsOpsPort=7020
+  elif [ "$org" == "lynkeus" ]; then
+    caPort=8055
+    tlsPort=8054
+    peerPort=8080  
+    endorsingPeerPort=8090
+    tlsOpsPort=8020
+  elif [ "$org" == "texorderer" ]; then
     typeOfOrg=orderer
+    caPort=9055
+    tlsPort=9054
+    tlsOpsPort=9020  
+  elif [ "$org" == "lynkeusorderer" ]; then
+    typeOfOrg=orderer
+    caPort=11055
+    tlsPort=11054
+    tlsOpsPort=11020
+  elif [ "$org" == "org3" ]; then
+    tlsOpsPort=10020
+    caPort=10055
+    tlsPort=10054
+    peerPort=10070
   fi
-  
+
   export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_PATH/${org}/fabric-ca-client-${org}
   export TLS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tls-root-cert/tls-ca-cert.pem
   export TLSOPS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tlsops-root-cert/tls-ca-cert.pem
   
   # CA 
+  caHost=localhost
   caendpoint=$caHost:$caPort
   caName=ca-${org}
   caadmin=rcaadmin
@@ -148,6 +177,7 @@ setParams() {
   # TLS 
   tlsadmin=tlsadmin
   tlsadminpw=tlsadminpw
+  tlsHost=localhost
   tlsendpoint=${tlsHost}:${tlsPort}
   tlscaName=tlsca-${org}
 
@@ -156,8 +186,8 @@ setParams() {
   tlsopscaName=tlsopsca-${org}
 
   # Admin User
-  userpw=admin0pw
   user=admin0
+  userpw=admin0pw
 
   # Block Client 
   blockclient=blockclient
@@ -174,49 +204,10 @@ setParams() {
   # Org Admin ID-Secret
   admin=admin
   adminpw=adminpw
-  
+
   # Prometheus
   prometheus=prometheus
-  prometheuspw=prometheuspw
+  prometheuspw=secret123
 }
 
-export VM_IPS=(
-"167.172.190.194"
-)
 
-export HOSTS="# Hyperledger Fabric Host Configuration
-# Append to /etc/hosts
-
-# CAs
-20.224.189.91 ca_lynkeus
-20.224.189.91 tlsca_lynkeus
-
-20.101.138.179 ca_tex
-20.101.138.179 tlsca_tex
-
-20.101.137.150 ca_lynkeusorderer
-20.101.137.150 tlsca_lynkeusorderer
-
-20.101.75.205 ca_texorderer
-20.101.75.205 tlsca_texorderer
-
-# endCAs
-
-# Peers
-20.123.159.122 peer0.lynkeus.domain.com
-40.115.61.72 peer1.lynkeus.domain.com
-
-20.4.76.222 peer0.tex.domain.com
-20.101.106.73 peer1.tex.domain.com
-
-# endPeers
-
-# Orderers
-20.23.253.97 orderer0.lynkeusorderer.domain.com
-20.224.127.217 orderer0.texorderer.domain.com
-13.80.52.99 orderer1.texorderer.domain.com
-
-# endOrderers
-
-# end
-"

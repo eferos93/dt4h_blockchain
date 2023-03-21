@@ -269,6 +269,45 @@ createNewOrg() {
 	printSuccess "Org3 successfully created"
 }
 
+removeAllExceptCA() {
+	printInfo "Removing all containers except CAs"
+
+	# Remove peer containers
+	docker container rm -vf $(docker ps --filter name="peer" -aq)
+	
+	# Remove orderer containers 
+	docker container rm -vf $(docker ps --filter name="orderer.\." -aq)
+	
+	# Remove chaincode containers
+	docker container rm -vf $(docker ps --filter name=dev. --filter status=exited -aq)
+	
+	# Remove dangling volumes
+	docker volume rm $(docker volume ls -qf dangling=true)
+
+	# Remove chaincode images
+	removeUnwantedImages
+
+	# Remove crypto files
+	sudo rm -rf channel-artifacts/
+	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/peers
+	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/users
+	sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/orderers
+	sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/users
+	docker container rm -vf explorer.mynetwork.com explorerdb.mynetwork.com
+
+	# Remove users
+	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/*-users
+	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/usersmsp
+
+	# Clean App
+	cleanApp
+	sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
+	sed -i -E "/^export CC_VERSION/s/=.*$/=\"1.0\"/g" "${FABRIC_HOME}"/configCC.sh
+
+	# rm -rf grpc-comms/node_modules
+	printSuccess "All containers deleted except CAs"
+}
+
 
 MODE=$1
 
@@ -317,6 +356,11 @@ if [ "${MODE}" == "up" ]; then
 elif [ "${MODE}" == "down" ]; then	
 	networkDown
 elif [ "${MODE}" == "remake_certs" ]; then
+	
+	# Remove all first
+	removeAllExceptCA
+
+	# Remake
 	createNodes	
 	createConsortium
 	startNodes
@@ -340,43 +384,7 @@ elif [ "${MODE}" == "stop" ]; then
 
 	printSuccess "All containers are halted"
 elif [ "${MODE}" == "rm" ]; then
-	printInfo "Removing all containers except CAs"
-
-	# Remove peer containers
-	docker container rm -vf $(docker ps --filter name="peer" -aq)
-	
-	# Remove orderer containers 
-	docker container rm -vf $(docker ps --filter name="orderer.\." -aq)
-	
-	# Remove chaincode containers
-	docker container rm -vf $(docker ps --filter name=dev. --filter status=exited -aq)
-	
-	# Remove dangling volumes
-	docker volume rm $(docker volume ls -qf dangling=true)
-
-	# Remove chaincode images
-	removeUnwantedImages
-
-	# Remove crypto files
-	sudo rm -rf channel-artifacts/
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/peers
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/users
-	sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/orderers
-	sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/users
-	docker container rm -vf explorer.mynetwork.com explorerdb.mynetwork.com
-
-	# Remove users
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/*-users
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/usersmsp
-
-	# Clean App
-	cleanApp
-	sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
-	sed -i -E "/^export CC_VERSION/s/=.*$/=\"1.0\"/g" "${FABRIC_HOME}"/configCC.sh
-
-	# rm -rf grpc-comms/node_modules
-	printSuccess "All containers deleted except CAs"
-	
+	removeAllExceptCA
 fi
 
 if [ ! -z "$ERRORS" ]; then 

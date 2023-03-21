@@ -14,6 +14,7 @@ import (
 // Versioning
 const CURRENT_PRODUCT_VERSION = 0
 const CURRENT_USER_VERSION = 0
+const VERSION_FIELD = "vers"
 
 const TRUE = "true"
 const FALSE = "false"
@@ -139,7 +140,7 @@ type User struct {
 	// Active status
 	Active		bool	`json:"active"`
 
-	Version		int64 	`json:"_v" metadata:",optional"`
+	Version		int64 	`json:"vers" metadata:",optional"`
 }
 
 type OrgData struct {
@@ -229,7 +230,7 @@ type Product struct {
 
 	// In case of a Data Union
 	// ProductIDs []string `json:"productIDs,omitempty" metadata:",optional"`
-	Version		int64 	`json:"_v" metadata:",optional"`
+	Version		int64 	`json:"vers" metadata:",optional"`
 
 
 }
@@ -267,7 +268,7 @@ type Policy struct {
 	// Automated Decision Making Consequences
 	AutomatedDecisionMaking []string `json:"automated,omitempty" metadata:",optional"`
 
-	Version		int64 	`json:"_v" metadata:",optional"`
+	Version		int64 	`json:"vers" metadata:",optional"`
 
 }
 
@@ -315,7 +316,7 @@ type Agreement struct {
 	Price         float64 `json:"price"`
 	Status        string  `json:"status"`
 	Timestamp     int64   `json:"timestamp"`
-	Version		int64 	`json:"_v" metadata:",optional"`
+	Version		int64 	`json:"vers" metadata:",optional"`
 }
 
 type ProductHistoryQueryResult struct {

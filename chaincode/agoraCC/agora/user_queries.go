@@ -11,9 +11,8 @@ func (s *UserContract) ReadUser(ctx TransactionContextInterface, username string
 
 	user, err := s.getUser(ctx, username)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %v", method)
+		return nil, fmt.Errorf("%s: %v", method, err)
 	}
-
 
 	return user, nil
 }
@@ -43,9 +42,11 @@ func (s *UserContract) getUser(ctx TransactionContextInterface, username string)
 	}
 
 	if userBytes == nil {
-		return nil, fmt.Errorf("%s: %v", method, err)
+		return nil, nil
 	}
 
+
+	fmt.Printf("3333")
 	user, err := s.parseUserBytes(userBytes)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
@@ -141,7 +142,7 @@ func (s *UserContract) parseUserBytes(userBytes []byte) (*User, error) {
 		return nil, err
 	}
 
-	version, ok := mapping["_v"].(float64)
+	version, ok := mapping[VERSION_FIELD].(float64)
 	if !ok {
 		return nil, fmt.Errorf("%s - error decoding user version", method)
 	}
@@ -150,7 +151,7 @@ func (s *UserContract) parseUserBytes(userBytes []byte) (*User, error) {
 		fmt.Printf("%s - Latest Version: %v", method, version)
 		
 		// Change value here
-		// mapping["_v"] = 1
+		// mapping[VERSION_FIELD] = 1
 		// mapping["desc"] = "Test desc change"
 		userBytes, err = json.Marshal(mapping)
 		if err != nil {
