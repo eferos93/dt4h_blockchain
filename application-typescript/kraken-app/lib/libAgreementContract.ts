@@ -53,7 +53,7 @@ export class AgreementContract {
 	 */
 	handleError(e: any, method: string) {
 		logger.error('%s - ', method, e.message);
-		throw e;
+		return e;
 	}
 
 	/**
@@ -68,7 +68,7 @@ export class AgreementContract {
 		const method = 'updateAgreement';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		let gateway;
 
 		try {
@@ -98,7 +98,7 @@ export class AgreementContract {
 		const method = 'getAgreement';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		let gateway;
 
 		try {
@@ -128,7 +128,7 @@ export class AgreementContract {
 		const method = 'getAgreements';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		let gateway;
 
 		try {

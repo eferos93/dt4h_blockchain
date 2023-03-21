@@ -17,6 +17,7 @@ import * as process from 'process';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import * as _ from 'lodash';
 
 import { Gateway, Wallets, DefaultEventHandlerStrategies } from 'fabric-network';
 const config = winston.config;
@@ -335,7 +336,7 @@ export function getLogger(TYPE: string) {
 
 	let options = {} as winston.LoggerOptions
 
-	let transports = [];
+	let transports: any[] = [];
 
 	if (APP_LOGGING) {
 		APP_LOGGING = JSON.parse(APP_LOGGING);
@@ -390,6 +391,28 @@ export function getLogger(TYPE: string) {
 
 	logger.setType(TYPE);
 	return logger;
+}
+
+export const isEqualCommonProperties = (obj1, obj2) => {
+
+	for (const key of Object.keys(obj1)) {
+		if (!obj2.hasOwnProperty(key)) {
+			continue
+		}
+
+		if (typeof obj1[key] === 'object') {
+			if (!isEqualCommonProperties(obj1[key], obj2[key])) {
+				return false
+			}
+			continue
+		}
+
+		if (!(_.isEqual(obj1[key], obj2[key]))) {
+			return false
+		}
+	}
+
+	return true
 }
 
 /* Logging */

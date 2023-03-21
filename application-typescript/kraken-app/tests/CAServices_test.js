@@ -64,7 +64,7 @@ describe('==== Lib CAServices ====', async () => {
 			it('Should Enroll User NO CSR', async () => {
 				for (let u of test_data.userIDs) {
 					result = await ca.enrollAppUser(u, secret);
-					assert(result === 0);
+					assert(result.credentials.privateKey);
 				}
 			});
 

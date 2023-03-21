@@ -13,6 +13,7 @@ const Policy = new mongoose.Schema({
 		approvedOrgs: { type: [String] },
 		approvedUsers: { type: [String] },
 		automated: { type: [String] },
+		vers: { type: Number }
 	}
 )
 
@@ -31,11 +32,12 @@ const Product = new mongoose.Schema({
 		policy: { type: Policy },
 		timestamp: { type: Number },
 		curations: { type: [String] },
+		vers: { type: Number }
 	},
 	{ collection: 'products' }
 )
 
-Product.statics.deleteById = function(_id) {
+Product.statics.deleteById = function(_id: any) {
   return this.deleteOne({ _id: _id })
 };
 

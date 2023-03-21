@@ -38,67 +38,68 @@ export class Query extends OffchainDB {
 	}
 
 
-    /**
-     * Fetch all products from database
-     * joined with the owner's data
-     *
-     * @returns {Array} Array of products populated with owner
-     */
-    async getCatalogue(userID, query={}, page=1, limit=30) {
-        const method = 'getCatalogue';
-        logger.start(method);
-    	
-   //  	return await this.col
-   //  		.find(query, limit)
-   //  		.populate({ path: 'owner', model: UserModel }
-			// .skip((page-1) * limit)
-   //  		.limit(limit)
-		const buyer = await this.users.get(userID);
-		if (!buyer) return filteredData
+	/**
+	 * Fetch all products from database
+	 * joined with the owner's data
+	 *
+	 * @returns {Array} Array of products populated with owner
+	 */
+	async getCatalogue(userID: string, query={}, page=1, limit=500) {
+		const method = 'getCatalogue';
+		logger.start(method);
+		
+
+		return await this.products.col.find(query, limit)
+			.populate({ path: 'owner', model: UserModel })
+			.skip((page-1) * limit)
+			.limit(limit)
+	}
+
+		// const buyer = await this.users.get(userID);
+		// if (!buyer) return filteredData
 
 
-        return await this.products.col.aggregate([
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'owner',
-                    foreignField: '_id',
-                    as: 'seller'
-                }
-            },
-            {
-                $unwind: '$seller'
-            },
-            {
-            	$match: {
-            		$and: [
-	            		'policy.purposes': {
-	            			$in: buyer.purposes
-		            	}
-            		]
-            	}
-            },
-            {
-                $project: {
-                    // owner: 0,
-                    _id: 0,
-                    // validTo: '$seller.validTo',
-                    // 'seller.type': 0,
-                    // 'seller.org': 0,
-                    // "seller.seller": '$seller.username',
-                    // 'seller.isOrg': 0,
-                    // 'seller.isBuyer': 0,
-                    // 'seller.purposes': 0,
-                    // 'seller.username': 0,
-                    // 'seller.id': 0,
-                    // 'seller._id': 0,
-                    // 'seller.__v': 0,
-                    // 'seller.mspid': 0,
-                    // 'seller.certKey': 0
-                }
-            }
-        ])
-    }
+		// return await this.products.col.aggregate([
+		//     {
+		//         $lookup: {
+		//             from: 'users',
+		//             localField: 'owner',
+		//             foreignField: '_id',
+		//             as: 'seller'
+		//         }
+		//     },
+		//     {
+		//         $unwind: '$seller'
+		//     },
+		//     {
+		//     	$match: {
+		//     		$and: [
+		//         		'policy.purposes': {
+		//         			$in: buyer.purposes
+		//             	}
+		//     		]
+		//     	}
+		//     },
+		//     {
+		//         $project: {
+		//             // owner: 0,
+		//             _id: 0,
+		//             // validTo: '$seller.validTo',
+		//             // 'seller.type': 0,
+		//             // 'seller.org': 0,
+		//             // "seller.seller": '$seller.username',
+		//             // 'seller.isOrg': 0,
+		//             // 'seller.isBuyer': 0,
+		//             // 'seller.purposes': 0,
+		//             // 'seller.username': 0,
+		//             // 'seller.id': 0,
+		//             // 'seller._id': 0,
+		//             // 'seller.__v': 0,
+		//             // 'seller.mspid': 0,
+		//             // 'seller.certKey': 0
+		//         }
+		//     }
+		// ])
 
 
 	// *
@@ -108,15 +109,15 @@ export class Query extends OffchainDB {
 	//  * @param {Array<string>} dataPurpose  IProduct's policy purposes
 	//  * @returns {Boolean} True if purposes match, else false
 	 
-	// matchPurpose(buyerPurpose: Array<string>, dataPurpose: Array<string>): boolean {
-	// 	try {
-	// 		const result = !_.isEmpty(_.intersection(buyerPurpose, dataPurpose));
-	// 		return result;
-	// 	} catch (e: any) {
-	// 		logger.error(e);
-	// 		throw e;
-	// 	}
-	// }
+	matchPurpose(buyerPurpose: Array<string>, dataPurpose: Array<string>): boolean {
+		try {
+			const result = !_.isEmpty(_.intersection(buyerPurpose, dataPurpose));
+			return result;
+		} catch (e: any) {
+			logger.error(e);
+			throw e;
+		}
+	}
 
 	/**
 	 * Filtering algorithm
@@ -131,7 +132,7 @@ export class Query extends OffchainDB {
 		let filteredData: any = [];
 
 		try {
-			const buyer = await this.users.get(userID);
+			const buyer = await this.users.getByUsername(userID);
 			logger.debug('%s - ', method, buyer);
 
 			if (!buyer) return filteredData
@@ -139,7 +140,7 @@ export class Query extends OffchainDB {
 			// let query = {    }
 
 			// TODO: filter products with seller's data
-			const products = await this.getCatalogue();
+			const products = await this.getCatalogue(userID, {}, 1, 5000);
 			logger.debug('%s - Total Products Count: ', method, products.length)
 
 			products.forEach((product: any, index: any) => {

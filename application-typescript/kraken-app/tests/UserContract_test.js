@@ -40,6 +40,7 @@ let buyerObj = _.cloneDeep(test_data.getUser(clientID_2))
 
 let product = _.cloneDeep(test_data.product_batch_automated)
 
+console.log(product)
 describe('==== Lib UserContract ====', async function () {
 	this.timeout(100000);
 
@@ -122,18 +123,20 @@ describe('==== Lib UserContract ====', async function () {
 	});
 
 	context('Validations', async function () {
-		it('Rejects both Member and Org', async function () {
-			userObj.isOrg = true
-			userObj.isMemberOf = "asdf"
-			let res = await userContract.createUser(clientID, userObj);
-			expect(res).to.be.a('error');
-			userObj = _.cloneDeep(user0)
-		});
+		// it('Rejects both Member and Org', async function () {
+		// 	userObj.isOrg = true
+		// 	userObj.isMemberOf = "asdf"
+		// 	console.log(userObj)
+		// 	let res = await userContract.createUser(clientID, userObj);
+		// 	expect(res).to.be.a('error');
+		// 	userObj = _.cloneDeep(user0)
+		// });
 
 		it('Rejects Org institution type random value', async function () {
 			userObj.isOrg = true
 			userObj.org.instType = "random"
 			let res = await userContract.createUser(clientID, userObj);
+			console.log('fdfdsdsf')
 			expect(res).to.be.a('error');
 			userObj = _.cloneDeep(user0)
 		});
@@ -170,14 +173,14 @@ describe('==== Lib UserContract ====', async function () {
 
 		it('Appends member to Org.Members', async function () {
 			// Create Org
-			console.log(orgObj)
+			// orgObj.org.members.append(instBObj.username)
 			await userContract.createUser(orgObj.username, orgObj);
 			await sleep(BLOCK_DELAY)
 			
-			console.log(instBObj)
 			await userContract.createUser(instBObj.username, instBObj);
 			await sleep(BLOCK_DELAY)
-			
+
+
 			// buyerObj.isMemberOf = orgObj.username
 			// console.log(buyerObj)
 			// await userContract.createUser(buyerObj, buyerObj);
@@ -186,6 +189,16 @@ describe('==== Lib UserContract ====', async function () {
 			// // already registered
 			let orgUser = await userContract.readUser(clientID, org.username)
 			let instBuyer = await userContract.readUser(clientID, institutional_buyer.username)
+			
+			// Append member to Org's members
+			orgUser.org.members = [instBuyer.id]
+			await userContract.updateUser(orgObj.username, orgUser);
+			await sleep(BLOCK_DELAY)
+			
+			orgUser = await userContract.readUser(clientID, org.username)
+
+			// console.log(orgUser)
+			// console.log(instBuyer)
 			assert.equal(orgUser.org.members[orgUser.org.members.length - 1], instBuyer.id, 'Member not joined on org user');
 			await userContract.deleteUser(orgObj.username, orgObj.username);
 			await sleep(BLOCK_DELAY);

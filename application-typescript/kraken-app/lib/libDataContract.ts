@@ -56,8 +56,8 @@ export class DataContract {
 	 */
 	handleError(e: any, method: string) {
 		logger.error('%s - ', method, e.message);
-		// return e;
-		throw e
+		return e;
+		// throw e
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class DataContract {
 		const method = 'createProduct';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		// let gateway;
 
 		try {
@@ -107,7 +107,7 @@ export class DataContract {
 		const method = 'updateProduct';
 		logger.start(method);
 
-		let res = null;
+		let res;
 
 		try {
 
@@ -133,7 +133,7 @@ export class DataContract {
 		const method = 'readProduct';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		let gateway;
 
 		try {
@@ -171,7 +171,7 @@ export class DataContract {
 		const method = 'buyProduct';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		
 		try {
 
@@ -199,7 +199,7 @@ export class DataContract {
 		const method = 'deleteProduct';
 		logger.start(method);
 
-		let res = null;
+		let res;
 
 		try {
 

@@ -64,6 +64,67 @@ async function main() {
 	let res = 2;
 	let mode = args[0];
 
+	let obj1 = {
+	  type: 'product',
+	  owner: 'seller',
+	  id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
+	  name: 'PROD_BATCH_0',
+	  price: 10,
+	  desc: 'A simple blood test',
+	  sector: 'Health',
+	  productType: 'Batch',
+	  policy: {
+	    inclPersonalInfo: true,
+	    hasConsent: true,
+	    purposes: [ 'Automated', 'PubliclyFundedResearch' ],
+	    protectionType: 'SMPC',
+	    secondUseConsent: true,
+	    recipientType: [ 'PublicHospitals', 'PrivateHospitals' ],
+	    transferToCountry: 'eu',
+	    storagePeriod: 20,
+	    approvedOrgs: [ 'org0' ],
+	    automated: [ 'AutomatedPlacing' ],
+	    vers: 0
+	  },
+	  timestamp: 1679398363,
+	  vers: 0
+	}
+
+
+	let obj2 = {
+  _id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
+  type: 'product',
+  owner: 'seller',
+  id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
+  name: 'PROD_BATCH_0',
+  price: 10,
+  desc: 'A simple blood test',
+  sector: 'Health',
+  productType: 'Batch',
+  policy: {
+    inclPersonalInfo: true,
+    hasConsent: true,
+    purposes: [ 'Automated', 'PubliclyFundedResearch' ],
+    protectionType: 'SMPC',
+    secondUseConsent: true,
+    recipientType: [ 'PublicHospitals', 'PrivateHospitals' ],
+    transferToCountry: 'eu',
+    storagePeriod: 20,
+    approvedOrgs: [ 'org0' ],
+    approvedUsers: [],
+    automated: [ 'AutomatedPlacing' ],
+    vers: 0,
+    _id: "64199a06337174dbcd9e49b4"
+  },
+  timestamp: 1679398363,
+  curations: [],
+  vers: 0,
+  __v: 0
+}
+
+
+	console.log(Util.isEqualCommonProperties(obj1, obj2))
+
 	try {
 
 	 	if (mode === 'init') {
@@ -81,28 +142,28 @@ async function main() {
 			await ca.exportMSP(args[1]);
 		}
 		else {
-			await offchainDB.openConnection();
+			await offchainDB.connect();
 
 			if (mode === 'queryproducts') {
 				console.log('Querying all products...');
-				res = await queryDB.queryProducts();
+				res = await offchainDB.products.getAll();
 				console.log(util.inspect(res, false, null, true));
 				console.log('Total: ', res.length);
 			}
 			else if (mode === 'queryusers') {
 				console.log('Querying all users...');
-				res = await queryDB.queryUsers();
+				res = await offchainDB.users.getAll();
 				console.log(util.inspect(res, false, null, true));
 				console.log('Total: ', res.length);
 			}
 			else if (mode === 'queryuser') {
 				console.log('Querying user: ', args[1]);
-				res = await queryDB.queryUserByID(args[1]);
+				res = await offchainDB.users.getById(args[1]);
 				console.log(util.inspect(res, false, null, true));
 			}
 			else if (mode === 'queryproduct') {
 				console.log('Querying product: ', args[1]);
-				res = await queryDB.queryProductByID(args[1]);
+				res = await offchainDB.products.getById(args[1]);
 				console.log(util.inspect(res, false, null, true));
 			}
 			else if (mode === 'queryproductsbyuser') {
@@ -119,7 +180,7 @@ async function main() {
 				console.log('Total: ', res.length);
 			}
 			else if (mode === 'queryagreements') {
-				let res = await queryDB.queryAgreements(client);
+				let res = await offchainDB.agreements.getAll(client);
 				console.log(res);
 				console.log('Total: ', res.length);
 			}
@@ -324,7 +385,7 @@ async function main() {
 				console.log('Command not found.');
 			}
 
-			await offchainDB.closeConnection();
+			await offchainDB.disconnect();
 
 		}
 	} catch(e) {

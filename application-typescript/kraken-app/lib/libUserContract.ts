@@ -61,7 +61,8 @@ export class UserContract {
 	 */
 	handleError(e: any, method: string) {
 		logger.error('%s - ', method, e.message);
-		throw e;
+		// throw e;
+		return e;
 	}
 
 	/**
@@ -76,7 +77,7 @@ export class UserContract {
 		const method = 'createUser';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		// let gateway;
 
 		try {
@@ -110,7 +111,7 @@ export class UserContract {
 		const method = 'updateUser';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		// let gateway;
 
 		try {
@@ -145,7 +146,7 @@ export class UserContract {
 		const method = 'readUser';
 		logger.start(method);
 
-		let res = null;
+		let res;
 		let gateway;
 
 		try {
@@ -183,7 +184,7 @@ export class UserContract {
 		const method = 'deleteUser';
 		logger.start(method);
 
-		let res = null;
+		let res;
 
 		try {
 			// gateway = await connectGateway(userID);
@@ -212,7 +213,7 @@ export class UserContract {
 		const method = 'getUsers';
 		// logger.start(method);
 
-		let res = null;
+		let res;
 		let gateway;
 
 		try {

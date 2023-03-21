@@ -21,8 +21,8 @@ const _ = require('lodash');
 const fs = require('fs');
 
 require('dotenv').config();
-const url = process.env.MONGO_URL;
-const dbName = process.env.DB_NAME;
+const url = process.env.DB_LEDGER_URL;
+const dbName = process.env.DB_LEDGER;
 
 /* Env */
 const client = process.env.CLIENT;
@@ -49,9 +49,8 @@ async function validateDB() {
 	try {
 
 		/* Verify Products */
-		let prodBuffer = await dataContract.getProducts(client);
-		let products = prodBuffer;
-		let dbprods = await offchainDB.readProducts();
+		let products = await dataContract.getProducts(client);
+		let dbprods = await offchainDB.products.getAll();
 		logger.debug('%s - Total DB Products: ', method, dbprods.length);
 		logger.debug('%s - Total BC Products: ', method, products.length);
 
@@ -61,9 +60,8 @@ async function validateDB() {
 
 		if (Array.isArray(products) && products.length) {
 			for (let i = 0; i < products.length; i++) {
-				await offchainDB.readProductData(products[i].id).then((res) => {
-					products[i]._id = res._id;
-					if (_.isEqual(products[i], res) === false) {
+				await offchainDB.products.getById(products[i].id).then((res) => {
+					if (!Util.isEqualCommonProperties(products[i], res)) {
 						logger.debug('%s - ', method, products[i], res);
 						throw new Error(`Not equal product ${res.id}`);
 					}
@@ -74,9 +72,8 @@ async function validateDB() {
 		}
 
 		/* Verify Users */
-		let userBuffer = await userContract.getUsers(client);
-		let users = userBuffer;
-		let dbusers = await offchainDB.readUsers();
+		let users = await userContract.getUsers(client);
+		let dbusers = await offchainDB.users.getAll();
 		logger.debug('%s - Total DB Users: ', method, dbusers.length);
 		logger.debug('%s - Total BC Users: ', method, users.length);
 
@@ -86,9 +83,8 @@ async function validateDB() {
 
 		if (Array.isArray(users) && users.length) {
 			for (let i = 0; i < users.length; i++) {
-				await offchainDB.readUserData(users[i].username).then((res) => {
-					users[i]._id = res._id;
-					if (_.isEqual(users[i], res) === false) {
+				await offchainDB.users.getByUsername(users[i].username).then((res) => {
+					if (!Util.isEqualCommonProperties(users[i], res)) {
 						throw new Error(`Not equal user ${users[i]._id}`, users[i].id);
 					}
 				});
@@ -100,7 +96,7 @@ async function validateDB() {
 		/* Verify Agreements */
 		let agreementBuffer = await agreementContract.getAgreements(client);
 		let agreements = agreementBuffer;
-		let dbagreements = await offchainDB.readAgreements();
+		let dbagreements = await offchainDB.agreements.getAll();
 		logger.debug('%s - Total DB Agreements: ', method, dbagreements.length);
 		logger.debug('%s - Total BC Agreements: ', method, agreements.length);
 
@@ -112,9 +108,8 @@ async function validateDB() {
 		// Check all Agreement Documents to match
 		if (Array.isArray(agreements) && agreements.length) {
 			for (let i = 0; i < agreements.length; i++) {
-				await offchainDB.readAgreementData(agreements[i].txID).then((res) => {
-					agreements[i]._id = res._id;
-					if (_.isEqual(agreements[i], res) === false) {
+				await offchainDB.agreements.getById(agreements[i].txID).then((res) => {
+					if (!Util.isEqualCommonProperties(agreements[i], res)) {
 						throw new Error(`Not equal agreement ${agreements[i]._id}`);
 					}
 				});
@@ -136,7 +131,7 @@ async function validateDB() {
  */
 async function runValidate() {
 	const method = 'runValidate';
-	await offchainDB.openConnection();
+	await offchainDB.connect();
 
 	setInterval(async () => {
 		await validateDB()
@@ -146,7 +141,7 @@ async function runValidate() {
 			.catch((err) => {
 				logger.info('%s - Valid: false', method, err);
 			});
-	}, 2*1000);
+	}, 5*1000);
 }
 
 (async() => {
@@ -167,7 +162,9 @@ async function runValidate() {
 		await runValidate();
 	} 
 	else if (mode === 'drop') {
-		offchainDB.dropDatabase();
+		await offchainDB.connect();
+		await offchainDB.drop();
+		await offchainDB.disconnect()
 	} 
 	else if (mode === 'test') {
 		let err 
@@ -179,7 +176,7 @@ async function runValidate() {
 				await BlockListener.removeBlockListener(client, channelID, listener);
 			})
 
-			await offchainDB.openConnection();
+			await offchainDB.connect();
 			await validateDB();
 			console.log('\x1b[32m\u2714\x1b[0m Database is synced with Blockchain');
 		} catch(e) {
@@ -188,7 +185,7 @@ async function runValidate() {
 			err = e
 			throw e
 		} finally {
-			offchainDB.closeConnection()
+			offchainDB.disconnect()
 			if (err) {
 				process.exit(err)
 			} else {

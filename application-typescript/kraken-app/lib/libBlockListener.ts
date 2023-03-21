@@ -81,7 +81,7 @@ export async function createBlockListener(userID: string, channelID: string) {
 
 	try {
 		
-		// await offchainDB.connect();
+		await offchainDB.connect();
 		let users = await offchainDB.users.getAll()
 
 		const gateway = await Util.connectGateway(userID);

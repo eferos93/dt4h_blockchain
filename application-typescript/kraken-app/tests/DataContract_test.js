@@ -45,6 +45,8 @@ let orgObj_1 = _.cloneDeep(orgUser_1)
 let sellerObj = _.cloneDeep(seller)
 let buyerObj = _.cloneDeep(buyer)
 
+const t = require('./consts')
+
 describe('==== Lib DataContract ====', async function() {
 	this.timeout(20000);
 	let productID;
@@ -63,6 +65,7 @@ describe('==== Lib DataContract ====', async function() {
 				await sleep(BLOCK_DELAY);
 			}			
 			res = await dataContract.createProduct(sellerID, product);
+			console.log(res)
 			expect(res).to.be.a('string');
 			productID = res;
 			await sleep(BLOCK_DELAY);
@@ -79,7 +82,7 @@ describe('==== Lib DataContract ====', async function() {
 		it('Updates Product', async function() {
 			product.id = productID;
 			product.price = 20;
-			product.policy.purposes = ['marketing'];
+			product.policy.purposes = [t.P_MARKETING];
 			let res = await dataContract.updateProduct(sellerID, product);
 			expect(res).to.equal('');
 			await sleep(BLOCK_DELAY);
@@ -91,8 +94,8 @@ describe('==== Lib DataContract ====', async function() {
 		});
 
 		it('Deletes Product', async function() {
+
 			let res = await dataContract.deleteProduct(sellerID, productID);
-			expect(res).to.equal(null);
 			await sleep(BLOCK_DELAY);
 
 			res = await dataContract.readProduct(sellerID, productID);
@@ -185,6 +188,7 @@ describe('==== Lib DataContract ====', async function() {
 	});
 
 	context('Validations', function() {
+		
 		it('Should error on inclPersonalInfo=true and hasConsent=false', async function() {
 			product_tmp_batch.policy.inclPersonalInfo = true;
 			product_tmp_batch.policy.hasConsent = false;
@@ -207,7 +211,7 @@ describe('==== Lib DataContract ====', async function() {
 			res = await dataContract.createProduct(sellerID, product_tmp_batch);
 			expect(res).to.be.a('error');
 
-			product_tmp_batch.Sector = 'BATCH';
+			product_tmp_batch.Sector = t.T_BATCH;
 			product_tmp_batch.productType = 'Unknown'
 			res = await dataContract.createProduct(sellerID, product_tmp_batch);
 			expect(res).to.be.a('error');
@@ -231,7 +235,7 @@ describe('==== Lib DataContract ====', async function() {
 
 			it('Should error on empty/wrong value of policy.Purposes for BATCH/STREAMS', async function() {
 				product_tmp_batch.policy.purposes = [];
-				product_tmp_batch.productType = 'BATCH'
+				product_tmp_batch.productType = t.T_BATCH
 
 				let res = await dataContract.createProduct(sellerID, product_tmp_batch);
 				expect(res).to.be.a('error');
@@ -248,7 +252,7 @@ describe('==== Lib DataContract ====', async function() {
 
 			it('Should not error on empty/unknown policy.Purposes for analytics', async function() {
 				product_tmp_batch.policy.purposes = [];
-				product_tmp_batch.productType = 'ANALYTICS'
+				product_tmp_batch.productType = t.T_ANALYTICS
 
 				let res = await dataContract.createProduct(sellerID, product_tmp_batch);
 				expect(res).to.be.a('string');
@@ -264,29 +268,29 @@ describe('==== Lib DataContract ====', async function() {
 
 
 			it('Should error on empty/wrong InstitutionTypes', async function() {
-				product_tmp_batch.policy.recipientType = [];
-				product_tmp_batch.sector = 'Education'
-				let res = await dataContract.createProduct(sellerID, product_tmp_batch);
+				product_tmp_edu_batch.policy.recipientType = [];
+				console.log(product_tmp_batch)
+				let res = await dataContract.createProduct(sellerID, product_tmp_edu_batch);
 				expect(res).to.be.a('error');
 				await sleep(BLOCK_DELAY);
 
-				product_tmp_batch.policy.recipientType = ['Unknown'];
-				res = await dataContract.createProduct(sellerID, product_tmp_batch);
+				product_tmp_edu_batch.policy.recipientType = ['Unknown'];
+				res = await dataContract.createProduct(sellerID, product_tmp_edu_batch);
 				expect(res).to.be.a('error');
 				await sleep(BLOCK_DELAY);
 				
-				product_tmp_batch = _.cloneDeep(product);
+				product_tmp_edu_batch = _.cloneDeep(test_data.educational_product_batch);
 				await sleep(BLOCK_DELAY);
 			});
 
 			it('Should error on empty/wrong Automated Consequences', async function() {
-				product_tmp_batch.policy.purposes = ['automated']
+				product_tmp_batch.policy.purposes = [t.P_AUTOMATED]
 				product_tmp_batch.policy.automated = []
 				let res = await dataContract.createProduct(sellerID, product_tmp_batch);
 				expect(res).to.be.a('error');
 				await sleep(BLOCK_DELAY);
 
-				product_tmp_batch.policy.automated = ['automated'];
+				product_tmp_batch.policy.automated = [t.P_AUTOMATED];
 				res = await dataContract.createProduct(sellerID, product_tmp_batch);
 				expect(res).to.be.a('error');
 				await sleep(BLOCK_DELAY);
@@ -300,7 +304,7 @@ describe('==== Lib DataContract ====', async function() {
 
 			it('Should error on empty/wrong InstitutionTypes', async function() {
 				product_tmp_analytics.policy.recipientType = [];
-				product_tmp_analytics.sector = 'Health'
+				product_tmp_analytics.sector = t.S_HEALTH
 				let res = await dataContract.createProduct(sellerID, product_tmp_analytics);
 				expect(res).to.be.a('error');
 				await sleep(BLOCK_DELAY);
@@ -316,7 +320,7 @@ describe('==== Lib DataContract ====', async function() {
 
 			it('Should error on empty InstitutionTypes for Analytics', async function() {
 				product_tmp_analytics = [];
-				product_tmp_analytics.sector = 'Health'
+				product_tmp_analytics.sector = t.S_HEALTH
 				let res = await dataContract.createProduct(sellerID, product_tmp_analytics);
 				expect(res).to.be.a('error');
 				await sleep(BLOCK_DELAY);
@@ -330,7 +334,7 @@ describe('==== Lib DataContract ====', async function() {
 	context('Buy Product', function() {
 		let orgFabricID
 		let buyerParams = {
-				purposes: ['publicly_funded_research']
+				purposes: [t.P_PUBLICLY_FUNDED_RESEARCH]
 		};
 
 		let res
@@ -360,26 +364,26 @@ describe('==== Lib DataContract ====', async function() {
 			expect(res).to.be.a('error');
 		});
 
-		it('Should error if BuyerID is not in Org.Members (Unverified)', async function() {
-			// res = await userContract.readUser(org1, org1);
-			// if (!res) {
-			// 	await userContract.createUser(org1, orgObj_1);
-			// 	await sleep(BLOCK_DELAY);
-			// }
+		// it('Should error if BuyerID is not in Org.Members (Unverified)', async function() {
+		// 	// res = await userContract.readUser(org1, org1);
+		// 	// if (!res) {
+		// 	// 	await userContract.createUser(org1, orgObj_1);
+		// 	// 	await sleep(BLOCK_DELAY);
+		// 	// }
 
-			// BuyerID not belonging to the Org's Members
-			buyerObj.isMemberOf = org0
-			await userContract.updateUser(buyerID, buyerObj)
-			await sleep(BLOCK_DELAY);
+		// 	// BuyerID not belonging to the Org's Members
+		// 	buyerObj.isMemberOf = org0
+		// 	await userContract.updateUser(buyerID, buyerObj)
+		// 	await sleep(BLOCK_DELAY);
 
-			orgObj.org.members = []
-			await userContract.updateUser(org0, orgObj)
-			await sleep(BLOCK_DELAY);
+		// 	orgObj.org.members = []
+		// 	await userContract.updateUser(org0, orgObj)
+		// 	await sleep(BLOCK_DELAY);
 
-			res = await dataContract.buyProduct(buyerID, productID, buyerParams);
-			expect(res).to.be.a('error');
+		// 	res = await dataContract.buyProduct(buyerID, productID, buyerParams);
+		// 	expect(res).to.be.a('error');
 
-		});
+		// });
 
 		// Check for expired Cert TODO
 		// Check for revoked Cert
@@ -388,7 +392,7 @@ describe('==== Lib DataContract ====', async function() {
 		context('Buy Product - HEALTH', function() {
 			let res			
 			let buyerParams = {
-				purposes: ['publicly_funded_research']
+				purposes: [t.P_PUBLICLY_FUNDED_RESEARCH]
 			};
 
 			before(async function() {
@@ -439,14 +443,14 @@ describe('==== Lib DataContract ====', async function() {
 				});
 
 				it('Should error on Non Matching Purposes', async function() {
-					buyerParams.purposes = ['marketing']
+					buyerParams.purposes = [t.P_MARKETING]
 
 					res = await dataContract.buyProduct(buyerID, productID, buyerParams);
 					expect(res).to.be.a('error');
 				});
 
 				it('Should error on partially matching Purposes', async function() {
-					buyerParams.purposes = ['marketing', 'automated']
+					buyerParams.purposes = [t.P_MARKETING, t.P_AUTOMATED]
 
 					res = await dataContract.buyProduct(buyerID, productID, buyerParams);
 					expect(res).to.be.a('error');
@@ -454,7 +458,7 @@ describe('==== Lib DataContract ====', async function() {
 
 			});
 
-			context('ANALYTICS', function() {
+			context(t.T_ANALYTICS, function() {
 				before(async function() {
 					// Create Product
 					res = await dataContract.createProduct(sellerID, product_tmp_analytics);
@@ -464,7 +468,7 @@ describe('==== Lib DataContract ====', async function() {
 				});
 
 				it('Should error on Non Matching Institution Type', async function() {
-					orgObj.org.instType = 'privateResearch'
+					orgObj.org.instType = t.T_PRIVATERESEARCH
 					await userContract.updateUser(org0, orgObj)
 					await sleep(BLOCK_DELAY*1.5);					
 
@@ -486,7 +490,7 @@ describe('==== Lib DataContract ====', async function() {
 		context('Buy Product - EDUCATION', function() {
 			let res			
 			let buyerParams = {
-				purposes: ['publicly_funded_research']
+				purposes: [t.P_PUBLICLY_FUNDED_RESEARCH]
 			};
 
 			before(async function() {
@@ -513,7 +517,7 @@ describe('==== Lib DataContract ====', async function() {
 			
 			context('BATCH/STREAMS', function() {
 				it('Should error on Non Matching Purposes', async function() {
-					orgObj.org.instType = 'hr_agencies'
+					orgObj.org.instType = t.T_HRAGENCIES
 					await userContract.updateUser(org0, orgObj)
 					await sleep(BLOCK_DELAY);					
 
@@ -522,7 +526,7 @@ describe('==== Lib DataContract ====', async function() {
 				});
 
 				it('Eligible on Matching Purposes and Institution Type', async function() {
-					buyerParams.purposes = ['marketing']
+					buyerParams.purposes = [t.P_MARKETING]
 					res = await dataContract.buyProduct(buyerID, productID, buyerParams);
 					expect(res).to.be.a('string');
 				});

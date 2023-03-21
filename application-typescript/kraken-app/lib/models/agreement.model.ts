@@ -17,7 +17,7 @@ const Agreement = new mongoose.Schema({
 	{ collection: 'agreements' }
 )
 
-Agreement.statics.deleteById = function(_id) {
+Agreement.statics.deleteById = function(_id: any) {
 	return this.deleteOne({ _id: _id })
 };
 

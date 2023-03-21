@@ -61,8 +61,12 @@ class User {
 		return await this.inventories.deleteByOwner(id)
 	}
 
-	async get(query) {
+	async get(query: object) {
 		return await this.col.find(query)
+	}
+
+	async getByUsername(query: string) {
+		return await this.col.find({ username: query })
 	}
 
 	async getAll() {
@@ -118,16 +122,16 @@ class Product {
 		return await this.col.deleteOne({owner: id})
 	}
 
-	async get(query) {
-		return await this.col.find(query)
+	async get(query: object, fields={}) {
+		return await this.col.find(query, fields)
 	}
 
-	async getById(id: string) {
-		return await this.col.findById(id)
+	async getById(id: string, fields={}) {
+		return await this.col.findById(id, fields)
 	}
 
-	async getAll() {
-		return await this.col.find()
+	async getAll(query={}, fields={}) {
+		return await this.col.find(query, fields)
 	}
 
 	async getPagination(query={}, fields={}, select=null, page=1,
@@ -169,7 +173,7 @@ class Agreement {
 		return await this.col.deleteById(id)
 	}
 
-	async get(query) {
+	async get(query: object) {
 		return await this.col.find(query)
 	}
 
@@ -183,7 +187,7 @@ class Agreement {
 	}
 	
 	async getPagination(query={}, fields={}, select=null, page=1,
-	 limit=this.PAGE_SIZE, sortBy={timestamp: -1}) {
+	 limit=500, sortBy={timestamp: -1}) {
 		return await this.col
 		.find(query, fields)
 		.select(select)
@@ -254,6 +258,8 @@ export class OffchainDB {
 	constructor() {
 		this.url = process.env.DB_LEDGER_URL!;
 		this.dbName = process.env.DB_LEDGER!;
+		console.log('url ', this.url)
+		console.log(this.dbName)
 
 		this.users = new User()
 		this.products = new Product()
@@ -386,6 +392,8 @@ export class OffchainDB {
 	async drop(): Promise<void> {
 		const method = 'drop'
 		logger.info('%s - Dropping database... ', this.url)
+		console.log(this.url)
+		console.log(this.dbName)
 		// const conn = mongoose.createConnection(this.url);
 		// return await conn.dropDatabase();
 		return await this.connection.db.dropDatabase()

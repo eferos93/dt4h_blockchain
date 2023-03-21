@@ -56,7 +56,7 @@ function getValidEndorsementResponse(endorsementResponses: any) {
 
 function newEndorsementError(proposalResponse: any) {
 	let _a, _b;
-	const errorInfos = [];
+	const errorInfos: any[] = [];
 	for (const error of proposalResponse.errors) {
 		const errorInfo = {
 			peer: (_a = error === null || error === void 0 ? void 0 : error.connection) === null || _a === void 0 ? void 0 : _a.name,
@@ -241,10 +241,9 @@ exports.sendCommit = sendCommit
 export async function getChannelCtx(clientID: string, channelID: string, chaincodeID: string) {
 	const method = 'getChannelCtx';
 	logger.start(method);
-
 	const gateway = await Util.connectGateway(clientID);
 	// @ts-ignore
-	const channel = gateway.client.channels.get(channelID);
+	const channel = await gateway.client.channels.get(channelID);
 	logger.debug('%s - : %s', method, channel);
 	const endorsement = channel.newEndorsement(chaincodeID);
 

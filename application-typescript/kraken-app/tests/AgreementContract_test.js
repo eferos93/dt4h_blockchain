@@ -21,6 +21,7 @@ const BLOCK_DELAY = process.env.BLOCK_DELAY;
 const username = process.env.USERNAME;
 const adminID = process.env.CLIENT;
 const test_data = require('./test_data');
+const t = require('./consts')
 
 // Init
 // let userContract = new UserContract(channelID, chaincodeID);
@@ -44,6 +45,7 @@ let sellerObj = _.cloneDeep(seller)
 let buyerObj = _.cloneDeep(buyer)
 
 
+
 describe('==== Lib AgreementContract ====', async function () {
 	this.timeout(20000);
 	let productID;
@@ -58,7 +60,7 @@ describe('==== Lib AgreementContract ====', async function () {
 			productID = res;
 
 			const buyerParams = {
-				purposes: ['automated'],
+				purposes: [t.P_AUTOMATED],
 			};
 
 			res = await dataContract.buyProduct(buyerID, productID, buyerParams);

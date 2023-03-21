@@ -23,9 +23,10 @@ const User = new mongoose.Schema({
     validTo: { type: String },
     certKey: { type: String },
     active: { type: Boolean },
+    vers: { type: Number }
 }, { collection: 'users' });
 
-User.statics.deleteById = function (_id) {
+User.statics.deleteById = function (_id: any) {
     return this.deleteOne({ _id: _id });
 };
 
