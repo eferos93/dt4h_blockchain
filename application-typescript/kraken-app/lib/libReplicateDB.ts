@@ -17,6 +17,7 @@ require('dotenv').config();
 /* Local */
 import { sleep, prettyJSON, IsJsonString, getLogger } from './libUtil';
 import { IProduct, IUser, IAgreement, IInventory } from './interfaces'
+import * as fields from './queryFields' 
 const { ProductModel, UserModel, AgreementModel, InventoryModel } = require('./models')
 
 /* DB Collection names */
@@ -62,15 +63,15 @@ class User {
 	}
 
 	async get(query: object) {
-		return await this.col.find(query)
+		return await this.col.find(query).select("-__v")
 	}
 
 	async getByUsername(query: string) {
-		return await this.col.find({ username: query })
+		return await this.col.findOne({ username: query }).select("-__v")
 	}
 
 	async getAll() {
-		return await this.col.find()
+		return await this.col.find().select("-__v")
 	}
 
 	async getPagination(query={}, fields={}, select=null, page=1,
@@ -131,14 +132,20 @@ class Product {
 	}
 
 	async getAll(query={}, fields={}) {
-		return await this.col.find(query, fields)
+		return await this.col.find(query, fields).select("-__v")
 	}
 
-	async getPagination(query={}, fields={}, select=null, page=1,
+
+	async getPagination(query={}, fields={}, select={}, populSelect={}, page=1,
 	 limit=this.PAGE_SIZE, sortBy={timestamp: -1}) {
 		return await this.col
 		.find(query, fields)
 		.select(select)
+		.populate({ 
+			path: 'owner', 
+			model: UserModel,
+			select: populSelect
+		})
 		.sort(sortBy)
 		.limit(limit)
 		.skip((page-1) * limit)

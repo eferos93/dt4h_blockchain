@@ -320,7 +320,7 @@ type Agreement struct {
 }
 
 type ProductHistoryQueryResult struct {
-	Record    *Agreement `json:"record"`
+	Record    *Product `json:"record"`
 	TxId      string     `json:"txId"`
 	Timestamp time.Time  `json:"timestamp"`
 	IsDelete  bool       `json:"isDelete"`

@@ -22,6 +22,7 @@ const updateProductTx = 'UpdateProduct';
 const deleteProductTx = 'DeleteProduct';
 const buyProductTx = 'BuyProduct';
 const getAllProductsTx = 'GetAllProducts';
+const getProductHistoryTx = 'GetProductHistory';
 
 /* Logging */
 const logger = getLogger(TYPE);
@@ -233,6 +234,36 @@ export class DataContract {
 			const contract = network.getContract(this.chaincodeID, dataContract);
 
 			res = await contract.evaluateTransaction(getAllProductsTx);
+			res = prettyJSON(res);
+			if (!res) {res = [];}
+		} catch(e: any) {
+			res = this.handleError(e, method);
+		}
+
+		if(gateway) {gateway.disconnect();}
+
+		return res;
+	}
+
+	/**
+	 * Query History of product
+	 *
+	 * @param {String} clientID The client's ID
+	 * @returns {Array} An array of all products
+	 */
+	async getHistory(clientID: string, productID: string): Promise<any> {
+		const method = 'getHistory';
+		logger.start(method);
+
+		let res: any;
+		let gateway;
+
+		try {
+			gateway = await connectGateway(clientID);
+			const network = await gateway.getNetwork(this.channelID);
+			const contract = network.getContract(this.chaincodeID, dataContract);
+
+			res = await contract.evaluateTransaction(getProductHistoryTx, productID);
 			res = prettyJSON(res);
 			if (!res) {res = [];}
 		} catch(e: any) {

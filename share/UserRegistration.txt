@@ -1,0 +1,39 @@
+title User Registration
+
+activate User
+User->Backend:Register (Input username)
+activate Backend
+
+Backend->CA:Register Username
+
+activate CA
+
+rbox right of CA:Admin registers Username to CA DB
+
+CA-->Backend: Secret
+Backend-->User: Email secret
+space 
+
+rbox right of User: Key generation
+rbox right of User: Create CSR
+
+User->Backend: Enroll with CSR
+
+
+Backend->CA: Enroll User (CSR)
+
+rbox right of CA:Sign Certificate
+
+
+CA-->Backend: Signed Cert
+deactivate CA
+
+
+Backend-->User: Key/Cert file
+deactivate Backend
+
+rbox left of User: Download file
+
+deactivate User
+
+

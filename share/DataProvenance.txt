@@ -1,0 +1,33 @@
+title Data Provenance
+
+# 
+
+participant Alice #82eefd
+note over Alice #yellow: **Data parameter: Yield**\n - Percentage of payment\n the owner gets upon\n succesive transactions
+
+participant Marketplace #lightgreen
+Alice->Marketplace: Uploads Data D1
+
+participant Bob #82eefd
+note over Bob:Bob is eligible to buy D1.
+
+Marketplace<-Bob: Buys Data D1 for Curation
+
+participant Blockchain #lightgray
+note over Blockchain #e74f4e: **The transaction is recorded on the blockchain.**
+
+
+# 
+
+Bob->Marketplace: Uploads Data D1.Extended
+
+note over Marketplace #yellow: Link D1.Extended to D1\n and original owner Alice. \nRecord on the blockchain \nupon Data Product creation.
+
+note over Blockchain #e74f4e: **New Product D1.Extended is stored on the blockchain\nlinked with the previous product.**
+
+# 
+
+participant Charlie #82eefd
+Charlie->Marketplace:Buys D1.Extended for Curation
+
+Marketplace->Alice: **% of payment is transfered\n to original owner Alice based\n on the Yield parameter.**

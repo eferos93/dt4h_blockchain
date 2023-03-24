@@ -6,8 +6,6 @@ system-genesis-block
 log.txt
 node_modules/
 vendor
-chaincode-docker-devmode/
-share
 bin/
 ./*.json
 SWARM.md

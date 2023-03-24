@@ -1,0 +1,36 @@
+title User Transaction Flow
+
+activate User
+rbox right of User: Create Tx Proposal
+rbox right of User: Sign Proposal
+space 
+
+User->Backend:Proposal
+activate Backend
+
+Backend->Fabric:Proposal
+
+activate Fabric
+
+rbox right of Fabric:Peers Endorse Proposal
+
+Fabric-->Backend: Endorsed Proposal
+Backend-->User: Endorsed Proposal
+space 
+
+rbox right of User: Creates Commit Proposal
+rbox right of User: Signs Proposal
+User->Backend: Commit 
+
+Backend->Fabric: Commit
+
+rbox right of Fabric:Orderers validate\n and append Tx to block
+
+Fabric-->Backend: Response
+deactivate Fabric
+
+deactivate Backend
+
+deactivate User
+
+

@@ -1,0 +1,33 @@
+title Data Curation
+
+# 
+participant "<size:25>Alice</size>" as Alice #82eefd
+
+participant "<size:25>Marketplace</size>" as Marketplace #lightgreen
+
+Alice->Marketplace: <size:25>Creates Data Product D1</size>
+
+participant "<size:25>Bob</size>" as Bob #82eefd
+
+participant "<size:25>Blockchain</size>" as Blockchain #silver
+
+note over Blockchain #yellow:<size:25>Bob is eligible to buy D1 for curation.</size>
+
+Marketplace<-Bob: <size:25>Buys D1</size>
+
+note over Blockchain #e74f4e: <size:25>**The transaction is recorded on the blockchain.**</size>
+
+
+# 
+
+Bob->Marketplace: <size:25>Creates new Data Product \nD1.Extended</size>
+
+
+note over Blockchain #e74f4e: <size:25>**New Product D1.Extended is stored on the blockchain.\nA parameter //Curations// is added which stores the IDs of \nall the previous Data Products upon consequtive curations.</size>
+
+# 
+note over Blockchain #yellow:<size:25>Charlie is eligible to buy D1.Extended for curation.</size>
+
+participant "<size:25>Charlie</size>" as Charlie #82eefd
+Charlie->Marketplace:<size:25>Buys D1.Extended</size>
+

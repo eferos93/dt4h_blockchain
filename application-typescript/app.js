@@ -64,66 +64,66 @@ async function main() {
 	let res = 2;
 	let mode = args[0];
 
-	let obj1 = {
-	  type: 'product',
-	  owner: 'seller',
-	  id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
-	  name: 'PROD_BATCH_0',
-	  price: 10,
-	  desc: 'A simple blood test',
-	  sector: 'Health',
-	  productType: 'Batch',
-	  policy: {
-	    inclPersonalInfo: true,
-	    hasConsent: true,
-	    purposes: [ 'Automated', 'PubliclyFundedResearch' ],
-	    protectionType: 'SMPC',
-	    secondUseConsent: true,
-	    recipientType: [ 'PublicHospitals', 'PrivateHospitals' ],
-	    transferToCountry: 'eu',
-	    storagePeriod: 20,
-	    approvedOrgs: [ 'org0' ],
-	    automated: [ 'AutomatedPlacing' ],
-	    vers: 0
-	  },
-	  timestamp: 1679398363,
-	  vers: 0
-	}
+// 	let obj1 = {
+// 	  type: 'product',
+// 	  owner: 'seller',
+// 	  id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
+// 	  name: 'PROD_BATCH_0',
+// 	  price: 10,
+// 	  desc: 'A simple blood test',
+// 	  sector: 'Health',
+// 	  productType: 'Batch',
+// 	  policy: {
+// 	    inclPersonalInfo: true,
+// 	    hasConsent: true,
+// 	    purposes: [ 'Automated', 'PubliclyFundedResearch' ],
+// 	    protectionType: 'SMPC',
+// 	    secondUseConsent: true,
+// 	    recipientType: [ 'PublicHospitals', 'PrivateHospitals' ],
+// 	    transferToCountry: 'eu',
+// 	    storagePeriod: 20,
+// 	    approvedOrgs: [ 'org0' ],
+// 	    automated: [ 'AutomatedPlacing' ],
+// 	    vers: 0
+// 	  },
+// 	  timestamp: 1679398363,
+// 	  vers: 0
+// 	}
 
 
-	let obj2 = {
-  _id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
-  type: 'product',
-  owner: 'seller',
-  id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
-  name: 'PROD_BATCH_0',
-  price: 10,
-  desc: 'A simple blood test',
-  sector: 'Health',
-  productType: 'Batch',
-  policy: {
-    inclPersonalInfo: true,
-    hasConsent: true,
-    purposes: [ 'Automated', 'PubliclyFundedResearch' ],
-    protectionType: 'SMPC',
-    secondUseConsent: true,
-    recipientType: [ 'PublicHospitals', 'PrivateHospitals' ],
-    transferToCountry: 'eu',
-    storagePeriod: 20,
-    approvedOrgs: [ 'org0' ],
-    approvedUsers: [],
-    automated: [ 'AutomatedPlacing' ],
-    vers: 0,
-    _id: "64199a06337174dbcd9e49b4"
-  },
-  timestamp: 1679398363,
-  curations: [],
-  vers: 0,
-  __v: 0
-}
+// 	let obj2 = {
+//   _id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
+//   type: 'product',
+//   owner: 'seller',
+//   id: '014f679feef316e1ac0436a0757270d21eb45f9db4ce3797a379b92c9c6fafcf',
+//   name: 'PROD_BATCH_0',
+//   price: 10,
+//   desc: 'A simple blood test',
+//   sector: 'Health',
+//   productType: 'Batch',
+//   policy: {
+//     inclPersonalInfo: true,
+//     hasConsent: true,
+//     purposes: [ 'Automated', 'PubliclyFundedResearch' ],
+//     protectionType: 'SMPC',
+//     secondUseConsent: true,
+//     recipientType: [ 'PublicHospitals', 'PrivateHospitals' ],
+//     transferToCountry: 'eu',
+//     storagePeriod: 20,
+//     approvedOrgs: [ 'org0' ],
+//     approvedUsers: [],
+//     automated: [ 'AutomatedPlacing' ],
+//     vers: 0,
+//     _id: "64199a06337174dbcd9e49b4"
+//   },
+//   timestamp: 1679398363,
+//   curations: [],
+//   vers: 0,
+//   __v: 0
+// }
 
 
-	console.log(Util.isEqualCommonProperties(obj1, obj2))
+	// console.log(Util.isEqualCommonProperties(obj1, obj2))
 
 	try {
 
@@ -152,7 +152,7 @@ async function main() {
 			}
 			else if (mode === 'queryusers') {
 				console.log('Querying all users...');
-				res = await offchainDB.users.getAll();
+				res = await queryDB.queryUsers();
 				console.log(util.inspect(res, false, null, true));
 				console.log('Total: ', res.length);
 			}
@@ -175,8 +175,9 @@ async function main() {
 			else if (mode === 'queryfiltered') {
 				console.log('Example: node app.js queryfiltered user0');
 				console.log('Querying filtered products of user: ', args[1]);
-				res = await queryDB.queryFilteredProducts(args[1]);
-				// console.log(util.inspect(res, false, null, true));
+				
+				res = await queryDB.queryFilteredCatalogue(args[1]);
+				console.log(util.inspect(res, false, null, true));
 				console.log('Total: ', res.length);
 			}
 			else if (mode === 'queryagreements') {
@@ -185,11 +186,11 @@ async function main() {
 				console.log('Total: ', res.length);
 			}
 			// new
-			else if (mode === 'queryhistoryofproduct') {
-				console.log('Example: node app.js queryhistoryofproduct productID');
+			else if (mode === 'gethistoryofproduct') {
+				console.log('Example: node app.js gethistoryofproduct productID');
 				let productID = args[1];
 
-				let res = await queryDB.queryTransactionHistoryForProduct(productID);
+				let res = await dataContract.getHistory(client, productID);
 				console.log(res);
 			}
 			else if (mode === 'buyproduct') {
@@ -374,13 +375,13 @@ async function main() {
 			else if (mode === 'printcert') {
 				console.log(JSON.parse(fs.readFileSync(`wallet/${args[1]}.id`)).credentials.certificate);
 			}
-			else if (mode === 'gethistoryofproduct') {
-				let productID = args[1];
+			// else if (mode === 'gethistoryofproduct') {
+			// 	let productID = args[1];
 
-				let transaction = {fcn: 'AgreementContract:GetTransactionHistoryOfProduct', args: [productID]};
-				let res = await SignOffline.sendTransaction(client, transaction, channelID, chaincodeID);
-				console.log(util.inspect(res, false, null, true));
-			}
+			// 	let transaction = {fcn: 'AgreementContract:GetTransactionHistoryOfProduct', args: [productID]};
+			// 	let res = await SignOffline.sendTransaction(client, transaction, channelID, chaincodeID);
+			// 	console.log(util.inspect(res, false, null, true));
+			// }
 			else {
 				console.log('Command not found.');
 			}

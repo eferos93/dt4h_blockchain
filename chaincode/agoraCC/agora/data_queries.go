@@ -3,6 +3,7 @@ package agora
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/ptypes"
 )
 
 // ReadProduct Get a product by ID
@@ -45,10 +46,53 @@ func (s *DataContract) GetAllProducts(ctx TransactionContextInterface) ([]*Produ
 	return products, nil
 }
 
-// func (s *DataContract) GetHistoryOfProduct(ctx TransactionContextInterface, productID string) (*[]Agreement, error) {
+//  GetProductHistory fetch modification history of a product
+func (s *DataContract) GetProductHistory(ctx TransactionContextInterface, productID string) ([]ProductHistoryQueryResult, error) {
+	method := "GetProductHistory"
 
-// }
+	key := s.makeProductKey(ctx, productID)
+	resultsIterator, err := ctx.GetStub().GetHistoryForKey(key)
 
+	if err != nil {
+		return nil, fmt.Errorf("%s: %v", method, err)
+	}
+	defer resultsIterator.Close()
+
+	var records []ProductHistoryQueryResult
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return nil, fmt.Errorf("%s: %v", method, err)
+		}
+
+		var product Product		
+		if len(response.Value) > 0 {
+			err = json.Unmarshal(response.Value, &product)
+			if err != nil {
+				return nil, fmt.Errorf("%s: %v", method, err)
+			} 
+		} else {
+			product = Product{
+				ID: productID,
+			}
+		}
+
+		timestamp, err := ptypes.Timestamp(response.Timestamp)
+		if err != nil {
+			return nil, err
+		}	
+
+		record := ProductHistoryQueryResult{
+			TxId:      response.TxId,
+			Timestamp: timestamp,
+			Record:    &product,
+			IsDelete:  response.IsDelete,
+		}
+		records = append(records, record)
+	}
+
+	return records, nil
+}
 
 // getProduct fetch a product
 func (s *DataContract) getProduct(ctx TransactionContextInterface, productID string) (*Product, error) {
