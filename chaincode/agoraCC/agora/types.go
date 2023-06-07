@@ -345,7 +345,7 @@ type ProductHistoryQueryResult struct {
 	IsDelete  bool      `json:"isDelete"`
 }
 
-type ProductTxtHistoryQueryResult struct {
+type ProductTxHistoryQueryResult struct {
 	Record    *Agreement `json:"record"`
 	TxId      string     `json:"txId"`
 	Timestamp time.Time  `json:"timestamp"`

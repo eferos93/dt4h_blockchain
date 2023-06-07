@@ -8,7 +8,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 )
 
-func (s *AgreementContract) GetTransactionHistoryOfProduct(ctx TransactionContextInterface, productID string) ([]ProductTxtHistoryQueryResult, error) {
+func (s *AgreementContract) GetTransactionHistoryOfProduct(ctx TransactionContextInterface, productID string) ([]ProductTxHistoryQueryResult, error) {
 	const method = "GetTransactionHistoryOfProduct"
 	log.Printf("%s - Search Product ID: %s\n", method, productID)
 
@@ -20,7 +20,7 @@ func (s *AgreementContract) GetTransactionHistoryOfProduct(ctx TransactionContex
 	}
 	defer resultsIterator.Close()
 
-	var records []ProductTxtHistoryQueryResult
+	var records []ProductTxHistoryQueryResult
 	for resultsIterator.HasNext() {
 		log.Printf("%s - Search Product ID: %s\n", method, productID)
 		response, err := resultsIterator.Next()
@@ -45,7 +45,7 @@ func (s *AgreementContract) GetTransactionHistoryOfProduct(ctx TransactionContex
 			return nil, fmt.Errorf("%s: %v", method, err)
 		}
 
-		record := ProductTxtHistoryQueryResult{
+		record := ProductTxHistoryQueryResult{
 			TxId:      response.TxId,
 			Timestamp: timestamp,
 			Record:    &agreement,
