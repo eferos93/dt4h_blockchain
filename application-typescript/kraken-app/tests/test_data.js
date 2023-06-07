@@ -200,6 +200,32 @@ exports.educational_product_analytics = {
 	},
 };
 
+exports.product_data_access_levels = {
+	name: 'EDU_PROD_ANALYTICS',
+	price: 10,
+	desc: 'A simple blood test',
+	sector: t.S_EDU,
+	productType: t.T_ANALYTICS,
+	policy: {
+		inclPersonalInfo: true,
+		hasConsent: true,
+		purposes: [t.P_MARKETING],
+		protectionType: 'SMPC',
+		secondUseConsent: true,
+		recipientType: [t.T_HRAGENCIES],
+		transferToCountry: "eu",
+		storagePeriod: 20,
+		approvedOrgs: []
+	},
+	dataAccessLevels: [
+		{
+			level: 'level_1',
+			price: 10,
+			units: 500
+		}
+	]
+};
+
 exports.getUser = (input) => { 
 	for (let obj of Object.values(module.exports)) {
 

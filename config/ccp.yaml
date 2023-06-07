@@ -8,7 +8,7 @@ client:
       peer:
         endorser: '300'
 channels:
-  kraken:
+  agora:
     orderers:
       - orderer0.texorderer.domain.com
       - orderer1.texorderer.domain.com

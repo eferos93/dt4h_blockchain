@@ -45,7 +45,7 @@ I have solved this problem. Firstly, you should uninstall your current version g
 
 ## Discovery Service: (channel name) error: access denied
 
-Wrong certificate
+Wrong certificate or wrong channel name
 
 ## Identity not found in wallet.
 

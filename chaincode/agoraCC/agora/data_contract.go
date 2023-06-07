@@ -62,11 +62,11 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 	method := "validateCUD"
 	log.Printf("%s:  start\n", method)
 
-	//////////////////////// 
-	//////////////////////// 
-	//////////////////////// PERMISSION CHECKS 
-	//////////////////////// 
-	//////////////////////// 
+	////////////////////////
+	////////////////////////
+	//////////////////////// PERMISSION CHECKS
+	////////////////////////
+	////////////////////////
 
 	/* Check Owner existence */
 	err := s.assertUserExists(ctx)
@@ -86,11 +86,11 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 		}
 	}
 
-	//////////////////////// 
-	//////////////////////// 
-	//////////////////////// ARGUMENT VALIDATION 
-	//////////////////////// 
-	//////////////////////// 
+	////////////////////////
+	////////////////////////
+	//////////////////////// ARGUMENT VALIDATION
+	////////////////////////
+	////////////////////////
 	policy := product.Policy
 
 	// Price
@@ -113,7 +113,7 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 		if err != nil {
 			return fmt.Errorf("ValidationError: %v", err)
 		}
-	} 
+	}
 	// else {
 	// 	if len(policy.Purposes) > 0 {
 	// 		return fmt.Errorf("ValidationError: Cannot state purposes for product of type: %s", product.ProductType)
@@ -138,14 +138,14 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 		return fmt.Errorf("ValidationError: Missing pre approved orgs for product of type: %s", product.ProductType)
 	}
 
-	// Institution Types. 
+	// Institution Types.
 	// All EDUCATION product types must have institution types
-	// For HEALTH products, only analytics have institution types 
+	// For HEALTH products, only analytics have institution types
 	if (product.Sector == EDUCATION || product.ProductType == ANALYTICS) && len(policy.RecipientType) == 0 {
 		return fmt.Errorf("ValidationError: No Institution types selected")
-	}	
+	}
 
-	// Validate Institution types 
+	// Validate Institution types
 	if product.Sector == HEALTH && product.ProductType == ANALYTICS {
 		err = validateValues(product.Policy.RecipientType, HEALTH_INSTITUTION_TYPES)
 	} else if product.Sector == EDUCATION {
@@ -169,7 +169,7 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 
 	// Check curation base product existence
 	if len(product.Curations) > 0 {
-		exists, err := s.ProductExists(ctx, product.Curations[len(product.Curations) -1])
+		exists, err := s.ProductExists(ctx, product.Curations[len(product.Curations)-1])
 		if err != nil {
 			return fmt.Errorf("ValidationError: %v", err)
 		}
@@ -193,16 +193,23 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 		}
 
 		if buyer != nil {
-			tmp_array = append(tmp_array, buyer.ID)	
+			tmp_array = append(tmp_array, buyer.ID)
 		}
 	}
 
 	product.Policy.ApprovedUsers = make([]string, len(tmp_array))
 	copy(product.Policy.ApprovedUsers, tmp_array)
+
+	// Data Access Modes validation
+	// if len(product.DataAccessLevels) > 0 {
+	// 	for _, dataAccessLevel := range product.DataAccessLevels {
+
+	// 	}
+	// }
+
 	log.Printf("%s:  end\n", method)
 	return nil
 }
-
 
 // UpdateProduct Update a product by ID (owner only)
 func (s *DataContract) UpdateProduct(ctx TransactionContextInterface, productStr string) error {
@@ -214,7 +221,7 @@ func (s *DataContract) UpdateProduct(ctx TransactionContextInterface, productStr
 	if err != nil {
 		return fmt.Errorf("%s: %v", method, err)
 	}
-	
+
 	// Validate existence, ownership and args
 	if err = s.validateCUD(ctx, product, 1); err != nil {
 		return fmt.Errorf("%s: %v", method, err)
@@ -520,7 +527,7 @@ func (s *DataContract) makeProductKey(ctx TransactionContextInterface, productID
 	return key
 }
 
-func (s *DataContract) Test(ctx TransactionContextInterface, productID string)  (*Product, error) {
+func (s *DataContract) Test(ctx TransactionContextInterface, productID string) (*Product, error) {
 	method := "test"
 
 	log.Println("Testing...")
@@ -534,7 +541,7 @@ func (s *DataContract) Test(ctx TransactionContextInterface, productID string)  
 
 	if productBytes == nil {
 		return nil, fmt.Errorf("%s: Product %s does not exist", method, productID)
-	}	
+	}
 
 	m := make(map[string]interface{})
 	err = json.Unmarshal(productBytes, &m)
@@ -545,7 +552,7 @@ func (s *DataContract) Test(ctx TransactionContextInterface, productID string)  
 
 	fmt.Printf("%s: %v", method, m)
 	s.DecodeMapping(m)
-	
+
 	var product *Product
 	err = json.Unmarshal(productBytes, &product)
 
@@ -557,10 +564,10 @@ func (s *DataContract) Test(ctx TransactionContextInterface, productID string)  
 
 }
 
-func (s *DataContract) DecodeMapping(m map[string]interface{})  {
+func (s *DataContract) DecodeMapping(m map[string]interface{}) {
 	method := "DecodeMapping"
 
-	for k, v := range m { 
+	for k, v := range m {
 		fmt.Printf("%s - key[%s] value[%s]\n", method, k, v)
 	}
 

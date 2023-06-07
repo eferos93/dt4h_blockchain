@@ -29,6 +29,8 @@ let product_tmp_analytics = _.cloneDeep(product_2);
 let product_tmp_edu_batch = _.cloneDeep(test_data.educational_product_batch)
 let product_tmp_edu_analytics = _.cloneDeep(test_data.educational_product_analytics)
 let product_preapproved_user = _.cloneDeep(test_data.product_preapproved_user)
+let product_data_access_levels = _.cloneDeep(test_data.product_data_access_levels)
+
 
 const org0 = 'org0'
 const org1 = 'org1'
@@ -71,6 +73,19 @@ describe('==== Lib DataContract ====', async function() {
 			await sleep(BLOCK_DELAY);
 		});
 
+		it('Creates Product with Access levels', async function() {
+			let res = await userContract.readUser(sellerID, sellerID);
+			if (!res) {
+				await userContract.createUser(sellerID, sellerObj);
+				await sleep(BLOCK_DELAY);
+			}
+		
+			res = await dataContract.createProduct(sellerID, product_data_access_levels);
+			expect(res).to.be.a('string');
+			await sleep(BLOCK_DELAY);
+		});
+
+
 		it('Reads Product', async function() {
 			let res = await dataContract.readProduct(sellerID, productID);
 
@@ -102,6 +117,8 @@ describe('==== Lib DataContract ====', async function() {
 			expect(res).to.be.a('error')
 		});
 	});
+
+
 
 	context('Is not Owner - Permission checks CRUD', function() {
 		it('Cannot Update Product', async function() {
@@ -364,26 +381,26 @@ describe('==== Lib DataContract ====', async function() {
 			expect(res).to.be.a('error');
 		});
 
-		// it('Should error if BuyerID is not in Org.Members (Unverified)', async function() {
-		// 	// res = await userContract.readUser(org1, org1);
-		// 	// if (!res) {
-		// 	// 	await userContract.createUser(org1, orgObj_1);
-		// 	// 	await sleep(BLOCK_DELAY);
-		// 	// }
+		it('Should error if BuyerID is not in Org.Members (Unverified)', async function() {
+			// res = await userContract.readUser(org1, org1);
+			// if (!res) {
+			// 	await userContract.createUser(org1, orgObj_1);
+			// 	await sleep(BLOCK_DELAY);
+			// }
 
-		// 	// BuyerID not belonging to the Org's Members
-		// 	buyerObj.isMemberOf = org0
-		// 	await userContract.updateUser(buyerID, buyerObj)
-		// 	await sleep(BLOCK_DELAY);
+			// BuyerID not belonging to the Org's Members
+			buyerObj.isMemberOf = org0
+			await userContract.updateUser(buyerID, buyerObj)
+			await sleep(BLOCK_DELAY);
 
-		// 	orgObj.org.members = []
-		// 	await userContract.updateUser(org0, orgObj)
-		// 	await sleep(BLOCK_DELAY);
+			orgObj.org.members = []
+			await userContract.updateUser(org0, orgObj)
+			await sleep(BLOCK_DELAY);
 
-		// 	res = await dataContract.buyProduct(buyerID, productID, buyerParams);
-		// 	expect(res).to.be.a('error');
+			res = await dataContract.buyProduct(buyerID, productID, buyerParams);
+			expect(res).to.be.a('error');
 
-		// });
+		});
 
 		// Check for expired Cert TODO
 		// Check for revoked Cert
@@ -438,6 +455,7 @@ describe('==== Lib DataContract ====', async function() {
 
 				it('Eligible on Matching Purposes and PreApproved Org', async function() {
 					// Create product
+					console.log(buyerID, productID, buyerParams)
 					res = await dataContract.buyProduct(buyerID, productID, buyerParams);
 					expect(res).to.be.a('string');
 				});
@@ -504,7 +522,7 @@ describe('==== Lib DataContract ====', async function() {
 				res = await userContract.readUser(buyerID, buyerID)
 
 				orgObj.org.members = [res.id]
-				orgObj.org.instType = 'private_companies'
+				orgObj.org.instType = 'PrivateCompanies'
 				await userContract.updateUser(org0, orgObj)
 				await sleep(BLOCK_DELAY);
 			});

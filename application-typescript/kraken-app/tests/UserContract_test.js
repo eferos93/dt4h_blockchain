@@ -136,7 +136,6 @@ describe('==== Lib UserContract ====', async function () {
 			userObj.isOrg = true
 			userObj.org.instType = "random"
 			let res = await userContract.createUser(clientID, userObj);
-			console.log('fdfdsdsf')
 			expect(res).to.be.a('error');
 			userObj = _.cloneDeep(user0)
 		});

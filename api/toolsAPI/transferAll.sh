@@ -3,8 +3,7 @@
 # Transfer files to all Virtual Machine hosts
 transferAll() {
 	FILE=$1
-	USER=athena
-	DEST=/home/$USER/workspace/deploy/$2
+	DEST=/home/$VM_USER/workspace/deploy/$2
 	DELETE=$3
 
 	if [ -z "$FILE" ]; then
@@ -13,10 +12,8 @@ transferAll() {
 	fi
 
 	echo
-	echo
 	echo "File is: $FILE"
 	echo "Dest is: $DEST"
-	echo
 	echo
 
 
@@ -38,7 +35,7 @@ transferAll() {
 		echo -e "Sending to ${VM_IPS[$i]}..."
 		# set -x
 		set -x
-		rsync --update -ahv --info=progress2  $exclude "$FILE" "$USER"@${VM_IPS[$i]}:"$DEST"
+		rsync --update -ahv --info=progress2  $exclude "$FILE" "$VM_USER"@${VM_IPS[$i]}:"$DEST"
 		set +x
 		res=$?
 		# set +x

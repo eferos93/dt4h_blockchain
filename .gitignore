@@ -26,6 +26,7 @@ logs
 grpc-comms
 config-samples
 config.backup
+tests
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,windows,linux,java,intellij,python,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,linux,java,intellij,python,visualstudiocode

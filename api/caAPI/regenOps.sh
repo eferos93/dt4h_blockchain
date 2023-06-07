@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Register Users-ORG admin to TLS and CA Servers
+# Register Operations admin to TLS and CA Servers
 registerClientOps() {
 	if [ -z "$ORG_NAME" ]; then
 		printError "registerClientOps - No org specified."

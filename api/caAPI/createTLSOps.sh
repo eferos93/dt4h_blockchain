@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TLS
+# TLS Operations
 createTLSOpsServer() {
 	if [ -d "$FABRIC_CA_SERVER_HOME" ]; then
 		printError "Server exists"
@@ -43,7 +43,7 @@ createTLSOpsServer() {
 	sleep 5
 }
 
-# When the server is up, enroll the TLS CA Admin to obtain the key and TLS cert to enable communication 
+# When the server is up, enroll the TLS Ops CA Admin to obtain the key and TLS cert to enable communication 
 createTLSOpsClient() {
 	printInfo "createTLSOpsClient - Creating the TLS Client..."
 

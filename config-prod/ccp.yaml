@@ -9,7 +9,7 @@ client:
         endorser: '300'
 
 channels:
-  kraken:
+  agora:
     orderers:
       - orderer0.lynkeusorderer.domain.com
       - orderer0.texorderer.domain.com

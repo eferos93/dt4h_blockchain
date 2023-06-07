@@ -241,6 +241,7 @@ async function main() {
 
 				// FE
 				let CryptoMaterial = await Crypto.generateKeysCSR(enrollingUser, orgMSP);
+				console.log(CryptoMaterial)				
 
 				// BE
 				CryptoMaterial.enrollment = await ca.enrollAppUser(enrollingUser, secret, CryptoMaterial.csr);
@@ -375,13 +376,13 @@ async function main() {
 			else if (mode === 'printcert') {
 				console.log(JSON.parse(fs.readFileSync(`wallet/${args[1]}.id`)).credentials.certificate);
 			}
-			// else if (mode === 'gethistoryofproduct') {
-			// 	let productID = args[1];
+			else if (mode === 'gethistoryofproduct') {
+				let productID = args[1];
 
-			// 	let transaction = {fcn: 'AgreementContract:GetTransactionHistoryOfProduct', args: [productID]};
-			// 	let res = await SignOffline.sendTransaction(client, transaction, channelID, chaincodeID);
-			// 	console.log(util.inspect(res, false, null, true));
-			// }
+				let transaction = {fcn: 'AgreementContract:GetTransactionHistoryOfProduct', args: [productID]};
+				let res = await SignOffline.sendTransaction(client, transaction, channelID, chaincodeID);
+				console.log(util.inspect(res, false, null, true));
+			}
 			else {
 				console.log('Command not found.');
 			}

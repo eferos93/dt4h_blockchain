@@ -3,6 +3,7 @@ package agora
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/golang/protobuf/ptypes"
 )
 
@@ -65,12 +66,12 @@ func (s *DataContract) GetProductHistory(ctx TransactionContextInterface, produc
 			return nil, fmt.Errorf("%s: %v", method, err)
 		}
 
-		var product Product		
+		var product Product
 		if len(response.Value) > 0 {
 			err = json.Unmarshal(response.Value, &product)
 			if err != nil {
 				return nil, fmt.Errorf("%s: %v", method, err)
-			} 
+			}
 		} else {
 			product = Product{
 				ID: productID,
@@ -80,7 +81,7 @@ func (s *DataContract) GetProductHistory(ctx TransactionContextInterface, produc
 		timestamp, err := ptypes.Timestamp(response.Timestamp)
 		if err != nil {
 			return nil, err
-		}	
+		}
 
 		record := ProductHistoryQueryResult{
 			TxId:      response.TxId,
@@ -116,7 +117,6 @@ func (s *DataContract) getProduct(ctx TransactionContextInterface, productID str
 	return product, nil
 }
 
-
 // Parse product bytes based on the current version
 func (s *DataContract) parseProductBytes(productBytes []byte) (*Product, error) {
 	method := "parseProduct"
@@ -134,10 +134,9 @@ func (s *DataContract) parseProductBytes(productBytes []byte) (*Product, error) 
 
 	if version == CURRENT_PRODUCT_VERSION {
 		fmt.Printf("%s - Latest Version: %v", method, version)
-		
+
 		// Change value here
 		// mapping[VERSION_FIELD] = 1
-		// mapping["desc"] = "Test desc change"
 		productBytes, err = json.Marshal(mapping)
 		if err != nil {
 			return nil, err
@@ -148,7 +147,7 @@ func (s *DataContract) parseProductBytes(productBytes []byte) (*Product, error) 
 	err = json.Unmarshal(productBytes, &product)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
-	}	
+	}
 
 	return product, nil
 }

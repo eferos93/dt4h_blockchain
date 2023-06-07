@@ -4,6 +4,7 @@ import (
 	X509 "crypto/x509"
 	"encoding/json"
 	"fmt"
+
 	// age "github.com/bearbin/go-age"
 	"log"
 	// "strconv"
@@ -66,7 +67,6 @@ func getCertExpirationDate(ctx TransactionContextInterface) time.Time {
 	return cert.NotAfter
 }
 
-
 func validateValues(input []string, values []string) error {
 	if len(input) == 0 {
 		return fmt.Errorf("ValidationError: Empty input")
@@ -76,12 +76,11 @@ func validateValues(input []string, values []string) error {
 		exists := stringInSlice(val, values)
 		if !exists {
 			return fmt.Errorf("ValidationError: Undefined Type: %s", val)
-		}		
+		}
 	}
 
 	return nil
-} 
-
+}
 
 func _in(input string, arr []string) bool {
 	exists := stringInSlice(input, arr)
@@ -139,7 +138,7 @@ func assertCallerBelongsToOrg(ctx TransactionContextInterface) (*User, error) {
 
 	// Org selected is not an org
 	if orgUser.IsOrg != true {
-		return nil, fmt.Errorf("%s: ID stated is not an organization")
+		return nil, fmt.Errorf("%s: ID stated is not an organization", method)
 	}
 
 	// DEV COMMENT START
@@ -153,7 +152,7 @@ func assertCallerBelongsToOrg(ctx TransactionContextInterface) (*User, error) {
 }
 
 // Get Doc Version
-func getDocVersion(b []byte) (int64) {
+func getDocVersion(b []byte) int64 {
 	method := "parseVersion"
 
 	m := make(map[string]interface{})
@@ -162,9 +161,9 @@ func getDocVersion(b []byte) (int64) {
 		return -1
 	}
 
-	for k, v := range m { 
-		fmt.Printf("%s - key[%s] value[%s]\n", method, k, v)
-	}
+	// for k, v := range m {
+	// 	fmt.Printf("%s - key[%s] value[%s]\n", method, k, v)
+	// }
 
 	val, ok := m[VERSION_FIELD].(int64)
 	if ok && val == 0 {
@@ -181,7 +180,7 @@ func getMapping(b []byte) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	for k, v := range m { 
+	for k, v := range m {
 		fmt.Printf("key[%s] value[%s]\n", k, v)
 	}
 	return m, nil

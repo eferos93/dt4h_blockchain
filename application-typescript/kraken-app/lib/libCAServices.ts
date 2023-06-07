@@ -315,7 +315,7 @@ export class CAServices {
 			return 0;
 		} catch (e: any) {
 			this.handleError(e, method);
-			return -1;
+			return e;
 		}
 	}
 

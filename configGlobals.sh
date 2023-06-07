@@ -32,6 +32,7 @@ export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/texorder
 ################## ORDERERPW ##########################
 ################## ADMINPW ##########################
 
+
 # User Input
 [[ -z $ORGS ]] && export ORGS="tex lynkeus texorderer lynkeusorderer"
 [[ -z $PEER_ORGS ]] && export PEER_ORGS="tex lynkeus"

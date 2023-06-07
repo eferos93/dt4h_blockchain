@@ -1,8 +1,10 @@
 package agora
 
 import (
-	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"time"
+
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+
 	// "log"
 	"fmt"
 	// "math/big"
@@ -21,29 +23,29 @@ const FALSE = "false"
 const EMPTY_STR = ""
 
 const (
-	ADMIN 	string = "admin"
-	PEER 	string = "peer"
-	CLIENT 	string = "client"
+	ADMIN   string = "admin"
+	PEER    string = "peer"
+	CLIENT  string = "client"
 	ORDERER string = "orderer"
 )
 
 const (
-	USER_OBJECT_TYPE      = "user"
-	USERID_OBJECT_TYPE    = "userID"
-	PRODUCT_OBJECT_TYPE   = "product"
-	AGREEMENT_OBJECT_TYPE = "agreement"
-	INVENTORY_OBJECT_TYPE = "inventory"
+	USER_OBJECT_TYPE         = "user"
+	USERID_OBJECT_TYPE       = "userID"
+	PRODUCT_OBJECT_TYPE      = "product"
+	AGREEMENT_OBJECT_TYPE    = "agreement"
+	INVENTORY_OBJECT_TYPE    = "inventory"
 	REVOKED_CERT_OBJECT_TYPE = "revoked"
-	ORG_OBJECT_TYPE		  = "org"
+	ORG_OBJECT_TYPE          = "org"
 )
 
 const (
-	HEALTH = "Health"
+	HEALTH    = "Health"
 	EDUCATION = "Education"
 
 	ANALYTICS = "Analytics"
-	BATCH = "Batch"
-	STREAMS = "Streams"
+	BATCH     = "Batch"
+	STREAMS   = "Streams"
 )
 
 const (
@@ -59,15 +61,18 @@ var PRODUCT_TYPES = []string{BATCH, ANALYTICS, STREAMS}
 var EDUCATIONAL_INSTITUTION_TYPES = []string{"HrAgencies", "PrivateCompanies", "PublicInstitutions", "PublicResearchCenters", "PublicResearchInstitutions"}
 var HEALTH_INSTITUTION_TYPES = []string{"PublicHospitals", "PrivateHospitals", "PrivateResearch", "PublicResearch", "Governments", "PrivateCompanies", "Other"}
 var AUTOMATED_DECISION_MAKING_CONSEQUENCES = []string{"AutomatedPlacing", "HiringAssessment", "ClinicalResearchAssessment", "DiagnosticOrTreatment"}
-var INSTITUTION_TYPES = []string{"public_hospitals", "private_hospitals", "private_research_centers", "public_research_centers", "governments", "other", "public_institutions", "public_research_institutions", "hr_agencies", "private_companies", "private_institutions"}
+
+// var INSTITUTION_TYPES = []string{"public_hospitals", "private_hospitals", "private_research_centers", "public_research_centers", "governments", "other", "public_institutions", "public_research_institutions", "hr_agencies", "private_companies", "private_institutions"}
+
+// var DATA_ACCESS_LEVELS = []string{"level_1", "level_2", "level_3"}
 
 type RevokedCertificate struct {
-	ObjectType 	string `json:"type"`
-	MspID		string `json:"mspid"`
+	ObjectType string `json:"type"`
+	MspID      string `json:"mspid"`
 	// Data 	   	pkix.RevokedCertificate
-	SerialNumber   string `json:"serialNumber"`
+	SerialNumber   string    `json:"serialNumber"`
 	RevocationTime time.Time `json:"revocationTime"`
-	Key				string	`json:"key"`
+	Key            string    `json:"key"`
 }
 
 type Error struct {
@@ -117,14 +122,14 @@ type User struct {
 	// IDs
 	ID       string `json:"id"`
 	Username string `json:"username"`
-	MspID 	 string `json:"mspid"`
+	MspID    string `json:"mspid"`
 
 	// Org Are you sharing/looking for data on behalf of an organization such as a private company or a research center?
 	IsOrg bool `json:"isOrg"`
 
 	// True if the user is a member of the organization and not the admin
-	IsMemberOf   string `json:"isMemberOf,omitempty" metadata:",optional"`
-	Org   Org  `json:"org,omitempty" metadata:",optional"`
+	IsMemberOf string `json:"isMemberOf,omitempty" metadata:",optional"`
+	Org        Org    `json:"org,omitempty" metadata:",optional"`
 
 	IsBuyer bool `json:"isBuyer"`
 
@@ -135,27 +140,27 @@ type User struct {
 	ValidTo time.Time `json:"validTo"`
 
 	// Key of certificate
-	CertKey		string	`json:"certKey" metadata:",optional"`
+	CertKey string `json:"certKey" metadata:",optional"`
 
 	// Active status
-	Active		bool	`json:"active"`
+	Active bool `json:"active"`
 
-	Version		int64 	`json:"vers" metadata:",optional"`
+	Version int64 `json:"vers" metadata:",optional"`
 }
 
 type OrgData struct {
-	Verified bool `json:"verified"`
-	Members	 []string  `json:"members,omitempty" metadata:",optional"`
+	Verified bool     `json:"verified"`
+	Members  []string `json:"members,omitempty" metadata:",optional"`
 }
 
 type Org struct {
 	// identity and contact details of the controller, and DPO if applicable
-	InstType     string `json:"instType"`
-	OrgName      string `json:"orgName"`
-	Active       bool   `json:"active"`
+	InstType string `json:"instType"`
+	OrgName  string `json:"orgName"`
+	Active   bool   `json:"active"`
 
 	// Users transacting on behalf of the organization
-	Members		[]string  `json:"members,omitempty" metadata:",optional"`
+	Members []string `json:"members,omitempty" metadata:",optional"`
 
 	// DPOFirstName string `json:"dpoFirstName"`
 	// DPOLastName  string `json:"dpoLastName"`
@@ -173,7 +178,7 @@ func (o Org) validateOrgArgs() error {
 	method := "validateOrgArgs"
 
 	INSTITUTIONS := append(HEALTH_INSTITUTION_TYPES, EDUCATIONAL_INSTITUTION_TYPES...)
-	if !_in(o.InstType, INSTITUTIONS){
+	if !_in(o.InstType, INSTITUTIONS) {
 		return fmt.Errorf("%s - Undefined institution value: %s", method, o.InstType)
 	}
 
@@ -190,6 +195,8 @@ func (o Org) validateOrgArgs() error {
 // BuyerParams The buyer's input to validate against product's policy
 type BuyerParams struct {
 	Purposes []string `json:"purposes"`
+	// Data Access Level
+	DataAccessLevel string `json:"dataAccessLevel" metadata:",optional"`
 }
 
 // DataContract The contract utilizing data logic
@@ -228,11 +235,21 @@ type Product struct {
 	// In case of a curated Data Product
 	Curations []string `json:"curations,omitempty" metadata:",optional"`
 
+	// SMPC metadata
+	Epsilon float64 `json:"epsilon,omitempty" metadata:",optional"`
+
+	DataAccessLevels []DataAccessLevel `json:"dataAccessLevels,omitempty" metadata:",optional"`
+
 	// In case of a Data Union
 	// ProductIDs []string `json:"productIDs,omitempty" metadata:",optional"`
-	Version		int64 	`json:"vers" metadata:",optional"`
+	Version int64 `json:"vers" metadata:",optional"`
+}
 
-
+// Access tiers
+type DataAccessLevel struct {
+	Level string  `json:"level"`
+	Price float64 `json:"price"`
+	Units float64 `json:"units"`
 }
 
 // Policy Object containing the product's policy
@@ -250,7 +267,7 @@ type Policy struct {
 	ProtectionType string `json:"protectionType,omitempty" metadata:",optional"`
 
 	//
-	SecUseConsent bool   `json:"secondUseConsent,omitempty" metadata:",optional"`
+	SecUseConsent bool     `json:"secondUseConsent,omitempty" metadata:",optional"`
 	RecipientType []string `json:"recipientType,omitempty" metadata:",optional"`
 
 	// third country transfers, if any
@@ -268,8 +285,7 @@ type Policy struct {
 	// Automated Decision Making Consequences
 	AutomatedDecisionMaking []string `json:"automated,omitempty" metadata:",optional"`
 
-	Version		int64 	`json:"vers" metadata:",optional"`
-
+	Version int64 `json:"vers" metadata:",optional"`
 }
 
 // {
@@ -302,7 +318,6 @@ type UserInventory struct {
 	Salt  int `json:"prodSalt"`
 }
 
-
 /* Agreement object */
 type Agreement struct {
 	ObjectType string `json:"type"`
@@ -316,11 +331,22 @@ type Agreement struct {
 	Price         float64 `json:"price"`
 	Status        string  `json:"status"`
 	Timestamp     int64   `json:"timestamp"`
-	Version		int64 	`json:"vers" metadata:",optional"`
+
+	// Data Access Level
+	DataAccessLevel string `json:"dataAccessLevel"`
+
+	Version int64 `json:"vers" metadata:",optional"`
 }
 
 type ProductHistoryQueryResult struct {
-	Record    *Product `json:"record"`
+	Record    *Product  `json:"record"`
+	TxId      string    `json:"txId"`
+	Timestamp time.Time `json:"timestamp"`
+	IsDelete  bool      `json:"isDelete"`
+}
+
+type ProductTxtHistoryQueryResult struct {
+	Record    *Agreement `json:"record"`
 	TxId      string     `json:"txId"`
 	Timestamp time.Time  `json:"timestamp"`
 	IsDelete  bool       `json:"isDelete"`

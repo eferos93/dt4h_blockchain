@@ -42,6 +42,17 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 	// }
 	// log.Printf("%+v", seller)
 
+	// Check for data access level
+	if len(product.DataAccessLevels) > 0 {
+		var levels []string
+		for _, dal := range product.DataAccessLevels {
+			levels = append(levels, dal.Level)
+		}
+		if !_in(buyerParams.DataAccessLevel, levels) {
+			return fmt.Errorf("%s: Data Access Level %s does not exist in the product.", method, buyerParams.DataAccessLevel)
+		}
+	}
+
 	// If User is PreApproved, make no other checks
 	if _in(buyer.ID, policy.ApprovedUsers) {
 		return nil
@@ -69,7 +80,7 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 			if err != nil {
 				return fmt.Errorf("%s: %v", method, err)
 			}
-		} 
+		}
 
 		// Batch, Streams
 		if product.ProductType != ANALYTICS {
@@ -94,10 +105,10 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 		if err != nil {
 			return fmt.Errorf("%s: %v", method, err)
 		}
-		
+
 		// Analytics
 		// if product.ProductType == ANALYTICS {
-				
+
 		// }
 
 		// Batch, Streams
@@ -115,7 +126,7 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 }
 
 // checkInstitutionType Match policy on institution types
-func (s *AgreementContract) checkInstitutionType (buyerInst string, policyInst []string) error {
+func (s *AgreementContract) checkInstitutionType(buyerInst string, policyInst []string) error {
 	method := "checkInstitutionType"
 
 	// Check Institution Types
@@ -168,7 +179,7 @@ func (s *AgreementContract) newAgreement(ctx TransactionContextInterface, produc
 	}
 
 	agreement.Timestamp = timestamp.Seconds
-	log.Printf("%s - %+j", method, agreement)
+	log.Printf("%s - %+v", method, agreement)
 
 	agreementBytes, err := json.Marshal(agreement)
 	if err != nil {
@@ -279,7 +290,7 @@ func (s *AgreementContract) GetAgreement(ctx TransactionContextInterface, transa
 	return agreement, nil
 }
 
-// GetAgreements Query all agreements 
+// GetAgreements Query all agreements
 func (s *AgreementContract) GetAgreements(ctx TransactionContextInterface) ([]*Agreement, error) {
 	method := "GetAgreements"
 

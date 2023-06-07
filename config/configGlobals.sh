@@ -22,6 +22,7 @@ fi
 export ORDERER_HOSTNAME=orderer0.texorderer.domain.com
 export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/texorderer.domain.com/mspConfig/tlscacerts/ca.crt
 
+export VM_USER=athena
 ################## THIS SECTION SHOULD BE CONFIGURED BY NETWORK ADMINISTRATOR #########################
 ################## MANDATORY PARAMETERS TO CONFIGURE ##########################
 ################## TLSHOST ##########################

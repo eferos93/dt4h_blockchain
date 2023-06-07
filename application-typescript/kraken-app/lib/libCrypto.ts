@@ -2,7 +2,7 @@
  * Copyright Lynkeus 2020. All Rights Reserved.
  *
  * @file Implementation of Crypto related functionalities
- * @module liCrypto
+ * @module libCrypto
  * @author Alexandros Tragkas
  */
 
@@ -19,7 +19,6 @@ import { Certificate } from '@fidm/x509';
 import * as jsrsasign from 'jsrsasign';
 const asn1 = jsrsasign.KJUR.asn1;
 
-import * as crypto from 'crypto-js';
 import { signTransaction } from './libSignOffline'
 
 /* Logging */

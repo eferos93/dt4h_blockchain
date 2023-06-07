@@ -31,6 +31,7 @@ setup() {
 	# Install FABRIC binaries and Images
 	./downloadFabric.sh -s
 	docker pull hyperledger/fabric-ca:${CA_TAG}
+	sleep 100
 
 	rm -rf ${FABRIC_HOME}/bin
 
@@ -60,5 +61,5 @@ setup() {
 	# rm ${BINARY_FILE} ${CA_BINARY_FILE}
 	popd
 
-	chmod -R u+x .
+	chmod -R u+x bin
 }

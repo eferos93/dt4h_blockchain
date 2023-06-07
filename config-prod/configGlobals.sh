@@ -27,6 +27,7 @@ fi
 ################## ORDERERPW ##########################
 ################## ADMINPW ##########################
 
+export VM_USER=athena
 
 # User Input 
 [[ -z $ORGS ]] && export ORGS="tex lynkeus texorderer lynkeusorderer"
@@ -54,14 +55,13 @@ setPorts() {
 # Set peer parameters for the peer cli 
 setPeer() {
   org=$1 
-  id=$2
+  nodeID=$2
 
-  if [ -z "$id" ]; then
-    id=peer0
+  if [ -z "$nodeID" ]; then
+    nodeID=peer0
   fi
 
   setPorts "$org"
-  nodeID="$id"
 
   # Set hostname depending on deployed or localhost version
   [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.domain.com
