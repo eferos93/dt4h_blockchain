@@ -189,7 +189,7 @@ func (s *DataContract) validateCUD(ctx TransactionContextInterface, product *Pro
 	for _, buyerUsername := range policy.ApprovedUsers {
 		buyer, err := userContract.ReadUser(ctx, buyerUsername)
 		if err != nil {
-			fmt.Errorf("ValidationError: %v", err)
+			return fmt.Errorf("ValidationError: %v", err)
 		}
 
 		if buyer != nil {
@@ -367,7 +367,7 @@ func (s *DataContract) createProductID(ctx TransactionContextInterface, owner st
 		return EMPTY_STR, fmt.Errorf("%s: %v", method, err)
 	}
 
-	log.Printf("%s:  Count and Salt: %j\n", method, userInv)
+	log.Printf("%s:  Count and Salt: %v\n", method, userInv)
 
 	/* Create ID as hash(owner + salt) */
 	hashBytes := sha256.Sum256([]byte(owner + strconv.Itoa(userInv.Salt)))

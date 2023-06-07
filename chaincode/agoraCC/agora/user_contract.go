@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
-
 	// "time"
 	// "strconv"
 	// "strings"
@@ -39,7 +38,7 @@ func (s *UserContract) CreateUser(ctx TransactionContextInterface, userStr strin
 	if user.CertKey == EMPTY_STR {
 		return fmt.Errorf("%s - Error Updating Certificate Data", method)
 	}
-	log.Printf("%s - ", method, user.CertKey)
+	log.Printf("%s - %s", method, user.CertKey)
 	// TODO: IF IS ORG TRUE, CHECK IF ORGNAME IS EMPTY
 	// if user.IsOrg != true {
 	// 	user.Org = {0};
@@ -100,12 +99,12 @@ func (s *UserContract) UpdateUser(ctx TransactionContextInterface, userStr strin
 	user.ID = ctx.GetData().ID
 	user.Username = ctx.GetData().Username
 	user.MspID, _ = ctx.GetClientIdentity().GetMSPID()
-	user.Active = true	
+	user.Active = true
 	user.ValidTo, user.CertKey = updateCertData(ctx)
 	if err != nil {
 		return fmt.Errorf("%s - Error Updating Certificate Data", method)
 	}
-	
+
 	// if (!user.IsOrg) {
 	// 	user.Org = {};
 	// }
@@ -129,8 +128,6 @@ func (s *UserContract) UpdateUser(ctx TransactionContextInterface, userStr strin
 	return nil
 }
 
-
-
 // DeleteUser (self, owner only)
 // Username arg is not used yet, left for future admin implementation
 func (s *UserContract) DeleteUser(ctx TransactionContextInterface, username string) error {
@@ -147,7 +144,7 @@ func (s *UserContract) DeleteUser(ctx TransactionContextInterface, username stri
 
 	key := s.makeUserKey(ctx, userID)
 	if key == EMPTY_STR {
-		fmt.Errorf("%s: error creating key", method)
+		return fmt.Errorf("%s: error creating key", method)
 	}
 
 	user, err := s.ReadUser(ctx, userID)
@@ -222,7 +219,7 @@ func (s *UserContract) InactivateUser(ctx TransactionContextInterface, username 
 
 	user, err := s.ReadUser(ctx, username)
 	if err != nil {
-		return fmt.Errorf("%s - ", method, err)
+		return fmt.Errorf("%s - %v", method, err)
 	}
 
 	// Authorization checks
@@ -235,7 +232,7 @@ func (s *UserContract) InactivateUser(ctx TransactionContextInterface, username 
 		return fmt.Errorf("%s - OU value is not %s", method, CLIENT)
 	}
 
-	callerMSP, _ := ctx.GetClientIdentity().GetMSPID() 
+	callerMSP, _ := ctx.GetClientIdentity().GetMSPID()
 	if user.MspID != callerMSP {
 		return fmt.Errorf("%s - AuthorizationError: User %s belongs to another MSP", method, username)
 	}
@@ -245,16 +242,11 @@ func (s *UserContract) InactivateUser(ctx TransactionContextInterface, username 
 	/* Put new state */
 	err = s.putUserState(ctx, user, 1)
 	if err != nil {
-		return fmt.Errorf("%s - ", method, err)
+		return fmt.Errorf("%s - %v", method, err)
 	}
 
 	return nil
 }
-
-
-
-
-
 
 /* Account Recovery
 1. User sets a Hashed strong Key as input when they register or later
@@ -361,7 +353,7 @@ func (s *UserContract) putUserState(ctx TransactionContextInterface, user *User,
 
 	// 	// Interface -> Bytes
 	// 	orgData := {
-	// 		Verified 
+	// 		Verified
 	// 	}
 
 	// }
@@ -445,7 +437,7 @@ func (s *UserContract) validateCUD(ctx TransactionContextInterface, user *User, 
 		}
 	}
 
-	// Member of Organization 
+	// Member of Organization
 	if user.IsMemberOf != EMPTY_STR {
 		// DEV COMMENT START
 		// if user.IsOrg {
@@ -455,7 +447,7 @@ func (s *UserContract) validateCUD(ctx TransactionContextInterface, user *User, 
 
 		// user.Org.initOrg()
 
-		////////////////////////////  Append member to Org.Members, FOR DEV ONLY 
+		////////////////////////////  Append member to Org.Members, FOR DEV ONLY
 		// DEV START
 		// org, err := s.ReadUser(ctx, user.IsMemberOf)
 		// if err != nil {
@@ -512,7 +504,6 @@ func (s *UserContract) validateCUD(ctx TransactionContextInterface, user *User, 
 	return nil
 }
 
-
 // makeUserKey Create user key
 func (s *UserContract) makeUserKey(ctx TransactionContextInterface, username string) string {
 	key, err := ctx.GetStub().CreateCompositeKey(USER_OBJECT_TYPE, []string{username})
@@ -522,7 +513,6 @@ func (s *UserContract) makeUserKey(ctx TransactionContextInterface, username str
 
 	return key
 }
-
 
 /*
  *** **************** ****

@@ -2,9 +2,10 @@ package agora
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 	"encoding/hex"
+	"encoding/json"
 	"log"
+
 	// "strconv"
 	"fmt"
 	// "github.com/hyperledger/fabric-chaincode-go/pkg/cid"
@@ -59,14 +60,14 @@ func (s *ManagementContract) UpdateCRL(ctx TransactionContextInterface, crlPEM s
 	certsList := tbsCertsList.RevokedCertificates
 
 	for i := 0; i < len(certsList); i++ {
-		revokedCert := RevokedCertificate {
-			MspID: mspID,
-			SerialNumber: certsList[i].SerialNumber.String(),
+		revokedCert := RevokedCertificate{
+			MspID:          mspID,
+			SerialNumber:   certsList[i].SerialNumber.String(),
 			RevocationTime: certsList[i].RevocationTime,
 		}
 
-		log.Printf("SerialNumber: ", revokedCert.SerialNumber)
-		
+		log.Printf("SerialNumber: %v", revokedCert.SerialNumber)
+
 		err = s.putRevokedCertState(ctx, revokedCert)
 		if err != nil {
 			return fmt.Errorf("%s: %v", method, err)
@@ -97,11 +98,10 @@ func (s *ManagementContract) putRevokedCertState(ctx TransactionContextInterface
 	err = ctx.GetStub().PutState(key, revokedCertJSON)
 	if err != nil {
 		return fmt.Errorf("%s: %v", method, err)
-	}	
+	}
 
 	return nil
 }
-
 
 // makeCertHash Generate a hash for a certificate
 func makeCertHash(ctx TransactionContextInterface, mspid string, serialNumber string) string {
@@ -145,7 +145,6 @@ func (s *ManagementContract) GetRevokedCert(ctx TransactionContextInterface, ID 
 func (s *ManagementContract) GetRevokedCertificates(ctx TransactionContextInterface) ([]*RevokedCertificate, error) {
 	method := "GetRevokedCertificates"
 
-
 	resultsIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(REVOKED_CERT_OBJECT_TYPE, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
@@ -168,8 +167,7 @@ func (s *ManagementContract) GetRevokedCertificates(ctx TransactionContextInterf
 	}
 
 	return revokedCerts, nil
-}	
-
+}
 
 // assertNotRevokedCertificate Assert a certificate is not revoked
 func (s *ManagementContract) assertNotRevokedCertificate(ctx TransactionContextInterface, ID string, mspID string) error {
