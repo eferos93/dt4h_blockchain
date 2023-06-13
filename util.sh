@@ -43,6 +43,74 @@ ERROR='[ERROR]:'
 TLS_DEFAULT_EXPIRY=43830h
 CA_DEFAULT_EXPIRY=17532h
 
+
+# Set endorsing peers
+setPeers() {
+
+  if [ ${STAGE} == 'dev' ]; then
+    peer0Org1="--peerAddresses localhost:7070"
+    peer1Org1="--peerAddresses localhost:7080"
+
+    peer0Org2="--peerAddresses localhost:8080"
+    peer1Org2="--peerAddresses localhost:8090"
+  else
+    peer0Org1="--peerAddresses peer0.${ORG_1}.domain.com:${CCP_PEER_PORT}"
+    peer1Org1="--peerAddresses peer1.${ORG_1}.domain.com:${CCP_PEER_PORT}"
+
+    peer0Org2="--peerAddresses peer0.${ORG_2}.domain.com:${CCP_PEER_PORT}"
+    peer1Org2="--peerAddresses peer1.${ORG_2}.domain.com:${CCP_PEER_PORT}"
+  fi
+
+  export TLS_ROOTCERT_ORG1=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_1}.domain.com/mspConfig/tlscacerts/ca.crt
+  export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.domain.com/mspConfig/tlscacerts/ca.crt
+
+  tlsOrg1="--tlsRootCertFiles ${TLS_ROOTCERT_ORG1}"
+  tlsOrg2="--tlsRootCertFiles ${TLS_ROOTCERT_ORG2}"
+
+  PEERS="$peer0Org1 $tlsOrg1 $peer1Org1 $tlsOrg1 $peer0Org2 $tlsOrg2 $peer1Org2 $tlsOrg2"
+}
+
+# Set peer parameters for the peer cli 
+setPeer() {
+  org=$1 
+  nodeID=$2
+
+  if [ -z "$nodeID" ]; then
+    nodeID=peer0
+  fi
+
+  setPorts "$org"
+
+  # Set hostname depending on deployed or localhost version
+  [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.domain.com
+
+  # Check config existence
+  if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
+    printWarn "Missing configuration for ${nodeID}-${org}."
+    # exit 1
+  fi
+
+  # Set Env Vars to transact as a specific node
+  if [[ "$TYPE" == 'orderer' ]]; then
+    # Case Orderer
+    export PEER_HOME=${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${nodeID}.${org}.domain.com
+  else
+    # Case Peer
+    export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${nodeID}.${org}.domain.com
+    cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
+  fi
+
+  export CORE_PEER_TLS_ROOTCERT_FILE=${PEER_HOME}/tls/tlscacerts/ca.crt
+  export CORE_PEER_TLS_CERT=${PEER_HOME}/tls/signcerts/cert.pem
+  export CORE_PEER_TLS_KEY=${PEER_HOME}/tls/keystore/key.pem
+  
+  export CORE_PEER_ADDRESS=${hostname}:${PORT_MAP[$nodeID]}
+
+  # MSP (Need Admin to join channel)
+  export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
+
+}
+
 setExtraHosts() {
   printInfo "Setting extra hosts..."
 
@@ -133,7 +201,11 @@ services:
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
       - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${tlsadmin}
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${tlsadminpw}
       - FABRIC_CA_SERVER_CSR_HOSTS=tlsca_${org},${org}.domain.com,${tlsHost}
+      - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
+      - FABRIC_CA_SERVER_CSR_NAMES_0_OU=${org}-tls
       - FABRIC_CA_SERVER_PORT=${tlsPort}
       - FABRIC_CA_SERVER_TLS_CLIENTAUTH_CERTFILES=ca-cert.pem
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
@@ -183,6 +255,8 @@ services:
       - FABRIC_CA_SERVER_PORT=${tlsOpsPort}
       # - FABRIC_LOGGING_SPEC=DEBUG
       - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
+      - FABRIC_CA_SERVER_CSR_NAMES_0_OU=${org}-tlsops
       - FABRIC_CA_SERVER_CSR_HOSTS=tlsopsca_${org},${org}.domain.com,${tlsHost}
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_PROFILES_TLS_EXPIRY=${TLS_DEFAULT_EXPIRY}
@@ -229,9 +303,13 @@ services:
       - FABRIC_CA_SERVER_CA_NAME=ca-${org}
       - FABRIC_CA_SERVER_PORT=${caPort}
       - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${caadmin}
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${caadminpw}
       - FABRIC_CA_SERVER_CSR_HOSTS=ca_${org},${org}.domain.com,${caHost}
+      - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_TLS_DEFAULT_EXPIRY=${CA_DEFAULT_EXPIRY}
+      - FABRIC_CA_SERVER_AFFILIATIONS_${org}=MEMBERS,USERS
       ${ops_listenaddress}
     ports:
       - ${caPort}:${caPort}
@@ -371,6 +449,7 @@ services:
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw  
       #### PEER ADDRESSES CONFIG
+      - CORE_PEER_ID=${peerId}.${org}.domain.com
       - CORE_PEER_LISTENADDRESS=0.0.0.0:${peerPort}
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:${chaincodePort}
       - CORE_PEER_ADDRESS=${peerId}.${org}.domain.com:${peerPort}
@@ -386,7 +465,7 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
-      - ${FABRIC_HOME}/config/${peerId}-${org}.yaml:/etc/hyperledger/fabric/core.yaml
+      - ${FABRIC_HOME}/config/core.yaml:/etc/hyperledger/fabric/core.yaml
       - /var/run/:/host/var/run/
       - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/msp:/etc/hyperledger/fabric/msp
       - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls:/etc/hyperledger/fabric/tls
@@ -438,7 +517,7 @@ echo  "
     working_dir: /opt/gopath/github.com/hyperledger/fabric/peer
     command: /bin/bash
     volumes:
-      - ${FABRIC_HOME}/config/${peerId}-${org}.yaml:/etc/hyperledger/fabric/core.yaml
+      - ${FABRIC_HOME}/config/core.yaml:/etc/hyperledger/fabric/core.yaml
       - /var/run/:/host/var/run/
       - ${FABRIC_HOME}/chaincode/:/opt/gopath/src/github.com/chaincode
       - ${FABRIC_HOME}/organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations

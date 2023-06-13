@@ -4,37 +4,30 @@ export STAGE=prod
 
 # Profile used from configtx.yaml
 export CHANNEL_PROFILE=MarketplaceChannel
+
+# Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium
 
 # Set ORDERER global variables 
-# export ORDERER_IP="$(getent hosts orderer0.lynkeusorderer.domain.com |  tr -s ' ' | cut -d " " -f 1)"
-export ORDERER_HOSTNAME=orderer0.lynkeusorderer.domain.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/lynkeusorderer.domain.com/mspConfig/tlscacerts/ca.crt
 
-if [ ${STAGE} == 'dev' ]; then
-  export ORDERER=localhost:9051
-else
-  export ORDERER=orderer0.lynkeusorderer.domain.com:9051
-fi
+# -- USER INPUT - Set Organization Names
+export ORG_1=tex
+export ORG_2=lynkeus
 
-################## THIS SECTION SHOULD BE CONFIGURED BY NETWORK ADMINISTRATOR #########################
-################## MANDATORY PARAMETERS TO CONFIGURE ##########################
-################## TLSHOST ##########################
-################## CAHOST ##########################
-################## TLSADMINPW ##########################
-################## CAADMINPW ##########################
-################## PEERPW ##########################
-################## ORDERERPW ##########################
-################## ADMINPW ##########################
+# Auto set orderer of Org 1
+export ORDERER_HOSTNAME=orderer0.${ORG_1}orderer.domain.com
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}orderer.domain.com/mspConfig/tlscacerts/ca.crt
+export ORDERER=orderer0.lynkeusorderer.domain.com:9051
 
-export VM_USER=athena
+# -- USER INPUT - Set Organizations
+[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_1}orderer ${ORG_2}orderer"
+[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_1} ${ORG_2}"
+[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}orderer ${ORG_2}orderer"
 
-# User Input 
-[[ -z $ORGS ]] && export ORGS="tex lynkeus texorderer lynkeusorderer"
-[[ -z $PEER_ORGS ]] && export PEER_ORGS="tex lynkeus"
-[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="texorderer lynkeusorderer"
 export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
+
+# -- USER INPUT - Set CouchDB Ports
 export COUCHDB_PORTS=("5100" "5200" "6100" "6200")
 
 # For CCP Generation
@@ -44,77 +37,31 @@ export CCP_CA_PORT=7055
 
 setPorts() {
   org=$1
-
-  PEER_PORT=7070
-  if [ "$org" == "texorderer" ] || [ "$org" == "lynkeusorderer" ]; then
-      PEER_PORT=9051
-      CLUSTER_PORT=9052
+  declare -Ag PORT_MAP
+  if [ "$org" == "tex" ]; then
+    PORT_MAP[peer0]=7070
+    PORT_MAP[peer1]=7070
+  elif [ "$org" == "lynkeus" ]; then
+    PORT_MAP[peer0]=7070
+    PORT_MAP[peer1]=7070
+  elif [ "$org" == "texorderer" ]; then
+    PORT_MAP[orderer0]=9051
+    PORT_MAP[orderer1]=9051
+  elif [ "$org" == "lynkeusorderer" ]; then
+    PORT_MAP[orderer0]=9051
+  elif [ "$org" == "org3" ]; then
+    PORT_MAP[peer0]=9051
   fi
-}
-
-# Set peer parameters for the peer cli 
-setPeer() {
-  org=$1 
-  nodeID=$2
-
-  if [ -z "$nodeID" ]; then
-    nodeID=peer0
-  fi
-
-  setPorts "$org"
-
-  # Set hostname depending on deployed or localhost version
-  [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.domain.com
-
-  # Check config existence
-  if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
-    printWarn "Missing configuration for ${nodeID}-${org}."
-    # exit 1
-  fi
-
-  # Set Env Vars to transact as a specific node
-  if [[ "$TYPE" == 'orderer' ]]; then
-    # Case Orderer
-    export PEER_HOME=${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${nodeID}.${org}.domain.com
-  else
-    # Case Peer
-    export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${nodeID}.${org}.domain.com
-    cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
-  fi
-
-  export CORE_PEER_TLS_ROOTCERT_FILE=${PEER_HOME}/tls/tlscacerts/ca.crt
-  export CORE_PEER_TLS_CERT=${PEER_HOME}/tls/signcerts/cert.pem
-  export CORE_PEER_TLS_KEY=${PEER_HOME}/tls/keystore/key.pem
-  
-  export CORE_PEER_ADDRESS=${nodeID}.${org}.domain.com:$PEER_PORT
-
-  # MSP (Need Admin to join channel)
-  export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
-
-}
-
-# Set endorsing peers
-setPeers() {
-
-  peer0tex="--peerAddresses peer0.tex.domain.com:${CCP_PEER_PORT}"
-  peer1tex="--peerAddresses peer1.tex.domain.com:${CCP_PEER_PORT}"
-
-  peer0lyn="--peerAddresses peer0.lynkeus.domain.com:${CCP_PEER_PORT}"
-  peer1lyn="--peerAddresses peer1.lynkeus.domain.com:${CCP_PEER_PORT}"
-
-  export TLS_ROOTCERT_TEX=${FABRIC_HOME}/organizations/peerOrganizations/tex.domain.com/mspConfig/tlscacerts/ca.crt
-  export TLS_ROOTCERT_LYN=${FABRIC_HOME}/organizations/peerOrganizations/lynkeus.domain.com/mspConfig/tlscacerts/ca.crt
-
-  tlsTex="--tlsRootCertFiles ${TLS_ROOTCERT_TEX}"
-  tlsLyn="--tlsRootCertFiles ${TLS_ROOTCERT_LYN}"
-
-  PEERS="$peer0tex $tlsTex $peer1tex $tlsTex $peer0lyn $tlsLyn $peer1lyn $tlsLyn"
 }
 
 # User Input
 setParams() {
   org=$1
-
+  
+  export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_PATH/${org}/fabric-ca-client-${org}
+  export TLS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tls-root-cert/tls-ca-cert.pem
+  export TLSOPS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tlsops-root-cert/tls-ca-cert.pem
+  
   # export myIP=$(dig +short myip.opendns.com @resolver1.opendns.com)
   tlsHost="$(getent hosts tlsca_${org} |  tr -s ' ' | cut -d " " -f 1)"
   caHost="$(getent hosts ca_${org} |  tr -s ' ' | cut -d " " -f 1)"
@@ -132,10 +79,7 @@ setParams() {
   if [ "$org" == "lynkeusorderer" ] || [ "$org" == "texorderer" ]; then
     typeOfOrg=orderer
   fi
-  
-  export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_PATH/${org}/fabric-ca-client-${org}
-  export TLS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tls-root-cert/tls-ca-cert.pem
-  export TLSOPS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tlsops-root-cert/tls-ca-cert.pem
+
   
   # CA 
   caendpoint=$caHost:$caPort

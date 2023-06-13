@@ -40,7 +40,7 @@
 version: 1.4.8
 
 # Server's listening port (default: 7054)
-port: 9054
+port: 8055
 
 # Cross-Origin Resource Sharing (CORS)
 cors:
@@ -68,8 +68,8 @@ tls:
   # Enable TLS (default: false)
   enabled: true
   # TLS for the server's listening port
-  certfile:
-  keyfile:
+  certfile: tls/cert.pem
+  keyfile: tls/key.pem
   clientauth:
     type: noclientcert
     certfiles:
@@ -86,7 +86,7 @@ tls:
 #############################################################################
 ca:
   # Name of this CA
-  name: ca-lynkeusorderer-tls
+  name: ca-lynkeus
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -129,15 +129,15 @@ registry:
 
   # Contains identity information which is used when LDAP is disabled
   identities:
-     - name: tlsadmin
-       pass: tlsadminpw
+     - name: 
+       pass: 
        type: client
        affiliation: ""
        attrs:
           hf.Registrar.Roles: "*"
           hf.Registrar.DelegateRoles: "*"
           hf.Revoker: true
-          hf.IntermediateCA: true
+          hf.IntermediateCA: false
           hf.GenCRL: true
           hf.Registrar.Attributes: "*"
           hf.AffiliationMgr: true
@@ -243,11 +243,6 @@ ldap:
 # which are always stored in lower case.
 #############################################################################
 affiliations:
-   org1:
-      - department1
-      - department2
-   org2:
-      - department1
 
 #############################################################################
 #  Signing section
@@ -271,6 +266,14 @@ signing:
         - digital signature
       expiry: 998760h
     profiles:
+      ca:
+         usage:
+           - cert sign
+           - crl sign
+         expiry: 43800h
+         caconstraint:
+           isca: true
+           maxpathlen: 0
       tls:
          usage:
             - signing
@@ -304,15 +307,11 @@ csr:
      algo: ecdsa
      size: 256
    names:
-      - C: US
-        ST: "North Carolina"
+      - C: 
+        ST: 
         L:
         O: Hyperledger
         OU: Fabric
-   hosts:
-     - localhost
-     - domain.com
-     - tlsca_lynkeusorderer
    ca:
       expiry: 131400h
       pathlength: 1
@@ -450,7 +449,7 @@ cfg:
 ###############################################################################
 operations:
     # host and port for the operations server
-    listenAddress: 127.0.0.1:8334
+    listenAddress: 127.0.0.1:9445
 
     # TLS configuration for the operations endpoint
     tls:

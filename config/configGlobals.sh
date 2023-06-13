@@ -210,5 +210,3 @@ setParams() {
   prometheus=prometheus
   prometheuspw=secret123
 }
-
-

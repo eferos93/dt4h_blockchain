@@ -25,7 +25,8 @@ createTLSOpsServer() {
 	yes | mv msp/keystore/*sk msp/keystore/rootkey.pem
 
 	# Import existing and configured fabric-ca-server-config.yaml file
-	CONF_FILE="$FABRIC_CA_CFG_PATH/fca-tlsops-${ORG_NAME}-config.yaml"
+	# CONF_FILE="$FABRIC_CA_CFG_PATH/fca-tlsops-${ORG_NAME}-config.yaml"
+	CONF_FILE="$FABRIC_CA_CFG_PATH/base_tlscaops_config.yaml"
 	yes | cp "$CONF_FILE" ./fabric-ca-server-config.yaml
 	verifyResult $?  "createTLSOpsServer - Failed to cp config"
 

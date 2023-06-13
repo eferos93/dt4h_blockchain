@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# . configCC.sh
+. .env
 . util.sh
 . configGlobals.sh
 

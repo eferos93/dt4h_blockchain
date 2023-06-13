@@ -12,9 +12,6 @@ createCAServer() {
 		exit 1
 	fi
 
-	# User Input
-	# Read username-pw
-
 	# Create the organization's CA Server directory
 	mkdir -p "$FABRIC_CA_PATH"/"${ORG_NAME}"/fabric-ca-server-"${ORG_NAME}"
 
@@ -39,7 +36,7 @@ createCAServer() {
 	cd ../
 
 	# Importing our custom server config
-	yes | cp "$FABRIC_CA_CFG_PATH"/fca-ca-"${ORG_NAME}"-config.yaml ./fabric-ca-server-config.yaml
+	yes | cp "$FABRIC_CA_CFG_PATH"/base_ca_config.yaml ./fabric-ca-server-config.yaml
 	yes | cp "$FABRIC_CA_CFG_PATH"/fca-usersca-"${ORG_NAME}"-config.yaml users-ca/fabric-ca-server-config.yaml
 	
 	# popd

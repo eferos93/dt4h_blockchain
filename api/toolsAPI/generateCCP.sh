@@ -4,7 +4,7 @@ generateCCP() {
 
   printInfo "Generating CCP using hostnames and IPs from /etc/hosts..."
   if [[ "$STAGE" == 'dev' ]]; then
-    printError "generateCCP - You are on localhost (STAGE=Dev). HOSTS not set. "
+    printError "generateCCP - You are on localhost (STAGE=dev). HOSTS not set. "
     return
   fi
 

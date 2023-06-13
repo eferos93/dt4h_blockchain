@@ -19,7 +19,7 @@ cmdAll() {
 
 	for (( i = 0; i < IP_ARRAY_LEN; i++ )); do
 		echo -e "Requesting to ${VM_IPS[$i]}..."
-		ssh -i ../athenaKey athena@${VM_IPS[$i]} "cd ~/workspace/deploy >/dev/null || mkdir -p ~/workspace/deploy && cd ~/workspace/deploy && $cmd"
+		ssh -i ${SSH_KEY_PATH} ${VM_USER}@${VM_IPS[$i]} "cd ~/workspace/deploy >/dev/null || mkdir -p ~/workspace/deploy && cd ~/workspace/deploy && $cmd"
 	done
 
 }

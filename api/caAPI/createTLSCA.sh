@@ -24,7 +24,8 @@ createTLSServer() {
 	# mv msp/keystore/key.pem "$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp/keystore/key.pem
 
 	# Import existing and configured fabric-ca-server-config.yaml file
-	CONF_FILE="$FABRIC_CA_CFG_PATH/fca-tls-${ORG_NAME}-config.yaml"
+	# CONF_FILE="$FABRIC_CA_CFG_PATH/fca-tls-${ORG_NAME}-config.yaml"
+	CONF_FILE="$FABRIC_CA_CFG_PATH/base_tlsca_config.yaml"
 	yes | cp "$CONF_FILE" ./fabric-ca-server-config.yaml
 	verifyResult $? "createTLSServer - Failed to cp config"
 

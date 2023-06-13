@@ -38,7 +38,7 @@ make init
 
 ### Execution flow
 
-* The network.sh script executes commands for each organization listed to create a network, channel and deploy a chaincode. The configuration files of each node and CAs are listed in the config folder, while some parameters for each organization are hard coded in util.sh
+* The network.sh script executes commands for each organization listed to create a network, channel and deploy a chaincode. The configuration files of each node and CAs are listed in the config folder, while some parameters for each organization are hard coded in configGlobals.sh
 * The creation of docker-compose files is automated.
 
 ### Folder Structure

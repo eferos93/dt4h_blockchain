@@ -3,7 +3,7 @@
 # Transfer files to all Virtual Machine hosts
 transferAll() {
 	FILE=$1
-	DEST=/home/$VM_USER/workspace/deploy/$2
+	DEST=/home/${VM_USER}/workspace/deploy/$2
 	DELETE=$3
 
 	if [ -z "$FILE" ]; then
@@ -25,7 +25,6 @@ transferAll() {
 	exclude="--exclude smpc-application --exclude bin --exclude organizations --exclude .git"
 	# exclude+=" --exclude application-typescript"
 	exclude+=" --exclude application-typescript/identities"
-	exclude+=" --exclude chaincode/mhmdCC/mhmdCC"
 	exclude+=" --exclude blockchain-explorer"
 	exclude+=" --exclude application-typescript/node_modules --exclude application-typescript/kraken-app/docs --exclude application-typescript/kraken-app/jsdoc"
 	exclude+=" --exclude chaincode-docker-devmode"

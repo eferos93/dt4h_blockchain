@@ -1,5 +1,4 @@
 /*
- * Copyright Athena 2020. All Rights Reserved.
  *
  * Author: Alexandros Tragkas
  */

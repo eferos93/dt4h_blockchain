@@ -40,7 +40,7 @@
 version: 1.4.8
 
 # Server's listening port (default: 7054)
-port: 7054
+port: 8054
 
 # Cross-Origin Resource Sharing (CORS)
 cors:
@@ -86,7 +86,7 @@ tls:
 #############################################################################
 ca:
   # Name of this CA
-  name: ca-tex-tls
+  name: ca-lynkeus-tls
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -129,8 +129,8 @@ registry:
 
   # Contains identity information which is used when LDAP is disabled
   identities:
-     - name: tlsadmin
-       pass: tlsadminpw
+     - name: 
+       pass: 
        type: client
        affiliation: ""
        attrs:
@@ -304,15 +304,15 @@ csr:
      algo: ecdsa
      size: 256
    names:
-      - C: GR
-        ST: tex
+      - C: IT
+        ST: ITST
         L:
         O: Hyperledger
         OU: Fabric
    hosts:
      - localhost
-     - tex.domain.com
-     - tlsca_tex
+     - lynkeus.domain.com
+     - tlsca_lynkeus
    ca:
       expiry: 131400h
       pathlength: 1
@@ -450,7 +450,7 @@ cfg:
 ###############################################################################
 operations:
     # host and port for the operations server
-    listenAddress: 127.0.0.1:9443
+    listenAddress: 127.0.0.1:9444
 
     # TLS configuration for the operations endpoint
     tls:
