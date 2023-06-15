@@ -367,6 +367,7 @@ elif [ "${MODE}" == "remake_certs" ]; then
 	createChannel
 	deployCC
 	exportMSPs
+	sudo rm -rf channel-artifacts
 
 	# pushd blockchain-explorer || exit
 	# docker-compose up -d

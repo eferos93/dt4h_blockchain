@@ -14,8 +14,6 @@ registerOrgAdmin() {
 		exit 1
 	fi
 
-	setParams "${ORG_NAME}"
-	
 	printInfo "registerOrgAdmin - Register the Org Admin $admin of ${ORG_NAME}"
 
 	mkdir -p organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
@@ -51,8 +49,6 @@ enrollOrgAdmin() {
 		exit 1
 	fi
 
-	setParams "${ORG_NAME}"
-	
 	printInfo "enrollOrgAdmin - Enroll the Admin of ${ORG_NAME}"
 
 	# Set MSP/TLS Paths

@@ -41,10 +41,10 @@ startNode() {
 		exit 1
 	fi
 	
-	if [ ! -f ${FABRIC_CFG_PATH}/${NODE_ID}-${ORG_NAME}.yaml ]; then
-		printWarn "startNode - Missing Node configuration: ${NODE_ID}-${ORG_NAME}.yaml"
-		return
-	fi
+	# if [ ! -f ${FABRIC_CFG_PATH}/${NODE_ID}-${ORG_NAME}.yaml ]; then
+	# 	printWarn "startNode - Missing Node configuration: ${NODE_ID}-${ORG_NAME}.yaml"
+	# 	return
+	# fi
 
 	[ ! -d ${DOCKER_HOME} ] && mkdir -p ${DOCKER_HOME}
 	DOCK_COMPOSE_FILE=${DOCKER_HOME}/docker-compose-"${NODE_ID}"-${ORG_NAME}.yaml

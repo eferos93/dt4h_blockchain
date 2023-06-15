@@ -28,12 +28,9 @@ register() {
 
 	printInfo "register - Registering ${ORG_NAME} ${TYPE} $USERNAME"
 
-	setParams "${ORG_NAME}"
-
 	# MSP dirs of the TLS/CA Admin
-	TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/tlsadmin/msp
-	CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-ca/rcaadmin/msp
-	TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/tlsadmin/msp
+	TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp
+	TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${tlsadmin}/msp
 
 	# USERNAME=$(ls ${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.domain.com/peers | wc -l | sed 's/^ *//')	
 	USERNAME="$USERNAME"
@@ -53,28 +50,30 @@ register() {
 		attrs=""
 	fi
 
-	# Register to TLS Server
-	set -x
-	fabric-ca-client register -M "$TLSMSPDIR" -u https://"$tlsendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "$tlscaName" ${attrs}
-	res=$?
-	set +x 
-	# verifyResult "$res" "Registration of peer to TLS Server failed"
-
 	# Register to CA Server
 	set -x
-	fabric-ca-client register -M "$CAMSPDIR" -u https://"$caendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "$caName" ${attrs}
+	fabric-ca-client register -M "$CAMSPDIR" -u https://"$caendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "$CA_NAME" ${attrs}
 	res=$?
 	set +x 
 	# verifyResult "$res" "Registration of peer to CA Server failed"
 
-	# Register to TLS Operations Server
-	set -x
-	fabric-ca-client register -M "$TLSOPSDIR" -u https://"$tlsopsendpoint" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
-	res=$?
-	set +x 
-	# verifyResult "$res" "Registration of peer to TLS Server failed"
+	if [ -z $USERS ]; then
+		# Register to TLS Server
+		set -x
+		fabric-ca-client register -M "$TLSMSPDIR" -u https://"$tlsendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "$tlscaName" ${attrs}
+		res=$?
+		set +x 
+		# verifyResult "$res" "Registration of peer to TLS Server failed"
 
-	printSuccess "register - ${ORG_NAME} ${USERNAME} registered successfully"
+		# Register to TLS Operations Server
+		set -x
+		fabric-ca-client register -M "$TLSOPSDIR" -u https://"$tlsopsendpoint" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
+		res=$?
+		set +x 
+		# verifyResult "$res" "Registration of peer to TLS Server failed"
+
+		printSuccess "register - ${ORG_NAME} ${USERNAME} registered successfully"
+	fi
 }
 
 # registerPeer

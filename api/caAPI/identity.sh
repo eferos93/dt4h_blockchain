@@ -8,8 +8,6 @@ identityList() {
 		exit 1
 	fi
 
-	setParams "${ORG_NAME}"
-	
 	if [ $TLS ]; then
 		set -x
 		fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${tlsendpoint} -M ./tls-ca/${tlsadmin}/msp
@@ -18,7 +16,6 @@ identityList() {
 		verifyResult "$res" "identityList - Failed to get identities"
 	else	
 		if [[ $USERS ]]; then
-			echo "$USERS"
 			set -x
 			fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${caendpoint} -M ./${ORG_NAME}-users-ca/${userscaadmin}/msp/ --caname ${caName}-users
 			res=$?

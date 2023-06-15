@@ -19,7 +19,6 @@ organizations
 smpc-application
 NOTES*
 # ccp*
-configCC.sh
 application
 INFO.md
 logs

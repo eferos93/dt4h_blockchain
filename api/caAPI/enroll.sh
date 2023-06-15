@@ -29,8 +29,6 @@ enroll() {
 
 	# is_user_root
 
-	setParams ${ORG_NAME}
-
 	NODE_HOME=$FABRIC_HOME/organizations/${typeOfOrg}Organizations/${ORG_NAME}.domain.com/users/"$USERNAME"
 
 	if [[ "$TYPE" == "peer" ]]; then

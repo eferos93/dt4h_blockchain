@@ -4,8 +4,6 @@
 enrollCAAdmin() {
 	printInfo "enrollCAAdmin - Enrolling the CA Admins..."
 
-	# User Input
-	setParams "${ORG_NAME}"
 
 	# Enroll the CA Admin to obtain the msp 
 	set -x
@@ -15,7 +13,6 @@ enrollCAAdmin() {
 	verifyResult $res "enrollCAAdmin - Failed to enroll the CA Admin ${caadmin} to the CA Server at ${caendpoint}"
 	
 	echo
-
 	set -x
 	fabric-ca-client enroll -u https://${userscaadmin}:${userscaadminpw}@"${caendpoint}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts localhost,"$caHost" --mspdir "${ORG_NAME}"-users-ca/${userscaadmin}/msp --caname ca-${ORG_NAME}-users
 	set +x

@@ -9,8 +9,6 @@ registerUsersAdmin() {
 
 	printInfo "registerUsersAdmin - Registering the ${ORG_NAME}-users ${type}..."
 
-	setParams "${ORG_NAME}"
-
 	# MSP files of the TLS/CA Admin
 	TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp
 	CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-users-ca/${userscaadmin}/msp
@@ -38,8 +36,6 @@ enrollUsersAdmin() {
 	fi
 
 	printInfo "enrollUsersAdmin - Enrolling ${ORG_NAME}-users ${type}..."
-
-	setParams "${ORG_NAME}"
 
 	USERS_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.domain.com/${ORG_NAME}-users/
 	USER_HOME=$USERS_HOME/users/${user}/

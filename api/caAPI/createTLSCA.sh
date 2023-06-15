@@ -7,7 +7,6 @@ createTLSServer() {
 		exit 1
 	fi
 	
-	setParams "${ORG_NAME}"
 	printInfo "createTLSServer - Creating ${ORG_NAME} TLS Server..."
 
 	# Create the TLS Server directory
@@ -47,9 +46,6 @@ createTLSServer() {
 # When the server is up, enroll the TLS Admin to obtain the key and TLS cert to enable communication 
 createTLSClient() {
 	printInfo "createTLSClient - Creating the TLS Client..."
-
-	# User Input
-	setParams "${ORG_NAME}"
 
 	# Create directory for the client
 	mkdir -p "${FABRIC_CA_CLIENT_HOME}"

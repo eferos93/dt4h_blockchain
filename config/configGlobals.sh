@@ -76,10 +76,10 @@ setPeer() {
   [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.domain.com
 
   # Check config existence
-  if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
-    printWarn "Missing configuration for ${NODE_ID}-${org}."
-    # exit 1
-  fi
+  # if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
+  #   printWarn "Missing configuration for ${NODE_ID}-${org}."
+  #   # exit 1
+  # fi
 
   # Set Env Vars to transact as a specific node
   if [[ "$TYPE" == 'orderer' ]]; then

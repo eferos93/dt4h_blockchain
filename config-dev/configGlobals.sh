@@ -93,7 +93,7 @@ setParams() {
   caendpoint=$caHost:$caPort
   caName=ca-${org}
 
-  caadmin=rootcaadmin
+  caadmin=rcaadmin
   caadminpw=rcaadminpw
   userscaadmin=userscaadmin
   userscaadminpw=userscaadminpw

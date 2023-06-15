@@ -85,10 +85,10 @@ setPeer() {
   [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.domain.com
 
   # Check config existence
-  if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
-    printWarn "Missing configuration for ${nodeID}-${org}."
-    # exit 1
-  fi
+  # if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
+  #   printWarn "Missing configuration for ${nodeID}-${org}."
+  #   # exit 1
+  # fi
 
   # Set Env Vars to transact as a specific node
   if [[ "$TYPE" == 'orderer' ]]; then
@@ -97,7 +97,8 @@ setPeer() {
   else
     # Case Peer
     export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${nodeID}.${org}.domain.com
-    cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
+    export CORE_PEER_LOCALMSPID=${org^}MSP
+    # cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
   fi
 
   export CORE_PEER_TLS_ROOTCERT_FILE=${PEER_HOME}/tls/tlscacerts/ca.crt
@@ -192,9 +193,9 @@ services:
   tlsca_${org}:
     image: hyperledger/fabric-ca:${CA_TAG}
     dns_search: .
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=tlsca-${org}
@@ -245,9 +246,9 @@ services:
   tlscaops_${org}:
     image: hyperledger/fabric-ca:${CA_TAG}
     dns_search: .
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     environment:
       - FABRIC_LOGGING_SPEC=INFO
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
@@ -294,9 +295,9 @@ services:
   ca_${org}:
     image: hyperledger/fabric-ca:${CA_TAG}
     dns_search: .
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     environment:
       - FABRIC_LOGGING_SPEC=INFO
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
@@ -357,15 +358,32 @@ services:
     container_name: ${ordererId}.${org}.domain.com
     image: hyperledger/fabric-orderer:${FABRIC_TAG}
     dns_search: .
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     environment:
       #### GENERAL
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
       #### CORE ORDERER
       - ORDERER_GENERAL_LISTENPORT=${ordererPort}
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
+      - ORDERER_GENERAL_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_GENERAL_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
+      - ORDERER_GENERAL_CLUSTER_LISTENPORT=${CLUSTER_PORT}
+      - ORDERER_GENERAL_CLUSTER_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_CLUSTER_SERVERCERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
+      - ORDERER_GENERAL_CLUSTER_SERVERPRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_LOCALMSPID=${org^}MSP
+      
       #### FOR CERT ROTATION
       # - ORDERER_GENERAL_TLS_TLSHANDSHAKETIMESHIFT=15h
       # - ORDERER_GENERAL_CLUSTER_TLSHANDSHAKETIMESHIFT=15h
@@ -375,13 +393,14 @@ services:
       - ORDERER_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/orderer/tlsops/signcerts/cert.pem
       - ORDERER_OPERATIONS_TLS_PRIVATEKEY=/var/hyperledger/orderer/tlsops/keystore/key.pem
       - ORDERER_OPERATIONS_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tlsops/tlscacerts/ca.crt
+      - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=true
       - ORDERER_METRICS_PROVIDER=prometheus
       ${ops_listenaddress}
       ${cl_lAddress}
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
-      - ${FABRIC_HOME}/config/${ordererId}-${org}.yaml:/etc/hyperledger/fabric/orderer.yaml
+      - ${FABRIC_HOME}/config/orderer.yaml:/etc/hyperledger/fabric/orderer.yaml
       - ${FABRIC_HOME}/system-genesis-block/genesis.block:/var/hyperledger/orderer/genesis.block
       - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/msp:/var/hyperledger/orderer/msp
       - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tls:/var/hyperledger/orderer/tls
@@ -434,14 +453,15 @@ services:
     container_name: ${peerId}.${org}.domain.com
     image: hyperledger/fabric-peer:${FABRIC_TAG}
     dns_search: .
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     environment:
       #### GENERAL CONFIG
       - grpc=debug:info
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_${STAGE}
       #### COUCHDB CONFIG 
@@ -452,8 +472,9 @@ services:
       - CORE_PEER_ID=${peerId}.${org}.domain.com
       - CORE_PEER_LISTENADDRESS=0.0.0.0:${peerPort}
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:${chaincodePort}
-      - CORE_PEER_ADDRESS=${peerId}.${org}.domain.com:${peerPort}
       - CORE_PEER_CHAINCODEADDRESS=${peerId}.${org}.domain.com:${chaincodePort}
+      - CORE_PEER_ADDRESS=${peerId}.${org}.domain.com:${peerPort}
+      - CORE_PEER_LOCALMSPID=${org^}MSP
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerId}.${org}.domain.com:${peerPort}
       - CORE_PEER_GOSSIP_BOOTSTRAP=${peerId}.${org}.domain.com:${peerPort}
       #### OPERATIONS CONFIG
@@ -488,9 +509,9 @@ echo  "
     container_name: ${peerId}cli.${org}
     image: hyperledger/fabric-tools:${FABRIC_TAG}
     dns_search: .
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     tty: true
     stdin_open: true
     environment:
@@ -557,9 +578,9 @@ services:
   ${peerId}couchDB${org}:
     container_name: ${peerId}couchDB${org}
     image: couchdb:3.1
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     environment: 
       - COUCHDB_USER=admin
       - COUCHDB_PASSWORD=adminpw

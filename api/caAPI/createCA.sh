@@ -3,8 +3,6 @@
 # Create and Initialize the CA Server
 createCAServer() {
 	
-	setParams "${ORG_NAME}"
-
 	printInfo "createCAServer - Creating ${ORG_NAME} CA Servers..."
 
 	if [ -d "$FABRIC_CA_SERVER_HOME" ]; then
@@ -60,9 +58,6 @@ createCAServer() {
 # Enroll the CA Admin to the CA Server
 enrollCAAdmin() {
 	printInfo "enrollCAAdmin - Enrolling the CA Admins..."
-
-	# User Input
-	setParams "${ORG_NAME}"
 
 	# Enroll the CA Admin to obtain the msp 
 	set -x

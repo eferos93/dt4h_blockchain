@@ -7,14 +7,7 @@ createTLSOpsServer() {
 		exit 1
 	fi
 	
-	setParams "${ORG_NAME}"
 	printInfo "createTLSOpsServer - Creating ${ORG_NAME} TLS Operations Server..."
-
-	# User Input
-
-	# Read user input
-	# read -p "Enter TLS Admin username:" tlsadmin
-	# read -s -p "Enter TLS Admin password:" tlsadminpw
 
 	# Create the TLS Server directory
 	mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
@@ -48,9 +41,6 @@ createTLSOpsServer() {
 createTLSOpsClient() {
 	printInfo "createTLSOpsClient - Creating the TLS Client..."
 
-	# User Input
-	setParams "${ORG_NAME}"
-
 	# Create directory for the client
 	mkdir -p "$FABRIC_CA_PATH"/"${ORG_NAME}"/fabric-ca-client-"${ORG_NAME}"
 	cd "$FABRIC_CA_CLIENT_HOME" || exit
@@ -61,7 +51,6 @@ createTLSOpsClient() {
 	# Directory to store the certificates that are issued upon enrolling 
 	# the boostrap identity 
 	mkdir tlsops-ca
-	
 	mkdir tlsops-root-cert
 
 	# Copy tls-cert.pem to the client folder 

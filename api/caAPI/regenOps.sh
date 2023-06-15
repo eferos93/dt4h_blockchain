@@ -60,8 +60,6 @@ enrollClientOps() {
 
 	printInfo "enrollClientOps - Enrolling ${ORG_NAME} ${TYPE} $USERNAME..."
 
-	setParams "$ORG_NAME"
-	
 	NODE_HOME=$FABRIC_HOME/organizations/"$typeOfOrg"Organizations/${ORG_NAME}.domain.com/users/"$USERNAME"
 	TLSOPSDIR=$NODE_HOME/tlsops
 
