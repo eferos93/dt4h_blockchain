@@ -10,8 +10,8 @@ registerUsersAdmin() {
 	printInfo "registerUsersAdmin - Registering the ${ORG_NAME}-users ${type}..."
 
 	# MSP files of the TLS/CA Admin
-	TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp
-	CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-users-ca/${userscaadmin}/msp
+	TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp
+	CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-users-ca/${USERSCA_ADMIN}/msp
 	
 	if [ "$type" == "admin" ]; then
 		attrs="--id.attrs hf.Registrar.Roles=client --id.attrs hf.Revoker=true"
@@ -20,7 +20,7 @@ registerUsersAdmin() {
 	fi
 	
 	set -x
-	fabric-ca-client register -M "$CAMSPDIR" -u https://"$caendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$type" --id.name "$user" --id.secret "$userpw"  --caname "$caName"-users ${attrs}
+	fabric-ca-client register -M "$CAMSPDIR" -u https://"${CA_ENDPOINT}" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$type" --id.name "$user" --id.secret "$userpw"  --caname "$caName"-users ${attrs}
 	res=$?
 	set +x
 
@@ -44,7 +44,7 @@ enrollUsersAdmin() {
 
 	# Enroll to CA Server
 	set -x 
-	fabric-ca-client enroll -M "$CAMSPDIR" -u https://$user:$userpw@"$caendpoint" --caname "$caName"-users --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"${ORG_NAME}".domain.com
+	fabric-ca-client enroll -M "$CAMSPDIR" -u https://$user:$userpw@"${CA_ENDPOINT}" --caname "${CA_NAME}"-users --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"${ORG_NAME}".domain.com
 	res=$?
 	set +x
 	verifyResult "$res" "enrollUsersAdmin - Failed to enroll ${type} to CA Server"
@@ -52,7 +52,7 @@ enrollUsersAdmin() {
 	mv "$CAMSPDIR"/keystore/* "$CAMSPDIR"/keystore/key.pem
 	mv "$CAMSPDIR"/cacerts/* "$CAMSPDIR"/cacerts/cacert.pem
 
-	# cp "$FABRIC_CA_PATH"/${ORG_NAME}/fabric-ca-client-${ORG_NAME}/${ORG_NAME}-users-ca/${userscaadmin}/msp/cacerts/*  "$CAMSPDIR"/cacerts/cacert-users.pem
+	# cp "$FABRIC_CA_PATH"/${ORG_NAME}/fabric-ca-client-${ORG_NAME}/${ORG_NAME}-users-ca/${USERS_CAADMIN}/msp/cacerts/*  "$CAMSPDIR"/cacerts/cacert-users.pem
 
 	createNodeOUs "${ORG_NAME}" "$CAMSPDIR"
 

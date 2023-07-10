@@ -31,7 +31,7 @@ setup() {
 	./downloadFabric.sh -s
 	docker pull hyperledger/fabric-ca:${CA_TAG}
 	if [ $? -ne 0 ]; then
-        printError 'Exiting due to setup failure...'
+        printError 'Skipping due to download failure...'
 		return -1
     fi
 

@@ -129,6 +129,7 @@ setParams() {
 
   export TLSOPS_ENDPOINT=$tlsopsendpoint
   export TLSOPS_CANAME=$tlsopscaName
+  export TLSOPS_PORT=$tlsOpsPort
 
   # Admin User
   user=admin0

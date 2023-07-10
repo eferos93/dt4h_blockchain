@@ -22,13 +22,13 @@ registerOrgAdmin() {
 	# read -s -p "Enter admin password:" adminpw
 
 	set -x
-	fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/tls-ca/${tlsadmin}/msp -u https://$tlsendpoint --id.name $admin --id.secret $adminpw --id.type admin --caname tlsca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
+	fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/tls-ca/${TLS_ADMIN}/msp -u https://${TLS_ENDPOINT} --id.name $admin --id.secret $adminpw --id.type admin --caname tlsca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
 	res=$?
 	set +x
 	verifyResult $res "registerOrgAdmin - Failed to register Org Admin $admin to TLS Server"
 	
 	set -x
-	fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/${ORG_NAME}-ca/${caadmin}/msp -u https://$caendpoint --id.name $admin --id.secret $adminpw --id.type admin --caname ca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
+	fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/${ORG_NAME}-ca/${CA_ADMIN}/msp -u https://${CA_ENDPOINT} --id.name $admin --id.secret $adminpw --id.type admin --caname ca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
 	res=$?
 	set +x
 	verifyResult $res "registerOrgAdmin - Failed to register Org Admin $admin to CA Server"
@@ -72,7 +72,7 @@ enrollOrgAdmin() {
 		# Move the old msp to oldmsp folder
 		[ -d "${TLSMSPDIR}" ] && mv "${TLSMSPDIR}" "$OLDMSPSDIR"/$msp_no
 		set -x
-		fabric-ca-client enroll --caname $tlscaName --mspdir ${TLSMSPDIR} -u https://$admin:$adminpw@$tlsendpoint --tls.certfiles $TLS_ROOTCERT_PATH --enrollment.profile tls
+		fabric-ca-client enroll --caname ${TLS_CANAME} --mspdir ${TLSMSPDIR} -u https://$admin:$adminpw@${TLS_ENDPOINT} --tls.certfiles $TLS_ROOTCERT_PATH --enrollment.profile tls
 		res=$?
 		set +x
 		verifyResult $res "enrollOrgAdmin - Failed to enroll ${ORG_NAME} Org Admin to TLS Server"
@@ -84,7 +84,7 @@ enrollOrgAdmin() {
 	if [ -z "$CA_TYPE" ] || [ "$CA_TYPE" == 'ca' ]; then
 		[ -d "$CAMSPDIR" ] && mv "$CAMSPDIR" "$OLDMSPSDIR"/$msp_no
 		set -x
-		fabric-ca-client enroll --caname $caName --mspdir ${CAMSPDIR} -u https://$admin:$adminpw@$caendpoint --tls.certfiles $TLS_ROOTCERT_PATH 
+		fabric-ca-client enroll --caname ${CA_NAME} --mspdir ${CAMSPDIR} -u https://$admin:$adminpw@${CA_ENDPOINT} --tls.certfiles $TLS_ROOTCERT_PATH 
 		res=$?
 		set +x
 		verifyResult $res "enrollOrgAdmin - Failed to enroll ${ORG_NAME} Org Admin to CA Server"

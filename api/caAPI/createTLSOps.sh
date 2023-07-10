@@ -12,9 +12,9 @@ createTLSOpsServer() {
 	# Create the TLS Server directory
 	mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
 
-	printInfo "createTLSOpsServer - Initializing the server with bootstrap identity ${tlsadmin}"
+	printInfo "createTLSOpsServer - Initializing the server with bootstrap identity ${TLS_ADMIN}"
 	
-	fabric-ca-server init -b ${tlsadmin}:${tlsadminpw}
+	fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW}
 	yes | mv msp/keystore/*sk msp/keystore/rootkey.pem
 
 	# Import existing and configured fabric-ca-server-config.yaml file
@@ -57,16 +57,16 @@ createTLSOpsClient() {
 	cp "$FABRIC_CA_SERVER_HOME"/ca-cert.pem "$FABRIC_CA_CLIENT_HOME"/tlsops-root-cert/tls-ca-cert.pem
 
 	# Enroll the TLS CA admin user to issue keys and certs
-	printInfo "createTLSOpsClient - Enrolling the TLS CA Operations Admin: ${tlsadmin}"
+	printInfo "createTLSOpsClient - Enrolling the TLS CA Operations Admin: ${TLS_ADMIN}"
 	set -x
-	fabric-ca-client enroll -u https://${tlsadmin}:${tlsadminpw}@$tlsHost:$tlsOpsPort --csr.hosts $tlsHost --tls.certfiles tlsops-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tlsops-ca/${tlsadmin}/msp 
+	fabric-ca-client enroll -u https://${TLS_ADMIN}:${TLS_ADMINPW}@${TLS_HOST}:${TLSOPS_PORT} --csr.hosts ${TLS_HOST} --tls.certfiles tlsops-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tlsops-ca/${TLS_ADMIN}/msp 
 	res=$?
 	set +x
-	verifyResult $res "createTLSOpsClient - Failed to enroll identity: ${tlsadmin}"
+	verifyResult $res "createTLSOpsClient - Failed to enroll identity: ${TLS_ADMIN}"
 
-	mv "$FABRIC_CA_CLIENT_HOME"/tlsops-ca/${tlsadmin}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tlsops-ca/${tlsadmin}/msp/keystore/key.pem
+	mv "$FABRIC_CA_CLIENT_HOME"/tlsops-ca/${TLS_ADMIN}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tlsops-ca/${TLS_ADMIN}/msp/keystore/key.pem
 	cd "$FABRIC_HOME" || exit
-	printSuccess "createTLSOpsClient - Operations TLS Client Admin ${tlsadmin} enrolled successfully!"
+	printSuccess "createTLSOpsClient - Operations TLS Client Admin ${TLS_ADMIN} enrolled successfully!"
 }
 
 # # Register and Enroll the CA Admin via the TLS CA Admin to issue keys and certs to the TLS Server
@@ -83,7 +83,7 @@ createTLSOpsClient() {
 # 	# Register CA Admin to the TLS CA via the TLS CA Admin
 # 	cd "$FABRIC_CA_CLIENT_HOME" || exit
 # 	set -x
-# 	fabric-ca-client register --id.name ${caadmin} --id.secret ${caadminpw} -u https://"${tlsendpoint}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --mspdir tlsops-ca/${tlsadmin}/msp
+# 	fabric-ca-client register --id.name ${caadmin} --id.secret ${caadminpw} -u https://"${TLS_ENDPOINT}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --mspdir tlsops-ca/${TLS_ADMIN}/msp
 # 	res=$?
 # 	set +x
 # 	verifyResult $res "Failed to register the CA Admin to the TLS Server" 
@@ -92,7 +92,7 @@ createTLSOpsClient() {
 # 	# Enroll CA Admin to obtain keys and certificates
 # 	printInfo "Enrolling the CA Admin..."
 # 	set -x
-# 	fabric-ca-client enroll -u https://${caadmin}:${caadminpw}@"${tlsendpoint}" --csr.hosts ${tlsHost} --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tlsops-ca/${caadmin}/msp 
+# 	fabric-ca-client enroll -u https://${caadmin}:${caadminpw}@"${TLS_ENDPOINT}" --csr.hosts ${tlsHost} --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tlsops-ca/${caadmin}/msp 
 # 	set +x
 
 # 	# Rename the secret key to key.pem for easier manipulation

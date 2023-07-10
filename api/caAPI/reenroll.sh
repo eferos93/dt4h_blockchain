@@ -71,7 +71,7 @@ reenroll() {
 		[ -d "$TLSMSPDIR" ] && cp -r "$TLSMSPDIR" "$OLDMSPSDIR"/$msp_no
 		# exit
 		set -x
-		fabric-ca-client reenroll -d ${REUSE_KEY} -M "$TLSMSPDIR" -u https://"$tlsendpoint" --enrollment.profile tls --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."${ORG_NAME}".domain.com,tlsca_"${ORG_NAME}"
+		fabric-ca-client reenroll -d ${REUSE_KEY} -M "$TLSMSPDIR" -u https://"${TLS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."${ORG_NAME}".domain.com,tlsca_"${ORG_NAME}"
 		res=$?
 		set +x
 		verifyResult "$res" "reenroll - Failed to enroll $TYPE $USERNAME to TLS Server"

@@ -10,19 +10,19 @@ identityList() {
 
 	if [ $TLS ]; then
 		set -x
-		fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${tlsendpoint} -M ./tls-ca/${tlsadmin}/msp
+		fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${TLS_ENDPOINT} -M ./tls-ca/${TLS_ADMIN}/msp
 		res=$?
 		set +x
 		verifyResult "$res" "identityList - Failed to get identities"
 	else	
 		if [[ $USERS ]]; then
 			set -x
-			fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${caendpoint} -M ./${ORG_NAME}-users-ca/${userscaadmin}/msp/ --caname ${caName}-users
+			fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${CA_ENDPOINT} -M ./${ORG_NAME}-users-ca/${USERSCA_ADMIN}/msp/ --CA_NAME ${CA_NAME}-users
 			res=$?
 			set +x
 		else 
 			set -x
-			fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${caendpoint} -M ./${ORG_NAME}-ca/${caadmin}/msp/ 
+			fabric-ca-client identity list --tls.certfiles ./tls-root-cert/tls-ca-cert.pem -u https://${CA_ENDPOINT} -M ./${ORG_NAME}-ca/${CA_ADMIN}/msp/ 
 			res=$?
 			set +x
 		fi
@@ -30,4 +30,4 @@ identityList() {
 		verifyResult "$res" "identityList - Failed to get identities"
 	fi
 	
-}
+}t

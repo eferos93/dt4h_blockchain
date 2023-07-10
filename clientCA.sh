@@ -147,8 +147,8 @@ export FABRIC_CA_CLIENT_HOME=${FABRIC_CA_PATH}/${ORG_NAME}/fabric-ca-client-${OR
 export TLS_ROOTCERT_PATH=${FABRIC_CA_CLIENT_HOME}/tls-root-cert/tls-ca-cert.pem
 
 [ -z $USERS ] && export CA_NAME=ca-${ORG_NAME} || export CA_NAME=ca-${ORG_NAME}-users
-[ -z $CAMSPDIR ] && [ ! -z $USERS ] && export CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-users-ca/${userscaadmin}/msp
-[ -z $CAMSPDIR ] && [ -z $USERS ] && export CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-ca/${caadmin}/msp
+[ -z $CAMSPDIR ] && [ ! -z $USERS ] && export CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-users-ca/${USERSCA_ADMIN}/msp
+[ -z $CAMSPDIR ] && [ -z $USERS ] && export CAMSPDIR="$FABRIC_CA_CLIENT_HOME"/${ORG_NAME}-ca/${CA_ADMIN}/msp
 
 # set -x
 eval $cmd

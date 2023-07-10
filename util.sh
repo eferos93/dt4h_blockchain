@@ -230,8 +230,8 @@ services:
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
       - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${tlsadmin}
-      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${tlsadminpw}
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${TLS_ADMIN}
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${TLS_ADMINPW}
       - FABRIC_CA_SERVER_CSR_HOSTS=tlsca_${org},${org}.domain.com,${tlsHost}
       - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CSR_NAMES_0_OU=${org}-tls
@@ -310,7 +310,7 @@ createDockerCA() {
 ops_listenaddress="- FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:7002"
 [ ${STAGE} == 'dev' ] && ops_listenaddress="# ${ops_listenaddress}"
 
-  command='fabric-ca-server start -b ${caadmin}:${caadminpw} -d'
+  command='fabric-ca-server start -b ${CA_ADMIN}:${CA_ADMINPW} -d'
 
   # Check if org does not contain 'orderer'
   if [[ "$1" != *"orderer"* ]]; then
@@ -339,10 +339,10 @@ services:
       - FABRIC_LOGGING_SPEC=INFO
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca-${org}
-      - FABRIC_CA_SERVER_PORT=${caPort}
+      - FABRIC_CA_SERVER_PORT=${CA_PORT}
       - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${caadmin}
-      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${caadminpw}
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${CA_ADMIN}
+      - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${CA_ADMINPW}
       - FABRIC_CA_SERVER_CSR_HOSTS=ca_${org},${org}.domain.com,${caHost}
       - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
@@ -350,7 +350,7 @@ services:
       - FABRIC_CA_SERVER_AFFILIATIONS_${org}=MEMBERS,USERS
       ${ops_listenaddress}
     ports:
-      - ${caPort}:${caPort}
+      - ${CA_PORT}:${CA_PORT}
     extra_hosts:
       - \"ca_${org}:127.0.0.1\"
     command: sh -c '${command}'

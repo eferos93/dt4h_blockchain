@@ -1,28 +1,28 @@
 #!/bin/bash
 
 # Enroll the CA Admin to the CA Server
-enrollCAAdmin() {
-	printInfo "enrollCAAdmin - Enrolling the CA Admins..."
+enrollCA_ADMIN() {
+	printInfo "enrollCA_ADMIN - Enrolling the CA Admins..."
 
 
 	# Enroll the CA Admin to obtain the msp 
 	set -x
-	fabric-ca-client enroll -u https://${caadmin}:${caadminpw}@"${caendpoint}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts localhost,"$caHost" --mspdir "${ORG_NAME}"-ca/${caadmin}/msp --caname ca-${ORG_NAME}
+	fabric-ca-client enroll -u https://${CA_ADMIN}:${CA_ADMINPW}@"${CA_ENDPOINT}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts localhost,"$caHost" --mspdir "${ORG_NAME}"-ca/${CA_ADMIN}/msp --caname ca-${ORG_NAME}
 	set +x
 	res=$?
-	verifyResult $res "enrollCAAdmin - Failed to enroll the CA Admin ${caadmin} to the CA Server at ${caendpoint}"
+	verifyResult $res "enrollCA_ADMIN - Failed to enroll the CA Admin ${CA_ADMIN} to the CA Server at ${CA_ENDPOINT}"
 	
 	echo
 	set -x
-	fabric-ca-client enroll -u https://${userscaadmin}:${userscaadminpw}@"${caendpoint}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts localhost,"$caHost" --mspdir "${ORG_NAME}"-users-ca/${userscaadmin}/msp --caname ca-${ORG_NAME}-users
+	fabric-ca-client enroll -u https://${USERSCA_ADMIN}:${USERSCA_ADMINPW}@"${CA_ENDPOINT}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --csr.hosts localhost,"$caHost" --mspdir "${ORG_NAME}"-users-ca/${USERSCA_ADMIN}/msp --caname ca-${ORG_NAME}-users
 	set +x
 	res=$?
-	verifyResult $res "enrollCAAdmin - Failed to enroll the Users CA Admin ${userscaadmin} to the CA Server at ${caendpoint}"
+	verifyResult $res "enrollCA_ADMIN - Failed to enroll the Users CA Admin ${USERSCA_ADMIN} to the CA Server at ${CA_ENDPOINT}"
 
 	echo
-	mv "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-ca/${caadmin}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-ca/${caadmin}/msp/keystore/key.pem
-	mv "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-users-ca/${userscaadmin}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-users-ca/${userscaadmin}/msp/keystore/key.pem
+	mv "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-ca/${CA_ADMIN}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-ca/${CA_ADMIN}/msp/keystore/key.pem
+	mv "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-users-ca/${USERSCA_ADMIN}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/"${ORG_NAME}"-users-ca/${USERSCA_ADMIN}/msp/keystore/key.pem
 	res=$?
-	verifyResult $res "enrollCAAdmin - Failed to rename the CA Admin files"
-	printSuccess "enrollCAAdmin - CA Admin: ${caadmin} (UsersCA Admin): ${userscaadmin} enrolled successfully!"
+	verifyResult $res "enrollCA_ADMIN - Failed to rename the CA Admin files"
+	printSuccess "enrollCA_ADMIN - CA Admin: ${CA_ADMIN} (UsersCA Admin): ${USERSCA_ADMIN} enrolled successfully!"
 }

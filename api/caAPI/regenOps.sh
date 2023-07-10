@@ -22,7 +22,7 @@ registerClientOps() {
 	
 	# Register to TLS Operations Server
 	set -x
-	fabric-ca-client register -M "$TLSOPSDIR" -u https://"$tlsopsendpoint" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
+	fabric-ca-client register -M "$TLSOPSDIR" -u https://"${TLSOPS_ENDPOINT}" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
 	res=$?
 	set +x 
 	# verifyResult "$res" "Registration of peer to TLS Server failed"
@@ -65,7 +65,7 @@ enrollClientOps() {
 
 	# TLS Operations Certs
 	set -x 
-	fabric-ca-client enroll -M "$TLSOPSDIR" -u https://"$USERNAME":"$SECRET"@"$tlsopsendpoint" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."$ORG_NAME".domain.com
+	fabric-ca-client enroll -M "${TLSOPSDIR}" -u https://"$USERNAME":"$SECRET"@"${TLSOPS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."$ORG_NAME".domain.com
 	res=$?
 	set +x
 	verifyResult "$res" "enrollClientOps - Failed to enroll $TYPE to TLS CA Operations Server"
