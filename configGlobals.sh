@@ -3,7 +3,7 @@
 export STAGE=dev
 
 # Profile used from configtx.yaml
-export CHANNEL_PROFILE=AthLynkChannel
+export CHANNEL_PROFILE=AgoraChannel
 
 # Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium
@@ -11,8 +11,8 @@ export CONSORTIUM_NAME=BasicConsortium
 # Set ORDERER global variables 
 
 # -- USER INPUT - Set Organization Names
-export ORG_1=tex
-export ORG_2=lynkeus
+export ORG_1=agora
+export ORG_2=athena
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}orderer.domain.com
@@ -47,6 +47,7 @@ setPorts() {
   elif [ "$org" == "${ORG_3}" ]; then
     PORT_MAP[peer0]=10070
   fi
+
 }
 
 
@@ -87,16 +88,27 @@ setParams() {
     tlsPort=10054
     peerPort=10070
   fi
+
   
   # CA 
   caHost=localhost
-  caendpoint=$caHost:$caPort
   caName=ca-${org}
+  caendpoint=$caHost:$caPort
+
+  export CA_PORT=$caPort
+  export CA_HOST=$caHost
+  export CA_ENDPOINT=$caendpoint
+  export CA_NAME=$caName
 
   caadmin=rcaadmin
   caadminpw=rcaadminpw
   userscaadmin=userscaadmin
   userscaadminpw=userscaadminpw
+
+  export CA_ADMIN=$caadmin
+  export CA_ADMINPW=$caadminpw
+  export USERSCA_ADMIN=$userscaadmin
+  export USERSCA_ADMINPW=$userscaadminpw
 
   # TLS 
   tlsadmin=tlsadmin
@@ -105,9 +117,18 @@ setParams() {
   tlsendpoint=${tlsHost}:${tlsPort}
   tlscaName=tlsca-${org}
 
+  export TLS_ADMIN=$tlsadmin
+  export TLS_ADMINPW=$tlsadminpw
+  export TLS_HOST=$tlsHost
+  export TLS_ENDPOINT=$tlsendpoint
+  export TLS_CANAME=$tlscaName
+
   # TLS Ops
   tlsopsendpoint=${tlsHost}:${tlsOpsPort}
   tlsopscaName=tlsopsca-${org}
+
+  export TLSOPS_ENDPOINT=$tlsopsendpoint
+  export TLSOPS_CANAME=$tlsopscaName
 
   # Admin User
   user=admin0

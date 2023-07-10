@@ -375,7 +375,7 @@ async function main() {
 			else if (mode === 'printcert') {
 				console.log(JSON.parse(fs.readFileSync(`wallet/${args[1]}.id`)).credentials.certificate);
 			}
-			else if (mode === 'gethistoryofproduct') {
+			else if (mode === 'gethistoryofproducttxs') {
 				let productID = args[1];
 
 				let transaction = {fcn: 'AgreementContract:GetTransactionHistoryOfProduct', args: [productID]};

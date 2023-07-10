@@ -1,5 +1,18 @@
 #!/bin/bash
 
+. api/peerAPI/channelOSNJoin.sh
+
+joinOrderers() {
+	
+	for org in $ORDERER_ORGS; do
+		setPorts "$org"
+		for orderer in $ORDERER_IDS; do
+			./peer.sh osnjoin -t orderer -n ${orderer}.$org.domain.com -p "${PORT_MAP[${orderer}]}"
+		done
+	done
+	
+}
+
 createChannelA() {
 
 	if [ -z "$1" ]; then 
@@ -10,9 +23,12 @@ createChannelA() {
 	orgs=$1
 	mainOrg=$(echo $orgs | head -n1 | cut -d " " -f1)
 
+	joinOrderers
+	sleep 10
+
 	set -x
 	./peer.sh createchanneltx -c ${CHANNEL_NAME} -P ${CHANNEL_PROFILE}
-	./peer.sh createchannel -n peer0.lynkeus.domain.com -c ${CHANNEL_NAME} -A
+	./peer.sh createchannel -n peer0.agora.domain.com -c ${CHANNEL_NAME} -A
 	set +x
 	for org in $orgs; do
 		ORG_MSP="${org^}"MSP

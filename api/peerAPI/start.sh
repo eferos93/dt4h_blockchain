@@ -19,7 +19,7 @@ startPeer() {
 startOrderer() {
 	# Create docker compose file for orderer
 	createDockerOrderer "${ORG_NAME}" "${NODE_ID}" "${NODE_PORT}"
-	
+
 	# Start the orderer
 	docker-compose -f "${DOCK_COMPOSE_FILE}" up -d 2>&1
 	sleep 3

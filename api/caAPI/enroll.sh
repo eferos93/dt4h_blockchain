@@ -72,7 +72,7 @@ enroll() {
 		# Move the old msp to oldmsp folder
 		[ -d "$TLSMSPDIR" ] && mv "$TLSMSPDIR" "$OLDMSPSDIR"/$msp_no
 		set -x
-		fabric-ca-client enroll -d -M "$TLSMSPDIR" -u https://"$USERNAME":"$SECRET"@"$tlsendpoint" --enrollment.profile tls --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
+		fabric-ca-client enroll -d -M "$TLSMSPDIR" -u https://"$USERNAME":"$SECRET"@"${TLS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
 		res=$?
 		set +x
 		verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to TLS Server"
@@ -84,7 +84,7 @@ enroll() {
 	if [ -z "$CA_TYPE" ] || [ "$CA_TYPE" == 'ca' ]; then
 		[ -d "$CAMSPDIR" ] && mv "$CAMSPDIR" "$OLDMSPSDIR"/$msp_no
 		set -x 
-		fabric-ca-client enroll -d -M "$CAMSPDIR" -u https://"$USERNAME":"$SECRET"@"$caendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
+		fabric-ca-client enroll -d -M "$CAMSPDIR" -u https://"$USERNAME":"$SECRET"@"${CA_ENDPOINT}" --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
 		res=$?
 		set +x
 		verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to CA Server"
@@ -97,7 +97,7 @@ enroll() {
 	if [ -z "$CA_TYPE" ] || [ "$CA_TYPE" == 'tlsops' ]; then
 		[ -d "$TLSOPSDIR" ] && mv "$TLSOPSDIR" "$OLDMSPSDIR"/$msp_no
 		set -x 
-		fabric-ca-client enroll -M "$TLSOPSDIR" -u https://"$USERNAME":"$SECRET"@"$tlsopsendpoint" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
+		fabric-ca-client enroll -M "$TLSOPSDIR" -u https://"$USERNAME":"$SECRET"@"${TLSOPS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
 		res=$?
 		set +x
 		verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to TLS CA Operations Server"

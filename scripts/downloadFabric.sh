@@ -12,6 +12,8 @@ CA_VERSION=${CA_TAG}
 ARCH=$(echo "$(uname -s|tr '[:upper:]' '[:lower:]'|sed 's/mingw64_nt.*/windows/')-$(uname -m | sed 's/x86_64/amd64/g')")
 MARCH=$(uname -m)
 
+. util.sh
+
 printHelp() {
     echo "Usage: downloadFabric.sh [version [ca_version]] [options]"
     echo
@@ -78,7 +80,7 @@ download() {
     echo "===> Downloading: " "${URL}"
     wget --no-check-certificate "${URL}" || rc=$?
     if [ -n "$rc" ]; then
-        echo "==> There was an error downloading the binary file."
+        printError "==> There was an error downloading the binary file."
         return 22
     else
         echo "==> Done."
@@ -92,16 +94,16 @@ pullBinaries() {
         echo
         echo "------> ${FABRIC_TAG} platform specific fabric binary is not available to download <----"
         echo
-        # #exit
+        return -1
     fi
 
     echo "===> Downloading version ${CA_TAG} platform specific fabric-ca-client binary"
     download "${CA_BINARY_FILE}" "https://github.com/hyperledger/fabric-ca/releases/download/v${CA_VERSION}/${CA_BINARY_FILE}"
     if [ $? -eq 22 ]; then
         echo
-        echo "------> ${CA_TAG} fabric-ca-client binary is not available to download  (Available from 1.1.0-rc1) <----"
+        printError "------> ${CA_TAG} fabric-ca-client binary is not available to download  (Available from 1.1.0-rc1) <----"
         echo
-        #exit
+        return -1
     fi
 }
 
@@ -126,8 +128,9 @@ pullDockerImages() {
         docker images | grep hyperledger
     else
         echo "========================================================="
-        echo "Docker not installed, bypassing download of Fabric images"
+        printError "Docker not installed, bypassing download of Fabric images"
         echo "========================================================="
+        return -1
     fi
 }
 
@@ -178,6 +181,7 @@ while getopts "h?dsb" opt; do
     esac
 done
 
+error=0
 if [ "$SAMPLES" == "true" ]; then
     echo
     echo "Clone hyperledger/fabric-samples repo"
@@ -189,10 +193,18 @@ if [ "$BINARIES" == "true" ]; then
     echo "Pull Hyperledger Fabric binaries"
     echo
     pullBinaries
+    if [ $? -eq -1 ]; then
+        error=1
+    fi
 fi
 if [ "$DOCKER" == "true" ]; then
     echo
     echo "Pull Hyperledger Fabric docker images"
     echo
     pullDockerImages
+    if [ $? -eq -1 ]; then
+        error=1
+    fi
 fi
+
+return error

@@ -123,7 +123,7 @@ createConsortium() {
 	fi
 
 	set -x
-	configtxgen -profile OrdererGenesis -channelID system-channel -outputBlock ./system-genesis-block/genesis.block
+	configtxgen -profile ${CHANNEL_PROFILE} -channelID ${CHANNEL_NAME} -outputBlock ./system-genesis-block/${CHANNEL_NAME}.block
 	res=$?
 	set +x
 

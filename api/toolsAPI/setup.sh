@@ -24,14 +24,16 @@ setup() {
 		./goinstall.sh
 		source ~/.bashrc
 	else
-		echo "GO already installed"
-		echo "Skipping..."
+		printSuccess "GO already installed. Skipping..."
 	fi
 
 	# Install FABRIC binaries and Images
 	./downloadFabric.sh -s
 	docker pull hyperledger/fabric-ca:${CA_TAG}
-	sleep 100
+	if [ $? -ne 0 ]; then
+        printError 'Exiting due to setup failure...'
+		return -1
+    fi
 
 	rm -rf ${FABRIC_HOME}/bin
 
@@ -58,8 +60,7 @@ setup() {
 		rm -rf bin config
 	fi
 
-	# rm ${BINARY_FILE} ${CA_BINARY_FILE}
 	popd
-
 	chmod -R u+x bin
+	printInfo 'Downloaded Fabric successfully!'
 }

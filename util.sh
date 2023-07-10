@@ -26,7 +26,7 @@ export COMPOSE_IGNORE_ORPHANS=True
 
 # Fabric Version of binaries
 export CA_TAG=1.5.1
-export FABRIC_TAG=2.2.5
+export FABRIC_TAG=2.5.3
 
 # Colours
 RED='\033[0;31m'
@@ -79,6 +79,7 @@ setPeer() {
     nodeID=peer0
   fi
 
+  echo $org
   setPorts "$org"
 
   # Set hostname depending on deployed or localhost version
@@ -91,9 +92,16 @@ setPeer() {
   # fi
 
   # Set Env Vars to transact as a specific node
+  echo $TYPE
   if [[ "$TYPE" == 'orderer' ]]; then
     # Case Orderer
+
+    # OSN configuration
     export PEER_HOME=${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${nodeID}.${org}.domain.com
+    export OSN_TLS_CA_ROOT_CERT=${PEER_HOME}/tls/tlscacerts/ca.crt
+    export ORDERER_ADMIN_TLS_SIGN_CERT=${PEER_HOME}/tls/signcerts/cert.pem
+    export ORDERER_ADMIN_TLS_PRIVATE_KEY=${PEER_HOME}/tls/keystore/key.pem
+
   else
     # Case Peer
     export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${nodeID}.${org}.domain.com
@@ -109,7 +117,8 @@ setPeer() {
 
   # MSP (Need Admin to join channel)
   export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
-
+  [ -z $NODE_PORT ] && export NODE_PORT=${PORT_MAP[$nodeID]}
+  
 }
 
 setExtraHosts() {
@@ -169,6 +178,25 @@ createNodeOUs() {
     OrdererOUIdentifier:
         Certificate: cacerts/cacert.pem
         OrganizationalUnitIdentifier: orderer" > "$NODE_OUS_PATH"/config.yaml
+}
+
+
+#!/bin/bash
+
+one_line_pem() {
+    echo "`awk 'NF {sub(/\\n/, ""); printf "%s\\\\\\\n",$0;}' $1`"
+}
+
+# Auto generate fca-users-config.yaml from template
+yaml_ccp_fca_users() {
+
+    # local PP=$(one_line_pem $4)
+    # local CP=$(one_line_pem $5)
+    sed -e "s/\${ORG}/$1/" \
+        -e "s/\${CAPORT}/$2/" \
+        -e "s/\${USERSCAADMIN}/$3/" \
+        -e "s/\${USERSCAADMINPW}/$4/" \
+        "$FABRIC_CA_CFG_PATH"/fca-usersca-template.yaml | sed -e $'s/\\\\n/\\\n          /g' 
 }
 
 
@@ -282,6 +310,15 @@ createDockerCA() {
 ops_listenaddress="- FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:7002"
 [ ${STAGE} == 'dev' ] && ops_listenaddress="# ${ops_listenaddress}"
 
+  command='fabric-ca-server start -b ${caadmin}:${caadminpw} -d'
+
+  # Check if org does not contain 'orderer'
+  if [[ "$1" != *"orderer"* ]]; then
+      echo $1
+      # Append the additional command if org does not contain 'orderer'
+      command+=' --cafiles users-ca/fabric-ca-server-config.yaml'
+  fi
+
   echo "
 # Docker compose file for creating Fabric CAs
 
@@ -316,7 +353,7 @@ services:
       - ${caPort}:${caPort}
     extra_hosts:
       - \"ca_${org}:127.0.0.1\"
-    command: sh -c 'fabric-ca-server start -b ${caadmin}:${caadminpw} -d --cafiles users-ca/fabric-ca-server-config.yaml' 
+    command: sh -c '${command}'
     volumes:
       - ${FABRIC_HOME}/organizations/fabric-ca/${org}/fabric-ca-server-${org}:/etc/hyperledger/fabric-ca-server
     container_name: ca_${org}
@@ -380,9 +417,11 @@ services:
       - ORDERER_GENERAL_CLUSTER_SERVERCERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
       - ORDERER_GENERAL_CLUSTER_SERVERPRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
-      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/${CHANNEL_NAME}.block
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_LOCALMSPID=${org^}MSP
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
       
       #### FOR CERT ROTATION
       # - ORDERER_GENERAL_TLS_TLSHANDSHAKETIMESHIFT=15h
@@ -401,7 +440,7 @@ services:
     command: orderer
     volumes:
       - ${FABRIC_HOME}/config/orderer.yaml:/etc/hyperledger/fabric/orderer.yaml
-      - ${FABRIC_HOME}/system-genesis-block/genesis.block:/var/hyperledger/orderer/genesis.block
+      - ${FABRIC_HOME}/system-genesis-block/${CHANNEL_NAME}.block:/var/hyperledger/orderer/${CHANNEL_NAME}.block
       - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/msp:/var/hyperledger/orderer/msp
       - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tls:/var/hyperledger/orderer/tls
       - ${ordererId}.${org}.domain.com:/var/hyperledger/production/orderer
@@ -458,12 +497,19 @@ services:
     #     condition: on-failure
     environment:
       #### GENERAL CONFIG
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_${STAGE}
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - grpc=debug:info
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
+      #### TLS
       - CORE_PEER_TLS_ENABLED=true
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_${STAGE}
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/tlscacerts/ca.crt
+      - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tls/tlscacerts/ca.crt
       #### COUCHDB CONFIG 
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${peerId}couchDB${org}:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
@@ -483,6 +529,9 @@ services:
       - CORE_OPERATIONS_TLS_CERT_FILE=/etc/hyperledger/fabric/tlsops/signcerts/cert.pem
       - CORE_OPERATIONS_TLS_KEY_FILE=/etc/hyperledger/fabric/tlsops/keystore/key.pem
       - CORE_OPERATIONS_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tlsops/tlscacerts/ca.crt
+      #### METRICS CONFIG
+      - CORE_METRICS_PROVIDER=prometheus 
+
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:

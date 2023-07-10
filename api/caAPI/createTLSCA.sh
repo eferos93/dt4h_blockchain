@@ -12,15 +12,15 @@ createTLSServer() {
 	# Create the TLS Server directory
 	mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
 
-	printInfo "createTLSServer - Initializing the server with bootstrap identity ${tlsadmin}"
+	printInfo "createTLSServer - Initializing the server with bootstrap identity ${TLS_ADMIN}"
 	
-	fabric-ca-server init -b ${tlsadmin}:${tlsadminpw}
+	fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW}
 	yes | mv msp/keystore/*sk msp/keystore/rootkey.pem
 
 	# sleep 10000
 	
-	# ls "$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp/keystore
-	# mv msp/keystore/key.pem "$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp/keystore/key.pem
+	# ls "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore
+	# mv msp/keystore/key.pem "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore/key.pem
 
 	# Import existing and configured fabric-ca-server-config.yaml file
 	# CONF_FILE="$FABRIC_CA_CFG_PATH/fca-tls-${ORG_NAME}-config.yaml"
@@ -67,18 +67,18 @@ createTLSClient() {
 	cp "$FABRIC_CA_SERVER_HOME"/ca-cert.pem "$FABRIC_CA_CLIENT_HOME"/tls-root-cert/tls-ca-cert.pem
 
 	# Enroll the TLS CA admin user to issue keys and certs
-	printInfo "createTLSClient - Enrolling the TLS CA Admin: ${tlsadmin}"
+	printInfo "createTLSClient - Enrolling the TLS CA Admin: ${TLS_ADMIN}"
 	set -x
-	fabric-ca-client enroll -u https://${tlsadmin}:${tlsadminpw}@"$tlsendpoint" --csr.hosts $tlsHost,tlsca_"${ORG_NAME}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tls-ca/${tlsadmin}/msp 
+	fabric-ca-client enroll -u https://${TLS_ADMIN}:${TLS_ADMINPW}@"${TLS_ENDPOINT}" --csr.hosts ${TLS_HOST},tlsca_"${ORG_NAME}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tls-ca/${TLS_ADMIN}/msp 
 	res=$?
 	set +x
-	verifyResult $res "createTLSClient - Failed to enroll identity ${tlsadmin}"
+	verifyResult $res "createTLSClient - Failed to enroll identity ${TLS_ADMIN}"
 
-	mv "$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tls-ca/${tlsadmin}/msp/keystore/key.pem
+	mv "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore/key.pem
 	verifyResult "$?" "createTLSClient - Failed to rename key"
 
 	cd "$FABRIC_HOME" || exit 1
-	printSuccess "createTLSClient - TLS Client admin ${tlsadmin} enrolled successfully!"
+	printSuccess "createTLSClient - TLS Client admin ${TLS_ADMIN} enrolled successfully!"
 }
 
 
@@ -92,20 +92,20 @@ enrollTLSCAAdmin() {
 	cd "$FABRIC_CA_CLIENT_HOME" || exit 1
 
 	set -x
-	fabric-ca-client register --id.name ${caadmin} --id.secret ${caadminpw} -u https://"${tlsendpoint}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --mspdir tls-ca/${tlsadmin}/msp
+	fabric-ca-client register --id.name ${CA_ADMIN} --id.secret ${CA_ADMINPW} -u https://"${TLS_ENDPOINT}" --tls.certfiles tls-root-cert/tls-ca-cert.pem --mspdir tls-ca/${TLS_ADMIN}/msp
 	res=$?
 	set +x
-	verifyResult $res "enrollTLSCAAdmin - Failed to register the CA Admin ${caadmin} to the TLS Server" || printSuccess "enrollTLSCAAdmin - CA Admin ${caadmin} registered to the TLS Server successfully"
+	verifyResult $res "enrollTLSCAAdmin - Failed to register the CA Admin ${CA_ADMIN} to the TLS Server" || printSuccess "enrollTLSCAAdmin - CA Admin ${CA_ADMIN} registered to the TLS Server successfully"
 
 	# Enroll CA Admin to obtain keys and certificates
-	printInfo "enrollTLSCAAdmin - Enrolling the CA Admin: ${caadmin}"
+	printInfo "enrollTLSCAAdmin - Enrolling the CA Admin: ${CA_ADMIN}"
 	set -x
-	fabric-ca-client enroll -u https://${caadmin}:${caadminpw}@"${tlsendpoint}" --csr.hosts ${tlsHost} --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tls-ca/${caadmin}/msp 
+	fabric-ca-client enroll -u https://${CA_ADMIN}:${CA_ADMINPW}@"${TLS_ENDPOINT}" --csr.hosts ${TLS_HOST} --tls.certfiles tls-root-cert/tls-ca-cert.pem --enrollment.profile tls --mspdir tls-ca/${CA_ADMIN}/msp 
 	set +x
 
 	# Rename the secret key to key.pem for easier manipulation
-	mv "$FABRIC_CA_CLIENT_HOME"/tls-ca/${caadmin}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tls-ca/${caadmin}/msp/keystore/key.pem
-	verifyResult $? "enrollTLSCAAdmin - Failed to enroll the CA Admin ${caadmin} to the TLS Server" || printSuccess "enrollTLSCAAdmin - CA Admin ${caadmin} enrolled successfully"
+	mv "$FABRIC_CA_CLIENT_HOME"/tls-ca/${CA_ADMIN}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tls-ca/${CA_ADMIN}/msp/keystore/key.pem
+	verifyResult $? "enrollTLSCAAdmin - Failed to enroll the CA Admin ${CA_ADMIN} to the TLS Server" || printSuccess "enrollTLSCAAdmin - CA Admin ${CA_ADMIN} enrolled successfully"
 	
 	cd "$FABRIC_HOME" || exit 1
 	sleep 3

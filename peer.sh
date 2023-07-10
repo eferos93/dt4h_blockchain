@@ -20,6 +20,7 @@ usage() {
 	echo -e "  addorgupdate \t\t Create a configuration update transaction to add an organization"
 	echo -e "  createchanneltx \t Creates a channel transaction from profile config"
 	echo -e "  createchannel \t Submit channel transaction to orderer"
+	echo -e "  osnjoin \t Add orderer to channel"
 	echo -e "  joinchannel \t \t Joins a peer to channel"
 	echo -e "  updateanchorpeers \t Create and submit anchor peer update transaction"
 	echo -e "  listchannel \t \t List channels a peer has joined"
@@ -127,6 +128,8 @@ if [[ $# -ge 1 ]] ; then
 		cmd=invoke
 	elif [ "$MODE" == "autocrlupdatecontract" ]; then
 		cmd=updateBlockchainRevokedCertificates
+	elif [ "$MODE" == "osnjoin" ]; then
+		cmd=osnChannelJoin
 	else
 		usage
 		exit 1
