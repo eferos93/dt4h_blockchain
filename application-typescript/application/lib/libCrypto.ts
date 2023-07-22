@@ -19,7 +19,6 @@ import { Certificate } from '@fidm/x509';
 import * as jsrsasign from 'jsrsasign';
 const asn1 = jsrsasign.KJUR.asn1;
 
-import { signTransaction } from './libSignOffline'
 
 /* Logging */
 const logger = getLogger(TYPE);
@@ -82,7 +81,6 @@ export function isValidX509(certificate: string) {
  */
 export function generateIdentity(cryptoMaterial: CryptoMaterial): EX509Identity {
 	const method = 'generateIdentity';
-	logger.start(method);
 
 	const identity: EX509Identity = {
 		credentials: {
@@ -107,7 +105,6 @@ export function generateIdentity(cryptoMaterial: CryptoMaterial): EX509Identity 
  */
 export async function generateKeysCSR(userID: string, orgMSP: string): Promise<CryptoMaterial> {
 	const method = 'generateKeysCSR';
-	logger.start(method);
 	logger.info('%s - Generating Crypto Material for user', method, userID);
 
 	let csrPem;
@@ -173,7 +170,6 @@ export function decodeCertificate(certificate: string): any {
 
 export function getCertSerialAndAKI(certificate: string): CertSerialAndAki {
 	const method = 'getCertSerialAndAuthorityNumber';
-	// logger.start(method);
 
 	const certJSON = decodeCertificate(certificate)
 	return {
@@ -184,7 +180,6 @@ export function getCertSerialAndAKI(certificate: string): CertSerialAndAki {
 
 export function getCertExpirationDate(certificate: string): Date {
 	const method = 'getCertExpirationDate';
-	// logger.start(method);
 
 	const certJSON = decodeCertificate(certificate)
 	return certJSON.validTo;

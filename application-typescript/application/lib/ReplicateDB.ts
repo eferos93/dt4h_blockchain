@@ -10,7 +10,6 @@
 const TYPE = 'MongoDB';
 
 /* Dependencies */
-import * as mongodb from 'mongodb';
 const mongoose = require('mongoose')
 require('dotenv').config();
 
@@ -18,20 +17,14 @@ require('dotenv').config();
 import { sleep, prettyJSON, IsJsonString, getLogger } from './libUtil';
 import { IProduct, IUser, IAgreement, IInventory } from './interfaces'
 import * as fields from './queryFields' 
-const { ProductModel, UserModel, AgreementModel, InventoryModel } = require('./models')
-
-/* DB Collection names */
-const userCol = 'user';
-const productCol = 'product';
-const inventoryCol = 'inventory';
-const agreementCol = 'agreement';
+import { DATABASE } from './Config'
+import { ProductModel, UserModel, AgreementModel, InventoryModel } from './models'
 
 /* All contract events */
 let userEvents = ['CreateUser', 'UpdateUser', 'DeleteUser'];
 let productEvents = ['CreateProduct', 'UpdateProduct', 'DeleteProduct'];
 let agreementEvents = ['NewAgreement', 'NewAgreementAnalytics', 'UpdateAgreement'];
 let allEvents = [...userEvents, ...productEvents, ...agreementEvents]
-
 
 class User {
 
@@ -74,12 +67,13 @@ class User {
 		return await this.col.find().select("-__v")
 	}
 
-	async getPagination(query={}, fields={}, select=null, page=1,
-	 limit=this.PAGE_SIZE, sortBy={timestamp: -1}) {
-		return await this.col
-		.find(query, fields)
-		.select(select)
-		.sort(sortBy)
+	async getPagination(query={}, fields={}, select='', page=1,
+	 limit=this.PAGE_SIZE, sortBy: {[key: string]: 1 | -1} = {timestamp: -1}) {
+		 return await this.col
+		 .find(query, fields)
+		 .select(select)
+		 //@ts-ignore
+		.sort(sortBy) 
 		.limit(limit)
 		.skip((page-1) * limit)
 	}
@@ -137,7 +131,7 @@ class Product {
 
 
 	async getPagination(query={}, fields={}, select={}, populSelect={}, page=1,
-	 limit=this.PAGE_SIZE, sortBy={timestamp: -1}) {
+	 limit=this.PAGE_SIZE, sortBy: {[key: string]: 1 | -1} = {timestamp: -1}) {
 		return await this.col
 		.find(query, fields)
 		.select(select)
@@ -193,8 +187,8 @@ class Agreement {
 		return await this.col.find()
 	}
 	
-	async getPagination(query={}, fields={}, select=null, page=1,
-	 limit=500, sortBy={timestamp: -1}) {
+	async getPagination(query={}, fields={}, select='', page=1,
+	 limit=500, sortBy: {[key: string]: 1 | -1} = {timestamp: -1}) {
 		return await this.col
 		.find(query, fields)
 		.select(select)
@@ -259,14 +253,10 @@ export class OffchainDB {
 	/**
 	 * Construct an OffchainDB Object
 	 * 
-	 * @param {String} url The url to establish connection to the Database
-	 * @param {String} dbName The name of the database
 	 */
 	constructor() {
-		this.url = process.env.DB_LEDGER_URL!;
-		this.dbName = process.env.DB_LEDGER!;
-		console.log('url ', this.url)
-		console.log(this.dbName)
+		this.url = DATABASE.url;
+		this.dbName = DATABASE.name;
 
 		this.users = new User()
 		this.products = new Product()
@@ -290,10 +280,8 @@ export class OffchainDB {
 	 */
 	async connect() {
 		const method = 'init';
-		logger.start(method);
-
 		try {
-			console.log(this.url)
+			logger.info(`${method} - Connecting to : ${this.url}...`)
 			this.connection = (await mongoose.connect(this.url)).connection
 			return this.connection
 		} catch(e: any) {
@@ -333,55 +321,38 @@ export class OffchainDB {
 	 * @param {String} eventName The name of the event from the smart contract
 	 * @param {Object} eventData Contains the data of the event
 	 */
-	async eventHandler(eventName: string, eventData: any): Promise<void> {
+	async eventHandler(eventName: string, eventData: any): Promise<any> {
 		const method = 'eventHandler';
-		// logger.start(method);
 
-		let data;
+		let data: any = eventData;
 
 		try {
 
 			// Check if event exists and parse data
-			if (allEvents.indexOf(eventName) > -1) {
-				if (IsJsonString(eventData)) {
-					data = prettyJSON(eventData);
-				} else {
-					throw new Error(`Wrong data format: ${eventData}`)
-				}
-			}
-			else {
+			if (!(allEvents.indexOf(eventName) > -1)) {
 				logger.warn('%s - Unhandled event', method, eventName)
 				return
-				// throw new Error('Unhandled event');
 			}
 
 			// Event routing
 			switch (eventName) {
 				case 'CreateUser':
 					return await this.users.insert(data);
-					break;
 				case 'UpdateUser':
 					return await this.users.update(data);
-					break;
 				case 'DeleteUser':
 					return await this.users.delete(data.username);
-					break;
 				case 'CreateProduct':
 					return await this.products.insert(data);
-					break;
 				case 'UpdateProduct':
 					return await this.products.update(data);
-					break;
 				case 'DeleteProduct':
 					return await this.products.delete(data.id);
-					break;
 				case 'NewAgreement':
 				case 'NewAgreementAnalytics':
 					return await this.agreements.insert(data);
-					break;
 				case 'UpdateAgreement':
 					return await this.agreements.update(data);
-					break;
 				default:
 					break;
 			}
@@ -398,11 +369,7 @@ export class OffchainDB {
 	 */
 	async drop(): Promise<void> {
 		const method = 'drop'
-		logger.info('%s - Dropping database... ', this.url)
-		console.log(this.url)
-		console.log(this.dbName)
-		// const conn = mongoose.createConnection(this.url);
-		// return await conn.dropDatabase();
+		logger.info(`${method} - Dropping database... ${this.url}`)
 		return await this.connection.db.dropDatabase()
 	}
 }

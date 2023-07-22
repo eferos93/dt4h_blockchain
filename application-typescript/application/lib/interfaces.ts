@@ -6,12 +6,68 @@ import * as crypto from 'crypto';
 import { X509Identity } from 'fabric-network';
 import { IdentityContext } from 'fabric-common'
 import { IEnrollResponse } from 'fabric-ca-client'
+import { ProposalOptions } from '@hyperledger/fabric-gateway'
 
 export { IdentityContext }
 export { IEnrollResponse }
 
+export interface IClient {
+	mspPath?: string;
+	mspId?: string;
+	x509Identity?: IWalletCredentials;
+	username?: string;
+}
+
+
+
+export interface IX509Identity {
+	credentials: {
+		certificate: string;
+		privateKey?: string;
+	};
+	mspId: string;
+	version?: number;
+}
+
+export interface IWalletCredentials {
+	credentials: {
+		certificate: string;
+		privateKey: string;
+	};
+	mspId: string;
+	version?: number;
+}
+
 export interface EX509Identity extends X509Identity {
 	version?: number;
+}
+
+export interface IProposalProto { 
+	bytes: Uint8Array;
+	digest: Uint8Array; 
+}
+
+export interface IProposalOptions {
+	name: string;
+	options: ProposalOptions;
+}
+
+export interface Peer {
+    endpoint: string,
+    hostname: string,
+    mspPath: string
+}
+
+export interface INetwork {
+    channelID: string,
+    chaincodeID: string
+}
+
+export interface IOrg {
+	instType: string,
+	orgName: string,
+	active: boolean,
+	members: Array<string>
 }
 
 export interface IUser {
@@ -19,7 +75,7 @@ export interface IUser {
 	id: string,
 	username: string,
 	isOrg: boolean,
-	org: Org,
+	org: IOrg,
 	isBuyer: boolean,
 	purposes: Array<string>,
 	validTo: number,
@@ -81,15 +137,6 @@ export interface Policy {
 
 export interface BuyerParameters {
 	purposes: Array<string>
-}
-
-export interface Org {
-	instType: string,
-	orgName: string,
-	dpoFirstName: string,
-	dpoLastName: string,
-	dpoEmail: string,
-	active: boolean
 }
 
 

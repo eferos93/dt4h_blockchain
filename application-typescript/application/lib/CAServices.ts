@@ -17,6 +17,7 @@ import { ReenrollResponse } from './interfaces';
 import * as Crypto from './libCrypto';
 // import { GrpcClient } from './libGrpc';
 import { getLogger } from './libUtil';
+import { CACONFIG } from './Config'
 
 import * as path from 'path';
 import * as fs from 'fs';
@@ -25,9 +26,8 @@ import * as yaml from 'js-yaml';
 require('dotenv').config();
 
 /* Env */
-const walletPath = path.join(process.env.WALLET_PATH!);
-const ccpPath = path.resolve(process.env.CCP_PATH!);
-const revokedCertificates = path.resolve(process.env.REVOKED_CERTS_PATH!)
+const walletPath = path.join(CACONFIG.walletPath);
+const ccpPath = path.resolve(CACONFIG.ccpPath);
 
 /* Logging */
 const logger = getLogger(TYPE);
@@ -83,7 +83,7 @@ export class CAServices {
 	 * @param {String} method The function's name
 	 */
 	private handleError(e: any, method: string) {
-		logger.error('%s - %s', method, e.message);
+		logger.error(`${method} - ${e.message}`);
 		return e;
 	}
 
@@ -112,7 +112,6 @@ export class CAServices {
 
 			return userContext;
 		} catch(e: any) {
-			// logger.warn('%s - user %s not found in wallet', method, userID)
 			this.handleError(e, method);
 			throw e;
 		}
@@ -126,7 +125,6 @@ export class CAServices {
 	 */
 	createCA(): FabricCAServices {
 		const method = 'createCA';
-		logger.start(method);
 
 		try {
 			// Load the network config
@@ -148,7 +146,7 @@ export class CAServices {
 				throw new Error(`TLS Certificate for Org: ${this.orgName} not found at file: ${tlsPath}`);
 			}
 
-			logger.debug(`%s - loaded ca_${this.orgName}`, method);
+			logger.debug(`${method} - loaded ca_${this.orgName}`);
 			const tlsRootCert = fs.readFileSync(tlsPath, 'ascii');
 			const tlsOptions: FabricCAServices.TLSOptions = {
 				trustedRoots: <any>tlsRootCert,
@@ -157,7 +155,7 @@ export class CAServices {
 
 			// Create Identity Service
 			const ca = new FabricCAServices(caURL, tlsOptions, `ca-${this.orgName}-users`);
-			logger.debug('%s - created CA instance', method);
+			logger.debug(`${method} - created CA instance`);
 
 			return ca;
 		} catch (e: any) {
@@ -175,10 +173,9 @@ export class CAServices {
 	 */
 	async isAdmin(appUserID: string): Promise<boolean> {
 		const method = 'isAdmin';
-		logger.start(method);
 
 		try {
-			logger.debug(`%s - Checking admin status of ${appUserID}...`, method);
+			logger.debug(`${method} - Checking admin status of ${appUserID}...`);
 
 			// Role to check
 			const checkRole = 'admin';
@@ -190,7 +187,7 @@ export class CAServices {
 			const userIdentity = await this.identityService.getOne(appUserID, adminCtx as User)
 			const status = userIdentity.result.type === checkRole; 
 
-			logger.info('%s - Admin status of %s: %s', method, appUserID, status);
+			logger.info(`${method} - Admin status of ${appUserID}: ${status}`);
 			return status;
 		} catch (e: any) {
 			this.handleError(e, method);
@@ -206,7 +203,6 @@ export class CAServices {
 	 */	
 	async getUser(appUserID: string) {
 		const method = 'getUser'
-		// logger.start(method)
 
 		try {
 			// Get Admin Context
@@ -230,10 +226,9 @@ export class CAServices {
 	 */
 	async updateUser(appUserID: string, identityRequest: FabricCAServices.IIdentityRequest) {
 		const method = 'updateUser';
-		logger.start(method);
 
 		try {
-			logger.debug(`%s - Updating user: ${appUserID}...`, method);
+			logger.debug(`${method} - Updating user: ${appUserID}...`);
 
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
@@ -241,7 +236,7 @@ export class CAServices {
 			// Update Identity
 			await this.identityService.update(appUserID, identityRequest, adminCtx as User);
 
-			logger.info('%s - User %s updated successfully', method, appUserID);
+			logger.info(`${method} - User ${appUserID} updated successfully`);
 
 			// Return success
 			return 0;
@@ -261,10 +256,9 @@ export class CAServices {
 	 */
 	async deleteUser(appUserID: string, force?: string) {
 		const method = 'deleteUser';
-		logger.start(method);
 
 		try {
-			logger.debug('%s - Deleting user: %s', method, appUserID);
+			logger.debug(`${method} - Deleting user: ${appUserID}`);
 
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
@@ -272,7 +266,7 @@ export class CAServices {
 			// Delete identity from CA
 			await this.identityService.delete(appUserID, adminCtx as User);
 
-			logger.info('%s - User %s deleted successfully', method, appUserID);
+			logger.info('${method} - User ${appUserID} deleted successfully');
 
 			return 0;
 		} catch (e: any) {
@@ -290,11 +284,9 @@ export class CAServices {
 	 */
 	async registerAppUser(appUserID: string, appUserRole: string, secret: string): Promise<number> {
 		const method = 'registerAppUser';
-		logger.start(method);
-		logger.debug('%s - ', method);
 
 		try {
-			logger.debug('%s - Registering user: %s to %s-users', method, appUserID, this.orgName);
+			logger.debug(`${method} - Registering user: ${appUserID} to ${this.orgName}-users`);
 			
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
@@ -309,7 +301,7 @@ export class CAServices {
 			// Register
 			await this.ca.register(registrationRequest, adminCtx);
 
-			logger.info('%s - User %s registered succesfully', method, appUserID);
+			logger.info(`${method} - User ${appUserID} registered succesfully`);
 
 			// Return null for success
 			return 0;
@@ -329,13 +321,11 @@ export class CAServices {
 	 */
 	async enrollAppUser(appUserID: string, secret: string, csr?: string): Promise<X509Identity | FabricCAServices.IEnrollResponse> {
 		const method = 'enrollAppUser';
-		logger.start(method);
-		logger.debug('%s - ', method);
 
 		try {
 
 			if (csr) {
-				logger.debug('%s - Enrolling user: %s with CSR', method, appUserID);
+				logger.debug(`${method} - Enrolling user: ${appUserID} with CSR`);
 
 				const enrollmentRequest: FabricCAServices.IEnrollmentRequest = {
 					enrollmentID: appUserID,
@@ -346,7 +336,7 @@ export class CAServices {
 				// Enroll to CA
 				const enrollment = await this.ca.enroll(enrollmentRequest);
 
-				logger.info('%s - User %s enrolled successfully with CSR', method, appUserID);
+				logger.info(`${method} - User ${appUserID} enrolled successfully with CSR`);
 				return enrollment;
 			}
 			else {
@@ -355,11 +345,11 @@ export class CAServices {
 
 				// const userIdentity = await wallet.get(appUserID);
 				// if (userIdentity) {
-				// 	logger.warn('%s - User %s crypto material already exists in wallet', method, appUserID);
+				// 	logger.warn(`${method} - User ${appUserID} crypto material already exists in wallet`);
 				// 	return 0;
 				// }
 
-				logger.debug('%s - Enrolling user: %s without CSR', method, appUserID);
+				logger.debug(`${method} - Enrolling user: ${appUserID} without CSR`);
 
 				// Enroll to CA
 				const enrollmentRequest: FabricCAServices.IEnrollmentRequest = {
@@ -379,7 +369,7 @@ export class CAServices {
 					type: 'X.509',
 				};
 
-				logger.info('%s - User %s enrolled successfully without CSR', method, appUserID);
+				logger.info(`${method} - User ${appUserID} enrolled successfully without CSR`);
 				await wallet.put(appUserID, x509Identity);
 
 				return x509Identity;
@@ -399,10 +389,9 @@ export class CAServices {
 	 */
 	async importMSP(userID: string, usersMSP: boolean) {
 		const method = 'importMSP';
-		logger.start(method);
 
 		try {
-			logger.debug(`%s - Importing MSP of user: ${userID}...`, method);
+			logger.debug(`${method} - Importing MSP of user: ${userID}...`);
 
 			// Create wallet
 			const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -411,7 +400,7 @@ export class CAServices {
 			let msp = usersMSP ? this.orgUsersMSP : this.orgMSP
 			// const userIdentity = await wallet.get(userID);
 			// if (userIdentity) {
-			// 	logger.warn('%s - User already exists.', method);
+			// 	logger.warn(`${method} - User already exists.`);
 			// 	return 0;
 			// }
 
@@ -437,7 +426,7 @@ export class CAServices {
 			};
 
 			await wallet.put(userID, x509Identity);
-			logger.info('%s - User %s imported successfully', method, userID);
+			logger.info(`${method} - User ${userID} imported successfully`);
 			return 0;
 
 		} catch (e: any) {
@@ -454,14 +443,13 @@ export class CAServices {
 	 */
 	async exportMSP(userID: string) {
 		const method = 'exportMSP';
-		logger.start(method);
 
 		const mspPath = `./${userID}/msp`;
 		const signcertsPath = `./${userID}/msp/signcerts`;
 		const privatekeyPath = `./${userID}/msp/keystore`;
 
 		try {
-			logger.debug(`%s - Exporting MSP of user: ${userID}`, method);
+			logger.debug(`${method} - Exporting MSP of user: ${userID}`);
 
 			// Create wallet
 			const wallet = await Wallets.newFileSystemWallet(walletPath);
@@ -477,7 +465,7 @@ export class CAServices {
 			fs.writeFileSync(`${signcertsPath}/cert.pem`, user.credentials.certificate);
 			fs.writeFileSync(`${privatekeyPath}/key.pem`, user.credentials.privateKey);
 
-			logger.info('%s - Exported MSP of %s', method, userID);
+			logger.info(`${method} - Exported MSP of ${userID}`);
 			return 0;
 		} catch (e: any) {
 			this.handleError(e, method);
@@ -496,16 +484,15 @@ export class CAServices {
 	 */
 	async reenrollAppUser(csr: string, signingIdentity: any, attrReqs = null): Promise<ReenrollResponse> {
 		const method = 'reenrollAppUser';
-		logger.start(method);
 
 		try {
 			let userID = (Crypto.decodeCertificate(signingIdentity._certificate)).subject.attributes[1].value
-			logger.info('%s - Reenrolling user: %s', method, userID);
+			logger.info(`${method} - Reenrolling user: ${userID}`);
 
 			// Identity
 			const response = await this.ca._fabricCAClient.reenroll(csr, signingIdentity, attrReqs);
 
-			logger.info('%s - User: %s reenrolled', method, userID);
+			logger.info(`${method} - User: ${userID} reenrolled`);
 
 			const reenrollResponse: ReenrollResponse = {
 				// key: privateKey,
@@ -529,10 +516,9 @@ export class CAServices {
 	 * */
 	async revokeCertificate(certificate: string, reason: string) {
 		const method = 'revokeCertificate';
-		logger.start(method);
 
 		try {
-			logger.info('%s - Revoking certificate...', method);
+			logger.info(`${method} - Revoking certificate ${certificate} ${reason}`);
 
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
@@ -551,15 +537,15 @@ export class CAServices {
 
 			const response = <any>await this.ca.revoke(request, adminCtx).then(async (response: any) => {
 				if (response.success) {
-					let req = {
-						message: certificate,
-						revoked: true
-					}
+					// let req = {
+					// 	message: certificate,
+					// 	revoked: true
+					// }
 					// await this.peer.triggerCRLUpdate(req).then((response: any) => {
 					// 	if (response.status == 200) {
-					// 		logger.info('%s - Channel config updated', method, response);
+					// 		logger.info('${} - Channel config updated', method, response);
 					// 	} else {
-					// 		logger.warn('%s - Failed to update channel configuration', method)
+					// 		logger.warn('${} - Failed to update channel configuration', method)
 					// 	}
 					// });
 				}
@@ -567,7 +553,7 @@ export class CAServices {
 				return response;
 			})
 
-			logger.debug('%s - CA Response: ', method, response);
+			logger.debug(`${method} - CA Response: ${response}`);
 			// this.addRevokedCertificate(certificate)
 			
 			return response;
@@ -585,10 +571,9 @@ export class CAServices {
 	 * */
 	async getCertificateBySerial(serial: string) {
 		const method = 'getCertificateBySerial';
-		logger.start(method);
 
 		try {
-			logger.info('%s - Getting certificate by serial number: %s', method, serial);
+			logger.debug(`${method} - Getting certificate by serial number: ${serial}`);
 
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
@@ -610,7 +595,7 @@ export class CAServices {
 			const PEM = cert[Object.keys(cert)[0]];
 
 			const result = Crypto.getCertSerialAndAKI(PEM);
-			logger.info('%s - \nSerial: %s \nAKI: %s', method, result.serial, result.aki);
+			logger.debug(`${method} - \nSerial: ${result.serial} \nAKI: ${result.aki}`);
 
 			return cert;
 		} catch(e: any) {
@@ -628,10 +613,9 @@ export class CAServices {
 	 */
 	async getExpirationDate(appUserID: string) {
 		const method = 'getExpirationDate';
-		logger.start(method);
 
 		try {
-			logger.info('%s - Getting expiration date of %s', method, appUserID);
+			logger.debug(`${method} - Getting expiration date of $appUserID{}`);
 
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
@@ -652,18 +636,18 @@ export class CAServices {
 
 			// Get certs from response
 			const certs = response.result.certs;
-			logger.debug('%s - Number of certificates: %s', method, certs.length);
+			logger.debug(`${method} - Number of certificates: ${certs.length}`);
 
 			// Find max expiration date of all certificates of user
 			let maxDate = new Date();
 			let expDate;
 			for (let cert of certs) {
-				logger.debug('%s - Cert: \n', method, cert.PEM)
+				logger.debug(`${method} - Cert: ${cert.PEM}`)
 				expDate = Crypto.getCertExpirationDate(cert.PEM);
 				if (expDate.getTime() > maxDate.getTime()) {
 					maxDate = expDate;
 				}
-					logger.debug('%s - Max Expiration date: ', method, expDate);
+					logger.debug(`${method} - Max Expiration date: ${expDate}`);
 			}
 
 			return maxDate;
@@ -672,32 +656,6 @@ export class CAServices {
 			throw e;
 		}
 	}
-
-	/**
-	 * Add a revoked certificate to a local file
-	 * 
-	 * @param {String} certificate A PEM encoded certificate
-	 */
-	// addRevokedCertificate(certificate: string) {
-	// 	const method = 'addRevokedCertificate'
-	// 	try {
-		
-	// 		fs.readFile(revokedCertificates, function (err: any, data: any) {
-	// 			let jsonData = JSON.parse(data);
-	// 			jsonData.revokedCerts.push(certificate);    
-	// 			fs.writeFile(revokedCertificates, JSON.stringify(jsonData), function(err: any){
-	// 				if (err) throw err;
-	// 				logger.debug('%s - cert appended to json file', method);
-	// 				console.log('good');
-	// 			});
-	// 		})
-	// 	}
-	// 	catch(e: any) {
-	// 		this.handleError(e, method);
-	// 		throw e;
-	// 	}
-
-	// }
 
 	setRegistrar(registrarID: string) {
 		this.registrarID = registrarID;

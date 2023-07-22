@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copyright Lynkeus 2020. All Rights Reserved.
  *
@@ -14,7 +15,7 @@ const TYPE = 'Query';
 import * as _ from 'lodash';
 
 /* Local */
-import { OffchainDB } from './libReplicateDB';
+import { OffchainDB } from './ReplicateDB';
 import { getLogger } from './libUtil';
 import { IUser, IProduct, IAgreement } from './interfaces';
 import { UserModel } from './models';
