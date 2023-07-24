@@ -37,10 +37,12 @@ createCAServer() {
 	yes | cp "$FABRIC_CA_CFG_PATH"/base_ca_config.yaml ./fabric-ca-server-config.yaml
 
 	# Check if org does not contain 'orderer', to add a users-ca
-	if [[ "$1" != *"orderer"* ]]; then
-		echo "$(yaml_ccp_fca_users ${ORG_NAME} $CA_PORT ${USERSCA_ADMIN} ${USERSCA_ADMINPW})" > config/fca-usersca-${ORG_NAME}-config.yaml
+	set -x
+	if [[ "${ORG_NAME}" != *"orderer"* ]]; then
+		echo "$(yaml_ccp_fca_users ${ORG_NAME} $CA_PORT ${USERSCA_ADMIN} ${USERSCA_ADMINPW})" > ${FABRIC_CFG_PATH}/fca-usersca-${ORG_NAME}-config.yaml
 		yes | cp "$FABRIC_CA_CFG_PATH"/fca-usersca-"${ORG_NAME}"-config.yaml users-ca/fabric-ca-server-config.yaml
 	fi
+	set +x
 	
 	# popd
 	cd "$FABRIC_HOME" || exit

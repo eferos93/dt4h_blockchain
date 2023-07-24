@@ -79,7 +79,6 @@ setPeer() {
     nodeID=peer0
   fi
 
-  echo $org
   setPorts "$org"
 
   # Set hostname depending on deployed or localhost version
@@ -92,7 +91,6 @@ setPeer() {
   # fi
 
   # Set Env Vars to transact as a specific node
-  echo $TYPE
   if [[ "$TYPE" == 'orderer' ]]; then
     # Case Orderer
 
@@ -118,7 +116,11 @@ setPeer() {
   # MSP (Need Admin to join channel)
   export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
   [ -z $NODE_PORT ] && export NODE_PORT=${PORT_MAP[$nodeID]}
+  export ADMIN_PORT=$((NODE_PORT + 2))
+  export CORE_PEER_TLS_ENABLED=true
   
+
+
 }
 
 setExtraHosts() {
@@ -196,7 +198,7 @@ yaml_ccp_fca_users() {
         -e "s/\${CAPORT}/$2/" \
         -e "s/\${USERSCAADMIN}/$3/" \
         -e "s/\${USERSCAADMINPW}/$4/" \
-        "$FABRIC_CA_CFG_PATH"/fca-usersca-template.yaml | sed -e $'s/\\\\n/\\\n          /g' 
+        "$FABRIC_CA_CFG_PATH"/base_causers_config.yaml | sed -e $'s/\\\\n/\\\n          /g' 
 }
 
 
@@ -371,6 +373,8 @@ createDockerOrderer() {
   ordererPort=$3
 
   let CLUSTER_PORT=$ordererPort+1
+  let ADMIN_PORT=$ordererPort+2
+
   ops_listenaddress="- ORDERER_OPERATIONS_LISTENADDRESS=0.0.0.0:9443"
   cl_lAddress="- ORDERER_GENERAL_CLUSTER_LISTENPORT=${CLUSTER_PORT}"
   ops_port="- 9443:9443"
@@ -422,11 +426,20 @@ services:
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
       - ORDERER_GENERAL_LOCALMSPID=${org^}MSP
       - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+
+      #### ADMIN CONFIG
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
+      - ORDERER_ADMIN_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:${ADMIN_PORT}
       
       #### FOR CERT ROTATION
       # - ORDERER_GENERAL_TLS_TLSHANDSHAKETIMESHIFT=15h
       # - ORDERER_GENERAL_CLUSTER_TLSHANDSHAKETIMESHIFT=15h
       # - ORDERER_GENERAL_AUTHENTICATION_NOEXPIRATIONCHECKS=true
+
       #### OPERATIONS
       - ORDERER_OPERATIONS_TLS_ENABLED=true
       - ORDERER_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/orderer/tlsops/signcerts/cert.pem
@@ -449,6 +462,7 @@ services:
     ports:
       - ${CLUSTER_PORT}:${CLUSTER_PORT}
       - ${ordererPort}:${ordererPort}
+      - ${ADMIN_PORT}:${ADMIN_PORT}
       ${ops_port}
     networks:
       - ${STAGE}
@@ -504,31 +518,35 @@ services:
       - grpc=debug:info
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
+
       #### TLS
       - CORE_PEER_TLS_ENABLED=true
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/signcerts/cert.pem
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/keystore/key.pem
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/tlscacerts/ca.crt
       - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tls/tlscacerts/ca.crt
+
       #### COUCHDB CONFIG 
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${peerId}couchDB${org}:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw  
+
       #### PEER ADDRESSES CONFIG
       - CORE_PEER_ID=${peerId}.${org}.domain.com
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:${peerPort}
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:${chaincodePort}
-      - CORE_PEER_CHAINCODEADDRESS=${peerId}.${org}.domain.com:${chaincodePort}
       - CORE_PEER_ADDRESS=${peerId}.${org}.domain.com:${peerPort}
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:${peerPort}
+      - CORE_PEER_CHAINCODEADDRESS=${peerId}.${org}.domain.com:${chaincodePort}
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:${chaincodePort}
       - CORE_PEER_LOCALMSPID=${org^}MSP
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerId}.${org}.domain.com:${peerPort}
       - CORE_PEER_GOSSIP_BOOTSTRAP=${peerId}.${org}.domain.com:${peerPort}
+
       #### OPERATIONS CONFIG
       - CORE_OPERATIONS_TLS_ENABLED=true
-      ${ops_listenaddress}
       - CORE_OPERATIONS_TLS_CERT_FILE=/etc/hyperledger/fabric/tlsops/signcerts/cert.pem
       - CORE_OPERATIONS_TLS_KEY_FILE=/etc/hyperledger/fabric/tlsops/keystore/key.pem
       - CORE_OPERATIONS_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tlsops/tlscacerts/ca.crt
+      ${ops_listenaddress}
       #### METRICS CONFIG
       - CORE_METRICS_PROVIDER=prometheus 
 
@@ -805,8 +823,9 @@ verifyResult() {
     ERRORS="${ERRORS} ${NEWLINE} $2"
     # >&2 echo $2
   fi
-  # return $1
+  return $1
 }
+
 
 printInfo() {
   echo

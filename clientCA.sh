@@ -18,6 +18,7 @@ usage() {
 	echo -e "  reenroll \t Renrolls a user/node to renew Certificate"
 	echo -e "  identitylist \t List identities"
 	echo -e "  setup_orgca \t Setup and launch TLS/CA Server"
+	echo -e "  setup_orgusersca \t Setup and launch TLS/CA Server for org-users"
 	echo -e "  setup_orgmsp \t Setup Org Admin (MSP)"
 	echo -e "  setup_orgops \t Setup and launch Operations TLS Server"
 	echo -e "  regen_ops \t Enroll an Operations Client to monitor nodes securely"
@@ -73,7 +74,9 @@ if [[ $# -ge 1 ]] ; then
 	elif [ "$MODE" == "setup_orgops" ]; then
 		cmd=createTLSOpsCA
 	elif [ "$MODE" == "setup_orgmsp" ]; then
-		cmd="registerOrgAdmin;enrollOrgAdmin"
+		cmd="registerOrgAdmin;enrollOrgAdmin"	
+	elif [ "$MODE" == "setup_orgusersca" ]; then
+		cmd="createUsersOrgAdmin"
 	elif [ "$MODE" == "enrollorgadmin" ]; then
 		cmd="enrollOrgAdmin"
 	elif [ "$MODE" == "regen_ops" ]; then
@@ -142,6 +145,7 @@ while [[ $# -ge 1 ]]; do
 	shift
 done
 
+mkdir -p docker organizations/fabric-ca
 setParams ${ORG_NAME}
 export FABRIC_CA_CLIENT_HOME=${FABRIC_CA_PATH}/${ORG_NAME}/fabric-ca-client-${ORG_NAME}
 export TLS_ROOTCERT_PATH=${FABRIC_CA_CLIENT_HOME}/tls-root-cert/tls-ca-cert.pem

@@ -13,7 +13,7 @@ const TYPE = 'CAServices';
 import { Wallets, X509Identity } from 'fabric-network';
 import FabricCAServices from 'fabric-ca-client';
 import { User } from 'fabric-common';
-import { ReenrollResponse } from './interfaces';
+import { ReenrollResponse, ICA } from './interfaces';
 import * as Crypto from './libCrypto';
 // import { GrpcClient } from './libGrpc';
 import { getLogger } from './libUtil';
@@ -42,38 +42,39 @@ export class CAServices {
 	orgName: string;
 	orgMSP: string;
 	registrarID: string;
-	orgUsersMSP: string;
 	identityService: FabricCAServices.IdentityService;
+	caMain: any;
 	ca: any;
-	peer: any;
+	currentCA: string;
+	caData: ICA;
+	type?: string;
 
 	/**
-	 * Construct a {@link CAServices}  object.
+	 * Construct a {@link CAServices} object.
 	 *
-	 * @param {String} orgName - The organization's name (non capitalized)
-	 * @param {String} caName - The organization's CA Server Name
-	 * @param {String} orgMSP - The organization's MSP ID
-	 * @param {String} registrarID - The organization's registrar (Admin performing the operations)
-	 * @param {String} endpoint - The organization's peer endpoint for RPC
+	 * @param {ICA} caData - The CA Data
 	 */
-	constructor(orgName: string, caName: string, orgMSP: string, registrarID: string, endpoint?: string) {
-		if (!orgName || !caName || !orgMSP) {
+	constructor(caData: ICA) {
+		if (!caData.orgName || !caData.caName || !caData.orgMSP) {
 			throw new Error('Error creating CA. Missing parameters!')
 		}
-
-		if (!endpoint) {
-			logger.warn('constructor - No peer endpoint given')
-			endpoint = 'localhost:4001'
-		}
-
-		this.orgName = orgName;
-		this.orgMSP = orgMSP;
+		
+		this.caData = caData;
+		this.orgName = caData.orgName;
+		this.orgMSP = caData.orgMSP;
+		this.registrarID = caData.registrarID
 		this.ca = this.createCA()
+		this.type = caData.type || 'main'
 		this.identityService = this.ca.newIdentityService();
-		this.registrarID = registrarID
-		this.orgUsersMSP = orgMSP.split("MSP")[0] + 'UsersMSP'
-		// this.peer = new GrpcClient(endpoint);
+		console.log(this.ca)
 	}
+
+
+	// useCA(currentCA: string) {
+	// 	this.currentCA = currentCA;
+	// 	this.ca = (currentCA == 'main' ? this.caMain : this.caUsers)
+	// 	this.orgMSP = (currentCA == 'main' ? this.caMain : this.caUsers)
+	// }
 
 	/**
 	 * Error handler for contract API
@@ -121,9 +122,9 @@ export class CAServices {
 	 * Creates CA instance based on existing ccp.yaml
 	 * on local file system at path: ../ccp.yaml
 	 *
-	 * @returns {Object} The CA instance
+	 * @returns {Object} The CA instances
 	 */
-	createCA(): FabricCAServices {
+	createCA() {
 		const method = 'createCA';
 
 		try {
@@ -154,10 +155,9 @@ export class CAServices {
 			};
 
 			// Create Identity Service
-			const ca = new FabricCAServices(caURL, tlsOptions, `ca-${this.orgName}-users`);
-			logger.debug(`${method} - created CA instance`);
+			const caName = `ca-${this.orgName}${this.type === 'users' ? '-users' : ''}`
+			return new FabricCAServices(caURL, tlsOptions, caName);
 
-			return ca;
 		} catch (e: any) {
 			this.handleError(e, method);
 			throw e;
@@ -175,7 +175,6 @@ export class CAServices {
 		const method = 'isAdmin';
 
 		try {
-			logger.debug(`${method} - Checking admin status of ${appUserID}...`);
 
 			// Role to check
 			const checkRole = 'admin';
@@ -187,7 +186,6 @@ export class CAServices {
 			const userIdentity = await this.identityService.getOne(appUserID, adminCtx as User)
 			const status = userIdentity.result.type === checkRole; 
 
-			logger.info(`${method} - Admin status of ${appUserID}: ${status}`);
 			return status;
 		} catch (e: any) {
 			this.handleError(e, method);
@@ -236,7 +234,7 @@ export class CAServices {
 			// Update Identity
 			await this.identityService.update(appUserID, identityRequest, adminCtx as User);
 
-			logger.info(`${method} - User ${appUserID} updated successfully`);
+			logger.debug(`${method} - User ${appUserID} updated successfully`);
 
 			// Return success
 			return 0;
@@ -258,15 +256,13 @@ export class CAServices {
 		const method = 'deleteUser';
 
 		try {
-			logger.debug(`${method} - Deleting user: ${appUserID}`);
-
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
 
 			// Delete identity from CA
 			await this.identityService.delete(appUserID, adminCtx as User);
 
-			logger.info('${method} - User ${appUserID} deleted successfully');
+			logger.info(`${method} - User ${appUserID} deleted successfully`);
 
 			return 0;
 		} catch (e: any) {
@@ -365,7 +361,7 @@ export class CAServices {
 						certificate: enrollment.certificate,
 						privateKey: enrollment.key.toBytes(),
 					},
-					mspId: `${this.orgUsersMSP}`,
+					mspId: this.orgMSP,
 					type: 'X.509',
 				};
 
@@ -385,9 +381,9 @@ export class CAServices {
 	 * Import existing MSP to local Wallet folder
 	 *
 	 * @param {String} userID The user ID to import
-	 * @returns {Number} 0 for success, -1 for failure
+	 * @param {String} importPath the MSP path
 	 */
-	async importMSP(userID: string, usersMSP: boolean) {
+	async importMSP(userID: string, importPath: string = './identities') {
 		const method = 'importMSP';
 
 		try {
@@ -395,19 +391,11 @@ export class CAServices {
 
 			// Create wallet
 			const wallet = await Wallets.newFileSystemWallet(walletPath);
-			const importPath = './identities';
-
-			let msp = usersMSP ? this.orgUsersMSP : this.orgMSP
-			// const userIdentity = await wallet.get(userID);
-			// if (userIdentity) {
-			// 	logger.warn(`${method} - User already exists.`);
-			// 	return 0;
-			// }
 
 			// Import identities from org folders
 			const certPath = path.resolve(`${importPath}`, `${userID}`, 'msp', 'signcerts', 'cert.pem');
 			if (!fs.existsSync(certPath)) {
-				throw new Error(`Public certificate path of ID: ${userID} of Org: ${msp} not found at Path: ${certPath}`)
+				throw new Error(`Public certificate path of ID: ${userID} of Org: ${this.orgMSP} not found at Path: ${certPath}`)
 			}
 
 			// User is already enrolled from CLI
@@ -415,19 +403,16 @@ export class CAServices {
 			const cert = fs.readFileSync(certPath, 'ascii');
 			const key = fs.readFileSync(keyPath, 'ascii');
 
-
 			let x509Identity: X509Identity = {
 				credentials: {
 					certificate: cert,
 					privateKey: key,
 				},
-				mspId: `${msp}`,
+				mspId: `${this.orgMSP}`,
 				type: 'X.509',
 			};
 
-			await wallet.put(userID, x509Identity);
-			logger.info(`${method} - User ${userID} imported successfully`);
-			return 0;
+			return await wallet.put(userID, x509Identity);
 
 		} catch (e: any) {
 			this.handleError(e, method);
@@ -449,8 +434,6 @@ export class CAServices {
 		const privatekeyPath = `./${userID}/msp/keystore`;
 
 		try {
-			logger.debug(`${method} - Exporting MSP of user: ${userID}`);
-
 			// Create wallet
 			const wallet = await Wallets.newFileSystemWallet(walletPath);
 			const user = <X509Identity> await wallet.get(userID);
@@ -465,7 +448,6 @@ export class CAServices {
 			fs.writeFileSync(`${signcertsPath}/cert.pem`, user.credentials.certificate);
 			fs.writeFileSync(`${privatekeyPath}/key.pem`, user.credentials.privateKey);
 
-			logger.info(`${method} - Exported MSP of ${userID}`);
 			return 0;
 		} catch (e: any) {
 			this.handleError(e, method);
@@ -487,12 +469,12 @@ export class CAServices {
 
 		try {
 			let userID = (Crypto.decodeCertificate(signingIdentity._certificate)).subject.attributes[1].value
-			logger.info(`${method} - Reenrolling user: ${userID}`);
+			logger.debug(`${method} - Reenrolling user: ${userID}`);
 
 			// Identity
 			const response = await this.ca._fabricCAClient.reenroll(csr, signingIdentity, attrReqs);
 
-			logger.info(`${method} - User: ${userID} reenrolled`);
+			logger.debug(`${method} - User: ${userID} reenrolled`);
 
 			const reenrollResponse: ReenrollResponse = {
 				// key: privateKey,
@@ -518,7 +500,7 @@ export class CAServices {
 		const method = 'revokeCertificate';
 
 		try {
-			logger.info(`${method} - Revoking certificate ${certificate} ${reason}`);
+			logger.debug(`${method} - Revoking certificate ${certificate} ${reason}`);
 
 			// Get Admin Context
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);

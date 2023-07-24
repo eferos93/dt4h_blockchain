@@ -210,7 +210,7 @@ export const getLogger = (type: string) => {
 			}));
 		} else {
 			transports.push(new winston.transports.File({
-				filename: `${level}.log`,
+				filename: `logs/${level}.log`,
 				level: level,
 				format: combine(timestamp(), nonColorFormat),
 			}));

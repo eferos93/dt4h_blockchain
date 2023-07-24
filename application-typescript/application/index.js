@@ -14,6 +14,7 @@ const Crypto = require('./dist/libCrypto');
 const Util = require('./dist/libUtil')
 const { App } = require('./dist/App')
 const Config = require('./dist/Config')
+const Connection = require('./dist/Connection')
 // const Grpc = require('./dist/libGrpc')
 
 module.exports = {
@@ -28,5 +29,6 @@ module.exports = {
 	// Grpc,
 	Util,
 	App,
-	Config
+	Config,
+	Connection
 }

@@ -3,19 +3,19 @@ const test_data = require('./application/tests/test_data')
 const { App } = require('./application/dist/App')
 const { GATEWAY_PEER, NETWORK } = require('./application/dist/Config')
 const fs = require('fs').promises;
+const Transaction = require('./application/dist/Transactions').default
 
 // Require relevant libs
-// const {
-// 	UserContract,
-// 	DataContract,
-// 	// AgreementContract,
-// 	Query,
-// 	OffchainDB,
-// 	CAServices,
-// 	Crypto,
-// 	Util
-// } = require('./application');
-
+const {
+	UserContract,
+	DataContract,
+	// AgreementContract,
+	Query,
+	OffchainDB,
+	CAServices,
+	Crypto,
+	Util
+} = require('./application');
 
 (async () => {
     let res;
@@ -47,13 +47,17 @@ const fs = require('fs').promises;
 
     // res = await client.userContract.createUser(test_data.user0)
     // console.log(res)
-    // await sleep(3000)
+    // await Util.sleep(3000)
+
+    res = await client.signOffline.submitTx(client.signer, Transaction.user.create(test_data.user0))
+    console.log(res)
+    await Util.sleep(3000)
+
     // res = await client.userContract.updateUser(test_data.user0)
     // // console.log(res)
     // res = await client.userContract.readUser(test_data.user0.username)
     // console.log(res)
     // res = await client.userContract.deleteUser(test_data.user0.username)
-    console.log(res)
     // await sleep(3000)
     // res = await client.userContract.getUsers()
     // console.log(res)
@@ -66,8 +70,8 @@ const fs = require('fs').promises;
     // await listener.run()
     
     // ------------- DB HANDLER TEST ------------
-    const dbHandler = await app.initDatabase(blockClient)
-    console.log(await dbHandler.runValidate())
+    // const dbHandler = await app.initDatabase(blockClient)
+    // console.log(await dbHandler.runValidate())
 
 
     // // app.connection.disconnectClient(this.client)

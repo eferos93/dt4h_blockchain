@@ -71,9 +71,9 @@ createNodes() {
 			./clientCA.sh enroll -t orderer -u "$orderer" -o "$org" -s "$ordererpw"
 		done
 
-		# Register admin
-		./clientCA.sh register -t admin -u "$admin" -o "$org" -s "$adminpw"
-		./clientCA.sh enroll -t admin -u "$admin" -o "$org" -s "$adminpw"
+		# Register registar admins
+		./clientCA.sh register -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
+		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
 		# Enroll an Operations Client to monitor nodes securely
 		./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
@@ -91,12 +91,12 @@ createNodes() {
 			./clientCA.sh enroll -t peer -u "$peer" -o "$org" -s "$peerpw"
 		done
 
-		# Register admin
-		./clientCA.sh register -t admin -u "$admin" -o "$org" -s "$adminpw"
-		./clientCA.sh enroll -t admin -u "$admin" -o "$org" -s "$adminpw"
+		# Register registar admins
+		./clientCA.sh register -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
+		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
 		# Create Org-Users Admin which will be used to register users in the app as a registrar
-		createOrgUsersAdmin "$org" "$admin"
+		./clientCA.sh setup_orgusersca -o "$org" -t admin
 
 		# Create a block listener client for the app
 		./clientCA.sh register -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
@@ -127,8 +127,7 @@ createConsortium() {
 	res=$?
 	set +x
 
-	verifyResult "$res" "Genesis block failed to generate"
-	printSuccess "Orderer genesis block generated!"
+	verifyResult "$res" "Genesis block failed to generate" && printSuccess "Orderer genesis block generated!"
 }
 
 # Bring up the nodes
@@ -138,7 +137,9 @@ startNodes() {
 	for org in $ORDERER_ORGS; do
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
+			set -x
 			./peer.sh start -t orderer -n "$orderer"."$org".domain.com -p "${PORT_MAP[${orderer}]}"
+			set +x
 		done
 	done
 
@@ -146,7 +147,9 @@ startNodes() {
 	for org in $PEER_ORGS; do
 		setPorts "$org"
 		for peer in $PEER_IDS; do
+			set -x
 			./peer.sh start -t peer -n "$peer"."$org".domain.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
+			set +x
 			((COUNT++))
 		done
 	done
@@ -160,9 +163,7 @@ createChannel() {
 
 	createChannelA "$PEER_ORGS"
 	res=$?
-	verifyResult "$res" "Channel creation failed!"
-	
-	printSuccess "Channel ${CHANNEL_NAME} Created!"
+	verifyResult "$res" "network - createChannel - Channel creation failed!" && printSuccess "network - createChannel - Channel ${CHANNEL_NAME} Created!"
 }
 
 # Deploy chaincode
@@ -179,14 +180,15 @@ exportMSPs() {
 
 	for org in $PEER_ORGS; do
 		set -x
-		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/admin0/. "$APP_DEST"/"$org"Registrar/
+		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/admin0/. "$APP_DEST"/"$org"UsersRegistrar/
+		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
 		set +x
 	done
  	
  	set -x
-	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/lynkeus.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
-	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/lynkeus.domain.com/peers/peer0.lynkeus.domain.com/. "$APP_DEST"/peer0Lynkeus/
-	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/lynkeus.domain.com/users/prometheus .
+	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
+	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/peers/peer0.agora.domain.com/. "$APP_DEST"/peer0agora/
+	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/prometheus .
 	set +x
 }
 

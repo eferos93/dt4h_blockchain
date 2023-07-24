@@ -32,18 +32,8 @@ register() {
 	TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp
 	TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${TLS_ADMIN}/msp
 
-	# USERNAME=$(ls ${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.domain.com/peers | wc -l | sed 's/^ *//')	
-	USERNAME="$USERNAME"
-
-	# # Check if a config file for the peer exists
-	# if [[ "$TYPE" == "peer" || "$TYPE" == "orderer" ]] && [[ ! -f "$FABRIC_HOME"/config/"$USERNAME"-"${ORG_NAME}".yaml ]]; then
-	# 	printError "Config for ${USERNAME}-${ORG_NAME} does not exist."
-	# 	echo "Please create a configuration file for the peer with name ${USERNAME}-${ORG_NAME}.yaml and add it to the folder: config"
-	# 	exit 1
-	# fi	
-
 	if [ "$TYPE" == "admin" ]; then
-		attrs="--id.attrs hf.Registrar.Roles=* --id.attrs hf.GenCRL=true"
+		attrs="--id.attrs hf.Registrar.Roles=*,hf.GenCRL=true"
 	elif [ "$TYPE" == "peer" ]; then
 		attrs="--id.attrs hf.GenCRL=true"
 	else

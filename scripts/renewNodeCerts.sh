@@ -4,7 +4,6 @@
 . util.sh
 
 # Use REUSE_KEY flag to keep private key and just update expiration date
-REUSE_KEY=
 REUSE_KEY="--reuse-key"
 # CA_TYPE=ca
 CA_TYPE=tls

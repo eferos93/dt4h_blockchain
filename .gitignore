@@ -19,7 +19,6 @@ organizations
 smpc-application
 NOTES*
 # ccp*
-application
 INFO.md
 logs
 grpc-comms

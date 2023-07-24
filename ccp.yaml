@@ -2,7 +2,7 @@
 name: fabric_main
 version: "1.1"
 client:
-  organization: tex
+  organization: athena
   connection:
     timeout:
       peer:
@@ -10,112 +10,112 @@ client:
 channels:
   agora:
     orderers:
-      - orderer0.texorderer.domain.com
-      - orderer1.texorderer.domain.com
-      - orderer0.lynkeusorderer.domain.com
+      - orderer0.athenaorderer.domain.com
+      - orderer1.athenaorderer.domain.com
+      - orderer0.agoraorderer.domain.com
     peers:
-      - peer0.tex.domain.com
-      - peer0.lynkeus.domain.com
-      - peer1.tex.domain.com
-      - peer1.lynkeus.domain.com
+      - peer0.athena.domain.com
+      - peer0.agora.domain.com
+      - peer1.athena.domain.com
+      - peer1.agora.domain.com
 
 organizations:
-  tex:
-    mspid: TexMSP
+  athena:
+    mspid: AthenaMSP
     peers:
-      - peer0.tex.domain.com
-      - peer1.tex.domain.com
+      - peer0.athena.domain.com
+      - peer1.athena.domain.com
     certificateAuthorities:
-      - ca_tex
+      - ca_athena
 
-  lynkeus:
-    mspid: LynkeusMSP
+  agora:
+    mspid: AgoraMSP
     peers:
-      - peer0.lynkeus.domain.com
-      - peer1.lynkeus.domain.com
+      - peer0.agora.domain.com
+      - peer1.agora.domain.com
     certificateAuthorities:
-      - ca_lynkeus
+      - ca_agora
 
 orderers:
-  orderer0.texorderer.domain.com:
+  orderer0.athenaorderer.domain.com:
     url: grpcs://localhost:9051
     grpcOptions:
-      ssl-target-name-override: orderer0.texorderer.domain.com
-      hostnameOverride: orderer0.texorderer.domain.com
+      ssl-target-name-override: orderer0.athenaorderer.domain.com
+      hostnameOverride: orderer0.athenaorderer.domain.com
       grpc.keepalive_timeout_ms: 20000
     tlsCACerts:
-      path: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer0.texorderer.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/ordererOrganizations/athenaorderer.domain.com/orderers/orderer0.athenaorderer.domain.com/tls/tlscacerts/ca.crt
 
-  orderer1.texorderer.domain.com:
+  orderer1.athenaorderer.domain.com:
     url: grpcs://localhost:9061
     grpcOptions:
-      ssl-target-name-override: orderer1.texorderer.domain.com
-      hostnameOverride: orderer1.texorderer.domain.com
+      ssl-target-name-override: orderer1.athenaorderer.domain.com
+      hostnameOverride: orderer1.athenaorderer.domain.com
       grpc.keepalive_timeout_ms: 20000
     tlsCACerts:
-      path: ../organizations/ordererOrganizations/texorderer.domain.com/orderers/orderer1.texorderer.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/ordererOrganizations/athenaorderer.domain.com/orderers/orderer1.athenaorderer.domain.com/tls/tlscacerts/ca.crt
 
-  orderer0.lynkeusorderer.domain.com:
+  orderer0.agoraorderer.domain.com:
     url: grpcs://localhost:9071
     grpcOptions:
-      ssl-target-name-override: orderer0.lynkeusorderer.domain.com
-      hostnameOverride: orderer0.lynkeusorderer.domain.com
+      ssl-target-name-override: orderer0.agoraorderer.domain.com
+      hostnameOverride: orderer0.agoraorderer.domain.com
       grpc.keepalive_timeout_ms: 20000
     tlsCACerts:
-      path: ../organizations/ordererOrganizations/lynkeusorderer.domain.com/orderers/orderer0.lynkeusorderer.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/ordererOrganizations/agoraorderer.domain.com/orderers/orderer0.agoraorderer.domain.com/tls/tlscacerts/ca.crt
 
 
 peers:
-  peer0.tex.domain.com:
+  peer0.athena.domain.com:
     url: grpcs://localhost:7070
     tlsCACerts:
-      path: ../organizations/peerOrganizations/tex.domain.com/peers/peer0.tex.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/athena.domain.com/peers/peer0.athena.domain.com/tls/tlscacerts/ca.crt
     grpcOptions:
-      hostnameOverride: peer0.tex.domain.com
+      hostnameOverride: peer0.athena.domain.com
       grpc.keepalive_timeout_ms: 20000
-      ssl-target-name-override: peer0.tex.domain.com
+      ssl-target-name-override: peer0.athena.domain.com
 
-  peer1.tex.domain.com:
+  peer1.athena.domain.com:
     url: grpcs://localhost:7080
     tlsCACerts:
-      path: ../organizations/peerOrganizations/tex.domain.com/peers/peer1.tex.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/athena.domain.com/peers/peer1.athena.domain.com/tls/tlscacerts/ca.crt
     grpcOptions:
-      hostnameOverride: peer1.tex.domain.com
+      hostnameOverride: peer1.athena.domain.com
       grpc.keepalive_timeout_ms: 20000
-      ssl-target-name-override: peer1.tex.domain.com
+      ssl-target-name-override: peer1.athena.domain.com
   
-  peer0.lynkeus.domain.com:
+  peer0.agora.domain.com:
     url: grpcs://localhost:8080
     tlsCACerts:
-      path: ../organizations/peerOrganizations/lynkeus.domain.com/peers/peer0.lynkeus.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/agora.domain.com/peers/peer0.agora.domain.com/tls/tlscacerts/ca.crt
     grpcOptions:
-      hostnameOverride: peer0.lynkeus.domain.com
+      hostnameOverride: peer0.agora.domain.com
       grpc.keepalive_timeout_ms: 20000
-      ssl-target-name-override: peer0.lynkeus.domain.com
+      ssl-target-name-override: peer0.agora.domain.com
 
-  peer1.lynkeus.domain.com:
+  peer1.agora.domain.com:
     url: grpcs://localhost:8090
     tlsCACerts:
-      path: ../organizations/peerOrganizations/lynkeus.domain.com/peers/peer1.lynkeus.domain.com/tls/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/agora.domain.com/peers/peer1.agora.domain.com/tls/tlscacerts/ca.crt
     grpcOptions:
-      hostnameOverride: peer1.lynkeus.domain.com
+      hostnameOverride: peer1.agora.domain.com
       grpc.keepalive_timeout_ms: 20000
-      ssl-target-name-override: peer1.lynkeus.domain.com
+      ssl-target-name-override: peer1.agora.domain.com
 
 
 certificateAuthorities:
-  ca_tex:
-    url: https://localhost:7055
-    caName: ca_tex
+  ca_athena:
+    url: https://localhost:8055
+    caName: ca_athena
     tlsCACerts:
-      path: ../organizations/fabric-ca/tex/fabric-ca-client-tex/tls-root-cert/tls-ca-cert.pem
+      path: ../organizations/fabric-ca/athena/fabric-ca-client-athena/tls-root-cert/tls-ca-cert.pem
     httpOptions:
       verify: true
       
-  ca_lynkeus:
-    url: https://localhost:8055
-    caName: ca_lynkeus
+  ca_agora:
+    url: https://localhost:7055
+    caName: ca_agora
     tlsCACerts:
-      path: ../organizations/fabric-ca/lynkeus/fabric-ca-client-lynkeus/tls-root-cert/tls-ca-cert.pem
+      path: ../organizations/fabric-ca/agora/fabric-ca-client-agora/tls-root-cert/tls-ca-cert.pem
     httpOptions:
       verify: true

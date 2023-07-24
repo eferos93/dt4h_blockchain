@@ -11,8 +11,9 @@
 const TYPE = 'Crypto';
 
 /* Dependencies */
-import { CertSerialAndAki, EX509Identity, CryptoMaterial, IEnrollResponse } from './interfaces'
+import { CertSerialAndAki, EX509Identity, CryptoMaterial, IEnrollResponse, IClient } from './interfaces'
 import { getLogger, toBuffer } from './libUtil'
+import Connection from './Connection';
 
 import { KeyObject, X509Certificate, generateKeyPair } from 'crypto';
 import { Certificate } from '@fidm/x509';
@@ -37,22 +38,19 @@ const KEY_OPTIONS = {
 	}
 };
 
-export function isValidIdentity(signerX509Identity: EX509Identity) {
-	const method = 'verifyIdentity'
+export async function isValidIdentity(cryptoMaterial: CryptoMaterial) {
+	const method = 'isValidIdentity'
+	const testMessage = new Uint8Array(Buffer.from("Hello, World!"));
 
 	try {
-		signTransaction(signerX509Identity, 'a message to sign')
-		return true
+		const x509Identity = generateIdentity(cryptoMaterial)
+		const signer = await Connection.newSigner({ x509Identity })
+		const sign = await signer(testMessage)
+		return (sign?.length > 0)		
 	} catch(e: any){
-		logger.error('%s - %s', method, e.message)
+		logger.error(`${method} - ${e.message}`)
 		return false
 	}
-	// let verify = crypto.createVerify('sha256');
-	// let data = "Test data for signature verification"
-	// let signature = getSignatureToVerify(data);
-	// let sign = crypto.createSign(ALGORITHM);
-	// sign.update(data);
-	// let signature = sign.sign(privateKey, SIGNATURE_FORMAT);
 }
 
 // export function privateKeyPEMtoRaw(privateKeyPEM: X509Certificate) {
@@ -92,7 +90,7 @@ export function generateIdentity(cryptoMaterial: CryptoMaterial): EX509Identity 
 		version: 1
 	};
 
-	logger.debug('%s - Identity cert: ', method, identity.credentials.certificate);
+	logger.debug(`${method} - Identity cert: ${identity.credentials.certificate}`);
 	return identity;
 }
 
@@ -105,7 +103,7 @@ export function generateIdentity(cryptoMaterial: CryptoMaterial): EX509Identity 
  */
 export async function generateKeysCSR(userID: string, orgMSP: string): Promise<CryptoMaterial> {
 	const method = 'generateKeysCSR';
-	logger.info('%s - Generating Crypto Material for user', method, userID);
+	logger.debug(`${method} - Generating Crypto Material for user ${userID}`);
 
 	let csrPem;
 
@@ -118,7 +116,7 @@ export async function generateKeysCSR(userID: string, orgMSP: string): Promise<C
 					throw err;
 				}
 
-				logger.debug('%s - public Key: ', method, publicKey);
+				logger.debug(`${method} - public Key: ${publicKey}`);
 
 				try {
 					const subjectDN = 'CN=' + userID;
@@ -144,15 +142,15 @@ export async function generateKeysCSR(userID: string, orgMSP: string): Promise<C
 						enrollment: {} as IEnrollResponse
 					};
 
-					logger.debug('%s - CSR PEM: ', method, csrPem);
+					logger.debug(`${method} - CSR PEM: ${csrPem}`);
 					resolve(result);
 				} catch (e: any) {
-					logger.error('%s - ', method, e.message);
+					logger.error(`${method} - ${e.message}`);
 					reject(e);
 				}
 			});
 		} catch (e: any) {
-			logger.error('%s - ', method, e.message);
+			logger.error(`${method} - ${e.message}`);
 			throw e;
 		}
 	});

@@ -52,8 +52,6 @@ export class App {
         return dbHandler
     }
 
-
-
     // async submitTx(signer, fcn) {
     //     return await this.signOffline.submitTx(signer, fcn)
     // }

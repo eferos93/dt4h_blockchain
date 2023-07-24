@@ -132,8 +132,8 @@ setParams() {
   export TLSOPS_PORT=$tlsOpsPort
 
   # Admin User
-  user=admin0
-  userpw=admin0pw
+  export ORG_USERS_ADMIN=admin0
+  export ORG_USERS_ADMIN_PW=admin0
 
   # Block Client 
   blockclient=blockclient
@@ -150,6 +150,8 @@ setParams() {
   # Org Admin ID-Secret
   admin=admin
   adminpw=adminpw
+  export ORG_REGISTRAR=registrar0
+  export ORG_REGISTRAR_PW=registrarpw
 
   # Prometheus
   prometheus=prometheus

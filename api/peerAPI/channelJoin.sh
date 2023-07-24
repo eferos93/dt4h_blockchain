@@ -6,6 +6,7 @@ joinChannel() {
 
 	local rc=1
 	local COUNTER=1
+	local MAX_RETRY=2
 
 	# Join channel	
 	while [ $rc -ne 0 -a $COUNTER -ne $MAX_RETRY ]; do

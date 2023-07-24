@@ -23,20 +23,20 @@ createChannelA() {
 	orgs=$1
 	mainOrg=$(echo $orgs | head -n1 | cut -d " " -f1)
 
-	joinOrderers
-	sleep 10
-
-	set -x
 	./peer.sh createchanneltx -c ${CHANNEL_NAME} -P ${CHANNEL_PROFILE}
-	./peer.sh createchannel -n peer0.agora.domain.com -c ${CHANNEL_NAME} -A
+	verifyResult $? "createChannelA - Failed to create channel tx. Exiting..." || return $?
+
+	joinOrderers
+	sleep 2
+
 	set +x
 	for org in $orgs; do
 		ORG_MSP="${org^}"MSP
 		# sleep 3
-		./peer.sh fetchconfig -n peer0."$org".domain.com
-		./peer.sh updateanchorpeers -o "$org" -O "$ORG_MSP"
-		sleep 3
-		./peer.sh channelupdate -n peer0.$org.domain.com -A
+		# ./peer.sh fetchconfig -n peer0."$org".domain.com
+		# ./peer.sh updateanchorpeers -o "$org" -O "$ORG_MSP"
+		# sleep 3
+		# ./peer.sh channelupdate -n peer0.$org.domain.com -A
 		./peer.sh joinchannel -n peer0."$org".domain.com -A 
 		./peer.sh joinchannel -n peer1."$org".domain.com -A 
 	done

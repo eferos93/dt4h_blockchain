@@ -48,8 +48,7 @@ export class UserContract {
 	 * @throws {Error}
 	 */
 	handleError(error: Error, method: string): never {
-		logger.error('%s - %j', method, error.message);
-		console.log(error)
+		logger.error(`${method} - ${error.message}`);
 		throw error;
 	}
 

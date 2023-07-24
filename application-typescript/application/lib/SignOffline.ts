@@ -1,5 +1,8 @@
 import { Gateway, Contract, Network, Signer, Proposal, Transaction, Commit, Status, GrpcClient } from '@hyperledger/fabric-gateway';
 import { IProposalOptions, IProposalProto  } from './interfaces'
+import { getLogger } from './libUtil'
+
+const logger = getLogger('SignOffline')
 
 /**
  * Class to handle the offline signing of Hyperledger Fabric transactions
@@ -32,7 +35,7 @@ export class SignOffline {
      * @param {Uint8Array} digest - The digest to be signed
      * @returns {Promise<Uint8Array>} - The signature
      */
-    private async signDigest(signer: Signer, digest: Uint8Array): Promise<Uint8Array> {
+    async signDigest(signer: Signer, digest: Uint8Array): Promise<Uint8Array> {
         return signer(digest);
     }
 
@@ -54,7 +57,6 @@ export class SignOffline {
      */
     private buildProposal(fcn: IProposalOptions): IProposalProto {
         const unsignedProposal = this.contract.newProposal(fcn.name, fcn.options);
-        console.log('built')
         return this.getBytesAndDigest(unsignedProposal);
     }
 
@@ -97,10 +99,7 @@ export class SignOffline {
      * @param {IProposalOptions} fcn - The function to call and its options
      * @returns {Promise<{ status: string, result: Buffer }>} - The status and result of the transaction
      */
-    async submitTx(signer: Signer, fcn: IProposalOptions): Promise<{ status: Status, result: any }> {
-
-        console.log(fcn)
-        // const network = this.init()
+    async submitTx(signer: Signer, fcn: IProposalOptions): Promise<{ status: number, result: any }> {
 
         // Create proposal digest
         const proposal = this.buildProposal(fcn);
@@ -120,18 +119,50 @@ export class SignOffline {
         // Submit transaction
         const { signedTransaction, unsignedCommit } = await this.submitTransaction(transaction, transactionSignature);
 
-        // Create commit digest
-        const commit = this.getBytesAndDigest(unsignedCommit);
+        // // Create commit digest
+        // const commit = this.getBytesAndDigest(unsignedCommit);
 
-        // Offline sign commit
-        const commitSignature = await this.signDigest(signer, commit.digest);
+        // // Offline sign commit
+        // const commitSignature = await this.signDigest(signer, commit.digest);
 
         // Get transaction result and status
-        const result = signedTransaction.getResult();
-        const status = await this.submitCommit(commit, commitSignature);
+        // const result = signedTransaction.getResult();
+        // const status = await this.submitCommit(commit, commitSignature);
 
-        return { status, result };
+        return { status: 0, result: '' };
+        // return { status, result };
     }
+
+
+    /**
+     * Sign a transaction manually
+     *
+     */
+    // signTransaction(privateKeyPEM: string, proposalBytes: any) {
+    //     const method = 'signTransaction';
+
+    //     const hashAlgo = 'sha256';
+    //     try {
+    //         const hash = crypto.createHash(hashAlgo);
+    //         hash.update(proposalBytes);
+    //         const digest = hash.digest('hex');
+    //         const { prvKeyHex } = KEYUTIL.getKey(privateKeyPEM); // convert the pem encoded key to hex encoded private key
+    //         const EC = elliptic.ec;
+    //         const ecdsaCurve = elliptic.curves.p256;
+    //         const ecdsa = new EC(ecdsaCurve);
+    //         const signKey = ecdsa.keyFromPrivate(prvKeyHex, 'hex');
+    //         let sig = ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
+    //         sig = _preventMalleability(sig);
+    //         const signature = Buffer.from(sig.toDER());
+
+    //         logger.debug('%s - transaction signed', method);
+    //         return signature;
+    //     } catch (e: any) {
+    //         logger.error('%s - %s', method, e.message);
+    //         throw e;
+    //     }
+    // }
 }
+
 
 export default SignOffline

@@ -16,7 +16,7 @@ createChannelTx() {
 	set -x
 	mkdir channel-artifacts
 	echo $FABRIC_CFG_PATH
-	configtxgen -profile ${CHANNEL_PROFILE} -channelID ${CHANNEL_NAME} -configPath "$FABRIC_CFG_PATH" -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx
+	configtxgen -profile ${CHANNEL_PROFILE} -channelID ${CHANNEL_NAME} -configPath "$FABRIC_CFG_PATH" -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block
 	res=$?
 	set +x
 

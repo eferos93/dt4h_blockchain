@@ -11,6 +11,14 @@ import { ProposalOptions } from '@hyperledger/fabric-gateway'
 export { IdentityContext }
 export { IEnrollResponse }
 
+export interface ICA {
+	orgName: string;
+	caName: string;
+	orgMSP: string;
+	registrarID: string;
+	type?: string;
+}
+
 export interface IClient {
 	mspPath?: string;
 	mspId?: string;
@@ -18,7 +26,14 @@ export interface IClient {
 	username?: string;
 }
 
-
+export interface CryptoMaterial {
+	enrollment: IEnrollResponse,
+	privateKey: crypto.KeyObject,
+	mspId: string,
+	subjectDN: string,
+	csr: string,
+	publicKey: crypto.KeyObject
+}
 
 export interface IX509Identity {
 	credentials: {
@@ -149,15 +164,6 @@ export interface ReenrollResponse {
 export interface Credentials {
 	certificate: string,
 	privateKey: crypto.KeyObject
-}
-
-export interface CryptoMaterial {
-	enrollment: IEnrollResponse,
-	privateKey: crypto.KeyObject,
-	mspId: string,
-	subjectDN: string,
-	csr: string,
-	publicKey: crypto.KeyObject
 }
 
 export interface CertSerialAndAki {
