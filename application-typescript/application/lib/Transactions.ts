@@ -53,7 +53,7 @@ class Agreement {
      * @return {ITransactionData} The transaction data.
      */
     read(id: string): ITransactionData {
-        return { name: `${this.contract}:${this.getAgreementTx}`, options: { arguments: id } };
+        return { name: `${this.contract}:${this.getAgreementTx}`, options: { arguments: [id] } };
     }
 
     getAll(): ITransactionData {
@@ -108,7 +108,7 @@ class Product {
      * @return {ITransactionData} The transaction data.
      */
     read(id: string): ITransactionData {
-        return { name: `${this.contract}:${this.readProductTx}`, options: { arguments: id } };
+        return { name: `${this.contract}:${this.readProductTx}`, options: { arguments: [id] } };
     }
 
     /**
@@ -117,7 +117,7 @@ class Product {
      * @return {ITransactionData} The transaction data.
      */
     delete(id: string): ITransactionData {
-        return { name: `${this.contract}:${this.deleteProductTx}`, options: { arguments: id } };
+        return { name: `${this.contract}:${this.deleteProductTx}`, options: { arguments: [id] } };
     }
 
     /**

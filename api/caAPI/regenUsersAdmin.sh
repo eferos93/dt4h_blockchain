@@ -61,6 +61,7 @@ enrollUsersAdmin() {
 	mkdir -p "$USERSMSPDIR"/cacerts
 	cp -r "$CAMSPDIR"/cacerts/cacert.pem "$USERSMSPDIR"/cacerts/cacert.pem
 	cp "$CAMSPDIR"/config.yaml "$USERSMSPDIR"
+	createNodeOUs "${ORG_NAME}" "$USERSMSPDIR"
 
 	printSuccess "enrollUsersAdmin - ${ORG_NAME} ${TYPE} ${ORG_USERS_ADMIN} enrolled succesfully"
 }

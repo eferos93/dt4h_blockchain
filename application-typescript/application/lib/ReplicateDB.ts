@@ -269,7 +269,7 @@ export class OffchainDB {
 	 * @ignore
 	 */
 	handleError(method: string, e: any): never {
-		logger.error('%s - ', method, e);
+		logger.error(`${method} - ${e}`);
 		throw e;
 	}
 
@@ -296,7 +296,7 @@ export class OffchainDB {
 	 */
 	async disconnect(): Promise<void> {
 		const method = 'disconnect';
-		logger.info('%s - Closing connection...', method);
+		logger.info(`${method} - Closing connection...`);
 
 		try {
 			return await this.connection.close();
@@ -330,7 +330,7 @@ export class OffchainDB {
 
 			// Check if event exists and parse data
 			if (!(allEvents.indexOf(eventName) > -1)) {
-				logger.warn('%s - Unhandled event', method, eventName)
+				logger.warn(`${method} - ${eventName}`)
 				return
 			}
 
@@ -373,4 +373,6 @@ export class OffchainDB {
 		return await this.connection.db.dropDatabase()
 	}
 }
+
+export default OffchainDB
 

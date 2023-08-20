@@ -118,7 +118,6 @@ setPeer() {
   [ -z $NODE_PORT ] && export NODE_PORT=${PORT_MAP[$nodeID]}
   export ADMIN_PORT=$((NODE_PORT + 2))
   export CORE_PEER_TLS_ENABLED=true
-  
 
 
 }

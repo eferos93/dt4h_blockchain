@@ -489,6 +489,7 @@ func (s *UserContract) validateCUD(ctx TransactionContextInterface, user *User, 
 		// DEV END
 	}
 
+	log.Printf("%+v", user.Org)
 	// Organization
 	if user.IsOrg {
 		err = user.Org.validateOrgArgs()

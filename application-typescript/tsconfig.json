@@ -104,6 +104,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
-  "include": ["./application/lib/**/*", "*.ts", "./application/lib/protos/*ts"],
+  "include": ["./application/lib/**/*", "./application/index.ts", "*.ts", "./application/lib/protos/*ts"],
   "exclude": ["./application/lib/protos/*.js"]
 }

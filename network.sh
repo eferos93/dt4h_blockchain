@@ -71,7 +71,9 @@ createNodes() {
 			./clientCA.sh enroll -t orderer -u "$orderer" -o "$org" -s "$ordererpw"
 		done
 
-		# Register registar admins
+		# Register admins
+		./clientCA.sh register -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
+		./clientCA.sh enroll -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
 		./clientCA.sh register -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
@@ -92,6 +94,8 @@ createNodes() {
 		done
 
 		# Register registar admins
+		./clientCA.sh register -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
+		./clientCA.sh enroll -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
 		./clientCA.sh register -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
@@ -180,7 +184,7 @@ exportMSPs() {
 
 	for org in $PEER_ORGS; do
 		set -x
-		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/admin0/. "$APP_DEST"/"$org"UsersRegistrar/
+		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${ADMIN_USER}/. "$APP_DEST"/"$org"UsersRegistrar/
 		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
 		set +x
 	done

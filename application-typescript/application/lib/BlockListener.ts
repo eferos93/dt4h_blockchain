@@ -9,8 +9,11 @@ import { ChaincodeEvent, CloseableAsyncIterable, GrpcClient, Gateway, GatewayErr
 import { TextDecoder } from 'util';
 import Connection from './Connection'
 import { IClient } from './interfaces'
-
 import { OffchainDB } from './ReplicateDB';
+import { getLogger } from './libUtil';
+
+/* Logging */
+const logger = getLogger('BlockListener');
 
 const offchainDB = new OffchainDB();
 const utf8Decoder = new TextDecoder();
@@ -97,17 +100,22 @@ export class BlockListener {
      * @param {bigint} startBlock - The block to start replaying from.
      */
     async replayChaincodeEvents(startBlock: bigint): Promise<void> {
-        console.log('\n*** Start chaincode event replay');
-        
+        const method = 'replayChaincodeEvents'
+
         const events = await this.network.getChaincodeEvents(this.chaincodeID, {
             startBlock,
         });
     
         try {
             for await (const event of events) {
-                const payload = this.parseJson(event.payload);
-                console.log(`\n<-- Chaincode event replayed: ${event.eventName} -`, payload);
-                await offchainDB.eventHandler(event.eventName, payload);
+                try {
+                    const payload = this.parseJson(event.payload);
+                    console.log(`\n<-- Chaincode event replayed: ${event.eventName} -`, payload);
+                    await offchainDB.eventHandler(event.eventName, payload);
+                } catch(e) {
+                    console.log(e)
+                    logger.error(`${method} - ${e}`)
+                }
             }
         } finally {
             events.close();

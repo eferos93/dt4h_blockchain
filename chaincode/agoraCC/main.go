@@ -1,9 +1,11 @@
 package main
 
 import (
-	agora "github.com/alxspectrum/chaincode/agoraCC/agora"
-	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"log"
+
+	// agora "github.com/alxspectrum/fabric/chaincode/agoraCC/agora"
+	agora "github.com/agora/chaincode/agora"
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	// "os"
 )
 

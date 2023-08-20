@@ -14,14 +14,12 @@ import { Wallets, X509Identity } from 'fabric-network';
 import FabricCAServices from 'fabric-ca-client';
 import { User } from 'fabric-common';
 import { ReenrollResponse, ICA } from './interfaces';
-import * as Crypto from './libCrypto';
-// import { GrpcClient } from './libGrpc';
+import * as Crypto from './Crypto';
 import { getLogger } from './libUtil';
 import { CACONFIG } from './Config'
 
 import * as path from 'path';
 import * as fs from 'fs';
-import * as process from 'process';
 import * as yaml from 'js-yaml';
 require('dotenv').config();
 
@@ -66,7 +64,6 @@ export class CAServices {
 		this.ca = this.createCA()
 		this.type = caData.type || 'main'
 		this.identityService = this.ca.newIdentityService();
-		console.log(this.ca)
 	}
 
 
@@ -83,16 +80,16 @@ export class CAServices {
 	 * @param {Error} e The error object
 	 * @param {String} method The function's name
 	 */
-	private handleError(e: any, method: string) {
+	private handleError(e: any, method: string): never {
 		logger.error(`${method} - ${e.message}`);
-		return e;
+		throw e;
 	}
 
 	/**
 	 * Get identity from Wallet
 	 *
-	 * @param {String} userID The ID of the user/admin
-	 * @returns {Object} The IdentityContext of the user/admin
+	 * @param {String} userID The ID of the admin
+	 * @returns {Object} The IdentityContext of the admin
 	 * */
 	async getIdentityContextFromWallet(userID: string): Promise<User | null> {
 		const method = 'getIdentityContextFromWallet';
@@ -114,7 +111,6 @@ export class CAServices {
 			return userContext;
 		} catch(e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -124,7 +120,7 @@ export class CAServices {
 	 *
 	 * @returns {Object} The CA instances
 	 */
-	createCA() {
+	createCA(): FabricCAServices {
 		const method = 'createCA';
 
 		try {
@@ -160,7 +156,6 @@ export class CAServices {
 
 		} catch (e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 
 	}
@@ -189,7 +184,6 @@ export class CAServices {
 			return status;
 		} catch (e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -199,7 +193,7 @@ export class CAServices {
 	 * @param {String} appUserID The user name to check
 	 * @returns {userIdentity} True if user is admin, else false
 	 */	
-	async getUser(appUserID: string) {
+	async getUser(appUserID: string): Promise<any> {
 		const method = 'getUser'
 
 		try {
@@ -212,9 +206,9 @@ export class CAServices {
 			return userIdentity
 		} catch(e: any) {
 			this.handleError(e, method)
-			// throw e;
 		}
 	}
+
 	/**
 	 * Updates a user on the CA
 	 *
@@ -222,7 +216,7 @@ export class CAServices {
 	 * @param {FabricCAServices.IIdentityRequest} identityRequest The identityRequest object to pass to the CA
 	 * @returns {Bool} 0 on success, -1 on failure
 	 */
-	async updateUser(appUserID: string, identityRequest: FabricCAServices.IIdentityRequest) {
+	async updateUser(appUserID: string, identityRequest: FabricCAServices.IIdentityRequest): Promise<any> {
 		const method = 'updateUser';
 
 		try {
@@ -232,15 +226,9 @@ export class CAServices {
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
 
 			// Update Identity
-			await this.identityService.update(appUserID, identityRequest, adminCtx as User);
-
-			logger.debug(`${method} - User ${appUserID} updated successfully`);
-
-			// Return success
-			return 0;
+			return await this.identityService.update(appUserID, identityRequest, adminCtx as User);
 		} catch (e: any) {
 			this.handleError(e, method);
-			return -1;
 		}
 	}
 
@@ -252,7 +240,7 @@ export class CAServices {
 	 * @param {Bool} force True if admin can remove self
 	 * @returns {Number} 0 on success, -1 on failure
 	 */
-	async deleteUser(appUserID: string, force?: string) {
+	async deleteUser(appUserID: string, force?: string): Promise<any> {
 		const method = 'deleteUser';
 
 		try {
@@ -260,14 +248,9 @@ export class CAServices {
 			const adminCtx = await this.getIdentityContextFromWallet(this.registrarID);
 
 			// Delete identity from CA
-			await this.identityService.delete(appUserID, adminCtx as User);
-
-			logger.info(`${method} - User ${appUserID} deleted successfully`);
-
-			return 0;
+			return await this.identityService.delete(appUserID, adminCtx as User);
 		} catch (e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -276,9 +259,9 @@ export class CAServices {
 	 *
 	 * @param {String} appUserID	The user name to register
 	 * @param {String} appUserRole 	The user's role to be registered
-	 * @returns {Number}    		0 for Success, -1 on error
+	 * @returns {any}    		Registration response
 	 */
-	async registerAppUser(appUserID: string, appUserRole: string, secret: string): Promise<number> {
+	async registerAppUser(appUserID: string, appUserRole: string, secret: string): Promise<any> {
 		const method = 'registerAppUser';
 
 		try {
@@ -295,15 +278,9 @@ export class CAServices {
 			}
 
 			// Register
-			await this.ca.register(registrationRequest, adminCtx);
-
-			logger.info(`${method} - User ${appUserID} registered succesfully`);
-
-			// Return null for success
-			return 0;
+			return await this.ca.register(registrationRequest, adminCtx);
 		} catch (e: any) {
 			this.handleError(e, method);
-			return e;
 		}
 	}
 
@@ -373,7 +350,6 @@ export class CAServices {
 
 		} catch (e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -416,7 +392,6 @@ export class CAServices {
 
 		} catch (e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -426,7 +401,7 @@ export class CAServices {
 	 * @param {String} userID The user ID to import
 	 * @returns {Number} 0 for success, -1 for failure
 	 */
-	async exportMSP(userID: string) {
+	async exportMSP(userID: string): Promise<number> {
 		const method = 'exportMSP';
 
 		const mspPath = `./${userID}/msp`;
@@ -451,8 +426,6 @@ export class CAServices {
 			return 0;
 		} catch (e: any) {
 			this.handleError(e, method);
-			// fs.rmdirSync(mspPath);
-			return -1;
 		}
 	}
 
@@ -462,9 +435,9 @@ export class CAServices {
 	 * @param {String} csr The Certificate Signing Request
 	 * @param {SigningIdentity} signingIdentity The Signing Identity Object
 	 * @param {Object} attrReqs Attributes to add to the user
-	 * @returns {Object} Contains signCert and rootCert
+	 * @returns {Promise<ReenrollResponse>} Contains signCert and rootCert
 	 */
-	async reenrollAppUser(csr: string, signingIdentity: any, attrReqs = null): Promise<ReenrollResponse> {
+	async reenrollAppUser(csr: string, signingIdentity: any, attrReqs: object = {}): Promise<ReenrollResponse> {
 		const method = 'reenrollAppUser';
 
 		try {
@@ -485,7 +458,6 @@ export class CAServices {
 			return reenrollResponse;
 		} catch(e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -496,7 +468,7 @@ export class CAServices {
 	 * @param {String} reason Reason for revoking the certificate
 	 * @returns {Object} Response of CA
 	 * */
-	async revokeCertificate(certificate: string, reason: string) {
+	async revokeCertificate(certificate: string, reason: string): Promise<any> {
 		const method = 'revokeCertificate';
 
 		try {
@@ -541,7 +513,6 @@ export class CAServices {
 			return response;
 		} catch(e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -551,7 +522,7 @@ export class CAServices {
 	 * @param {String} serial The serial number of cert
 	 * @returns {String} The certificate in PEM format
 	 * */
-	async getCertificateBySerial(serial: string) {
+	async getCertificateBySerial(serial: string): Promise<string> {
 		const method = 'getCertificateBySerial';
 
 		try {
@@ -582,7 +553,6 @@ export class CAServices {
 			return cert;
 		} catch(e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 
 	}
@@ -593,7 +563,7 @@ export class CAServices {
 	 * @param {String} appUserID The user's ID
 	 * @returns {ISODate} The max expiration date among all the certificates
 	 */
-	async getExpirationDate(appUserID: string) {
+	async getExpirationDate(appUserID: string): Promise<Date> {
 		const method = 'getExpirationDate';
 
 		try {
@@ -635,7 +605,6 @@ export class CAServices {
 			return maxDate;
 		} catch(e: any) {
 			this.handleError(e, method);
-			throw e;
 		}
 	}
 
@@ -644,3 +613,4 @@ export class CAServices {
 	}
 }
 
+export default CAServices

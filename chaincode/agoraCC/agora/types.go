@@ -52,7 +52,7 @@ const (
 	AUTOMATED_DECISION_MAKING = "Automated"
 )
 
-var AUTHORIZED_MSPS = []string{"LynkeusMSP", "TexMSP"}
+var AUTHORIZED_MSPS = []string{"AgoraMSP", "AthenaMSP"}
 var AGREEMENT_STATUS = []string{"Eligible", "Paid", "Access", "Withdrawn"}
 var PURPOSES = []string{"Marketing", "PubliclyFundedResearch", "PrivateResearch", "Management", "Automated", "StudyRecommendations", "JobOffers", "StatisticalResearch"}
 var PROTECTIONS = []string{"Anonymization", "Encryption", "SMPC"}
@@ -61,8 +61,7 @@ var PRODUCT_TYPES = []string{BATCH, ANALYTICS, STREAMS}
 var EDUCATIONAL_INSTITUTION_TYPES = []string{"HrAgencies", "PrivateCompanies", "PublicInstitutions", "PublicResearchCenters", "PublicResearchInstitutions"}
 var HEALTH_INSTITUTION_TYPES = []string{"PublicHospitals", "PrivateHospitals", "PrivateResearch", "PublicResearch", "Governments", "PrivateCompanies", "Other"}
 var AUTOMATED_DECISION_MAKING_CONSEQUENCES = []string{"AutomatedPlacing", "HiringAssessment", "ClinicalResearchAssessment", "DiagnosticOrTreatment"}
-
-// var INSTITUTION_TYPES = []string{"public_hospitals", "private_hospitals", "private_research_centers", "public_research_centers", "governments", "other", "public_institutions", "public_research_institutions", "hr_agencies", "private_companies", "private_institutions"}
+var INSTITUTIONS = append(HEALTH_INSTITUTION_TYPES, EDUCATIONAL_INSTITUTION_TYPES...)
 
 // var DATA_ACCESS_LEVELS = []string{"level_1", "level_2", "level_3"}
 
@@ -177,7 +176,6 @@ func (o *Org) initOrg() {
 func (o Org) validateOrgArgs() error {
 	method := "validateOrgArgs"
 
-	INSTITUTIONS := append(HEALTH_INSTITUTION_TYPES, EDUCATIONAL_INSTITUTION_TYPES...)
 	if !_in(o.InstType, INSTITUTIONS) {
 		return fmt.Errorf("%s - Undefined institution value: %s", method, o.InstType)
 	}
@@ -188,7 +186,10 @@ func (o Org) validateOrgArgs() error {
 	if len(o.Members) == 0 {
 		o.Members = []string{}
 	}
-	o.Active = true
+	//  else {
+	// 	o.Members =
+	// }
+
 	return nil
 }
 

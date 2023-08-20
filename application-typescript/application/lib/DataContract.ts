@@ -41,21 +41,16 @@ export class DataContract {
 		// this.chaincodeID = chaincodeID
 	}
 
-    // async setGateway(contract: Contract) {
-    //     this.contract = contract
-	// }
-
 	/**
-	 * Error handler for contract API
-	 *
-	 * @ignore
-	 * @param {Error} error The error object
-	 * @param {string} method The function's name
-	 * @returns {any} The error object
+	 * Logs an error message and rethrows the error.
+	 * 
+	 * @param error The error that was caught
+	 * @param method The name of the method where the error occurred
+	 * @throws {Error}
 	 */
 	handleError(error: Error, method: string): never {
-		logger.error('%s - %j', method, error.message);
-		console.log(error)
+		// console.log(error)
+		logger.error(`${method} - ${error}`);
 		throw error;
 	}
 
@@ -74,7 +69,7 @@ export class DataContract {
 			let res = await this.contract.submitTransaction(transaction.name, ...transaction.options!.arguments);
 			return Buffer.from(res).toString('utf-8');
 		} catch(e: any) {
-			return this.handleError(e, method);
+			this.handleError(e, method);
 		}
 	}
 
@@ -93,7 +88,7 @@ export class DataContract {
 			let res = await this.contract.submitTransaction(transaction.name, ...transaction.options!.arguments);
 			return Buffer.from(res).toString('utf-8');
 		} catch(e: any) {
-			return this.handleError(e, method);
+			this.handleError(e, method);
 		}
 	}
 

@@ -29,6 +29,12 @@ export ORDERER_IDS="orderer0 orderer1"
 # -- USER INPUT - Set CouchDB Ports
 export COUCHDB_PORTS=("5100" "5200" "6100" "6200")
 
+# -- ORG ADMINS USERNAMES AND PASSWORDS --
+export ADMIN_USER=admin0
+export ADMIN_USER_PW=admin0pw
+export ORG_REGISTRAR=registrar0
+export ORG_REGISTRAR_PW=registrarpw
+
 # -- USER INPUT - Set Peer Ports
 setPorts() {
   org=$1
@@ -88,7 +94,6 @@ setParams() {
     tlsPort=10054
     peerPort=10070
   fi
-
   
   # CA 
   caHost=localhost
@@ -150,8 +155,6 @@ setParams() {
   # Org Admin ID-Secret
   admin=admin
   adminpw=adminpw
-  export ORG_REGISTRAR=registrar0
-  export ORG_REGISTRAR_PW=registrarpw
 
   # Prometheus
   prometheus=prometheus

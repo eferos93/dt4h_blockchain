@@ -33,7 +33,7 @@ register() {
 	TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${TLS_ADMIN}/msp
 
 	if [ "$TYPE" == "admin" ]; then
-		attrs="--id.attrs hf.Registrar.Roles=*,hf.GenCRL=true"
+		attrs="--id.attrs hf.Registrar.Roles=*,hf.GenCRL=true,hf.Revoker=true"
 	elif [ "$TYPE" == "peer" ]; then
 		attrs="--id.attrs hf.GenCRL=true"
 	else

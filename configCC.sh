@@ -12,7 +12,7 @@ export CHANNEL_NAME=agora
 
 # Version of chaincode
 # If the update is only for the endorsement policy, the version can stay the same
-export CC_VERSION="1.0"
+export CC_VERSION="1.1"
 
 # Path to the chaincode
 export CC_PATH=${FABRIC_HOME}/chaincode/agoraCC
@@ -21,7 +21,7 @@ export CC_PATH=${FABRIC_HOME}/chaincode/agoraCC
 export CC_NAME=agoraCC
 
 # Should be incremented by 1 on every chaincode update commit
-export CC_SEQUENCE=1
+export CC_SEQUENCE=2
 
 # Endorsement policy
 export CC_EP="NA"
@@ -39,4 +39,4 @@ export CONN_TIMEOUT=3
 export MAX_RETRY=10
 
 # Package IDentifier
-export PACKAGE_ID=agoraCC_1.0:c8cf070af8923c7a758e194ebd41a79d977d908da30f343240a092477d907309
+export PACKAGE_ID=agoraCC_1.1:f647a2c9dd95ca49fd29ca64ffb219f7ce681f107dc569117f33c022cd698d6e

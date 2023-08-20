@@ -11,9 +11,6 @@ const TYPE = 'UserContract';
 
 /* Local */
 import {
-	connectGateway,
-	prettyJSONString,
-	prettyJSON,
 	getLogger,
 	bufferToJson
 } from './libUtil';
@@ -32,8 +29,6 @@ const logger = getLogger(TYPE);
  */
 export class UserContract {
 
-	// channelID: string;
-	// chaincodeID: string;
 	contract: Contract;
 	
 	constructor(contract: Contract) {

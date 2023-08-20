@@ -10,14 +10,15 @@ import (
 	// "github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-// IsEligible Compare buyer parameters with data policy
+// IsEligible checks if a buyer is eligible to buy a product by comparing
+// buyer's parameters with product's data policy
+// It returns a boolean indicating the eligibility and an error, if any.
 func (s *AgreementContract) IsEligible(ctx TransactionContextInterface, product *Product, buyerParams BuyerParams) (bool, error) {
-
-	// // test print
-	// userJSON, _ := json.MarshalIndent(user, "", " ")
-	// fmt.Printf("data %s", userJSON)
-
-	return true, s.validatePolicy(ctx, buyerParams, product)
+	err := s.validatePolicy(ctx, buyerParams, product)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // validatePolicy Matches policy of buyer and product
@@ -25,10 +26,8 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 	method := "validatePolicy"
 	log.Printf("%s - start\n", method)
 
-	policy := product.Policy
-
 	log.Printf("%s - Buyer's purposes: %s\n", method, buyerParams.Purposes)
-	log.Printf("%s - Policy purpose: %s\n", method, policy.Purposes)
+	log.Printf("%s - Policy purpose: %s\n", method, product.Policy.Purposes)
 
 	buyer := ctx.GetData()
 
@@ -54,7 +53,7 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 	}
 
 	// If User is PreApproved, make no other checks
-	if _in(buyer.ID, policy.ApprovedUsers) {
+	if _in(buyer.ID, product.Policy.ApprovedUsers) {
 		return nil
 	}
 
@@ -76,7 +75,7 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 		if product.ProductType == ANALYTICS {
 
 			// Check Institution
-			err = s.checkInstitutionType(userOrg.Org.InstType, policy.RecipientType)
+			err = s.checkInstitutionType(userOrg.Org.InstType, product.Policy.RecipientType)
 			if err != nil {
 				return fmt.Errorf("%s: %v", method, err)
 			}
@@ -86,12 +85,12 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 		if product.ProductType != ANALYTICS {
 
 			// Check if Org is Pre-Approved on this specific Data Product
-			if !_in(buyer.IsMemberOf, policy.ApprovedOrgs[:]) {
+			if !_in(buyer.IsMemberOf, product.Policy.ApprovedOrgs[:]) {
 				return fmt.Errorf("%s: Buyer's Org is not pre approved on this data product.", method)
 			}
 
 			// Check Purposes
-			err = s.checkPurposes(buyerParams.Purposes, policy.Purposes)
+			err = s.checkPurposes(buyerParams.Purposes, product.Policy.Purposes)
 			if err != nil {
 				return fmt.Errorf("%s: %v", method, err)
 			}
@@ -101,21 +100,13 @@ func (s *AgreementContract) validatePolicy(ctx TransactionContextInterface, buye
 	if product.Sector == EDUCATION {
 
 		// Check Institution
-		err = s.checkInstitutionType(userOrg.Org.InstType, policy.RecipientType)
-		if err != nil {
+		if err := s.checkInstitutionType(userOrg.Org.InstType, product.Policy.RecipientType); err != nil {
 			return fmt.Errorf("%s: %v", method, err)
 		}
 
-		// Analytics
-		// if product.ProductType == ANALYTICS {
-
-		// }
-
 		// Batch, Streams
 		if product.ProductType != ANALYTICS {
-
-			err = s.checkPurposes(buyerParams.Purposes, policy.Purposes)
-			if err != nil {
+			if err := s.checkPurposes(buyerParams.Purposes, product.Policy.Purposes); err != nil {
 				return fmt.Errorf("%s: %v", method, err)
 			}
 		}
