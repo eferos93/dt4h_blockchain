@@ -14,19 +14,9 @@ const TYPE = 'Util';
 import winston, { format, transport } from 'winston';
 
 import * as process from 'process';
-import * as path from 'path';
-import * as yaml from 'js-yaml';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 
-import { Gateway, Wallets, DefaultEventHandlerStrategies } from 'fabric-network';
-const config = winston.config;
 require('dotenv').config();
-
-/* Env */
-const walletPath: string = path.join(process.env.FABRIC_WALLET_PATH!);
-const ccpPath: string = path.resolve(process.env.FABRIC_CCP_PATH!);
-const AS_LOCALHOST: string = process.env.FABRIC_AS_LOCALHOST!.toLowerCase()
 
 export function toBuffer(bufStr: string) {
 	return Buffer.from(bufStr, 'utf8');
@@ -50,53 +40,6 @@ export function bufferToJson(buf: Uint8Array) {
 export function prettyJSONString(input: Object) {
 	if (!(input.toString())) { return ''; }
 	return JSON.stringify(input, null, 2);
-}
-
-/**
- * Connect to gateway
- *
- * @param {String} userID The user identity to connect
- * @returns {Gateway} gateway The gateway instance
- */
-export async function connectGateway(userID: string) {
-	const method = 'connectGateway';
-
-	try {
-
-		// Load the network config
-		const fileExists = fs.existsSync(ccpPath);
-		if (!fileExists) {
-			throw new Error(`Connection profile path not found at file: ${ccpPath}`);
-		}
-
-		// Load .yaml config
-		const ccpYaml = fs.readFileSync(ccpPath);
-		const ccp = yaml.load(ccpYaml as unknown as string);
-
-		const wallet = await Wallets.newFileSystemWallet(walletPath);
-
-		const gateway = new Gateway();
-		const gatewayOptions = {
-			eventHandlerOptions: {
-				strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ANYFORTX
-			},
-			wallet,
-			identity: userID,
-			clientTlsIdentity: userID,
-			discovery: { enabled: true, asLocalhost: AS_LOCALHOST === 'true' }
-		};
-
-		// @ts-ignore
-		await gateway.connect(ccp, gatewayOptions);
-
-		logger.debug('%s - gateway connected', method);
-		return gateway;
-
-	} catch (e: any) {
-		logger.error('%s - ', method, e);
-		throw e
-	}
-
 }
 
 /**
@@ -192,14 +135,18 @@ export const getLogger = (type: string) => {
 	winston.addColors(colors); // Add custom colors
 
 	const myFormat = format.printf(({ level, message, label, timestamp }) => {
-		return `${colors[level] || ''}${timestamp} [${label}] ${level.toUpperCase()}\x1b[0m: ${message}`;
-	});
-
-	const nonColorFormat = format.printf(({ level, message, label, timestamp }) => {
-		return `${timestamp} [${label}] ${level.toUpperCase()}: ${message}`;
+		// Check if the message is an error object and use the error message if available
+		const actualMessage = message instanceof Error ? message.message : message;
+		return `${colors[level] || ''}${timestamp} [${label}] ${level.toUpperCase()}\x1b[0m: ${actualMessage}`;
 	});
 	
-	const appLogging = JSON.parse(process.env.APP_LOGGING || '{}');
+	const nonColorFormat = format.printf(({ level, message, label, timestamp }) => {
+		// Check if the message is an error object and use the error message if available
+		const actualMessage = message instanceof Error ? message.message : message;
+		return `${timestamp} [${label}] ${level.toUpperCase()}: ${actualMessage}`;
+	});
+	
+	const appLogging = JSON.parse(process.env.FABRIC_APP_LOGGING || '{}');
 	const transports: winston.transport[] = [];
 
 	for (const level in loggingLevels) {
@@ -222,6 +169,18 @@ export const getLogger = (type: string) => {
 		defaultMeta: { label: type },
 		transports: transports
 	});
+	
+	const originalErrorMethod = logger.error.bind(logger);
+
+	logger.error = (message: any, ...meta: any[]): winston.Logger => {
+		if (message instanceof Error) {
+			return originalErrorMethod(message.message, ...meta);
+		} else if (typeof message !== 'string') {
+			return originalErrorMethod(JSON.stringify(message), ...meta);
+		} else {
+			return originalErrorMethod(message, ...meta);
+		}
+	};
 
 	return logger
 }

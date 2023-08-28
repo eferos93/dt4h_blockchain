@@ -70,6 +70,7 @@ const {
 
 
     let res;
+    console.log(clientData)
 
     const client = await app.newClient(clientData)
     
@@ -79,10 +80,10 @@ const {
     // res = await client.userContract.createUser(test_data.user0)
     // console.log(res)
     // await Util.sleep(3000)
-
-    res = await client.signOffline.submitTx(client.signer, Transaction.user.create(test_data.user0))
+    console.log(Transaction.product.create(test_data.product_analytics))
+    res = await client.signOffline.submitTx(client.signer, Transaction.product.create(test_data.product_analytics))
     console.log(res)
-    await Util.sleep(3000)
+    // await Util.sleep(3000)
 
     // res = await client.userContract.updateUser(test_data.user0)
     // // console.log(res)

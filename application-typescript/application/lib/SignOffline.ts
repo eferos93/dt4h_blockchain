@@ -36,7 +36,7 @@ export class SignOffline {
      * @returns {Promise<Uint8Array>} - The signature
      */
     async signDigest(signer: Signer, digest: Uint8Array): Promise<Uint8Array> {
-        return signer(digest);
+        return await signer(digest);
     }
 
     /**
@@ -66,8 +66,8 @@ export class SignOffline {
      * @param {Uint8Array} proposalSignature - The proposal's signature
      * @returns {Promise<UnsignedTransaction>} - The endorsed proposal
      */
-    private async endorseProposal(proposal: IProposalProto, proposalSignature: Uint8Array): Promise<Transaction> {
-        const signedProposal: Proposal = this.gateway!.newSignedProposal(proposal.bytes, proposalSignature);
+    private async endorseProposal(proposalBytes: Uint8Array, proposalSignature: Uint8Array): Promise<Transaction> {
+        const signedProposal: Proposal = this.gateway!.newSignedProposal(new Uint8Array(proposalBytes), new Uint8Array(proposalSignature));
         return signedProposal.endorse();
     }
 
@@ -77,8 +77,8 @@ export class SignOffline {
      * @param {Uint8Array} transactionSignature - The transaction's signature
      * @returns {Promise<{ signedTransaction: Transaction, unsignedCommit: Commit }>} - The signed transaction and the unsigned commit
      */
-    private async submitTransaction(transaction: IProposalProto, transactionSignature: Uint8Array): Promise<{ signedTransaction: Transaction, unsignedCommit: Commit }> {
-        const signedTransaction: Transaction = this.gateway!.newSignedTransaction(transaction.bytes, transactionSignature);
+    private async submitTransaction(transactionBytes: Uint8Array, transactionSignature: Uint8Array): Promise<{ signedTransaction: Transaction, unsignedCommit: Commit }> {
+        const signedTransaction: Transaction = this.gateway!.newSignedTransaction(transactionBytes, transactionSignature);
         return { signedTransaction, unsignedCommit: await signedTransaction.submit() };
     }
 
@@ -108,7 +108,7 @@ export class SignOffline {
         const proposalSignature = await this.signDigest(signer, proposal.digest);
 
         // Gather endorsements
-        const unsignedTransaction = await this.endorseProposal(proposal, proposalSignature);
+        const unsignedTransaction = await this.endorseProposal(proposal.bytes, proposalSignature);
 
         // Create transaction digest
         const transaction = this.getBytesAndDigest(unsignedTransaction);
@@ -117,17 +117,17 @@ export class SignOffline {
         const transactionSignature = await this.signDigest(signer, transaction.digest);
 
         // Submit transaction
-        const { signedTransaction, unsignedCommit } = await this.submitTransaction(transaction, transactionSignature);
+        const { signedTransaction, unsignedCommit } = await this.submitTransaction(transaction.bytes, transactionSignature);
 
-        // // Create commit digest
-        // const commit = this.getBytesAndDigest(unsignedCommit);
+        // Create commit digest
+        const commit = this.getBytesAndDigest(unsignedCommit);
 
-        // // Offline sign commit
-        // const commitSignature = await this.signDigest(signer, commit.digest);
+        // Offline sign commit
+        const commitSignature = await this.signDigest(signer, commit.digest);
 
         // Get transaction result and status
-        // const result = signedTransaction.getResult();
-        // const status = await this.submitCommit(commit, commitSignature);
+        const result = signedTransaction.getResult();
+        const status = await this.submitCommit(commit, commitSignature);
 
         return { status: 0, result: '' };
         // return { status, result };

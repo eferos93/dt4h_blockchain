@@ -147,8 +147,9 @@ export class Connection {
      * @param {IClient} client - Client interface.
      * @returns {Promise<Signer>} The Signer object.
      */
-    async newSigner(client: IClient): Promise<Signer> {
-        if (client.x509Identity) {
+    async newSigner(client: IClient): Promise<Signer | undefined> {
+        if (client?.x509Identity) {
+            if (!client.x509Identity.credentials?.privateKey) return undefined
             const privateKeyPem = Buffer.from(client.x509Identity.credentials.privateKey, 'utf-8')
             const privateKey = crypto.createPrivateKey(privateKeyPem);
             return signers.newPrivateKeySigner(privateKey)
@@ -156,6 +157,7 @@ export class Connection {
         const keystorePath = `${client.mspPath}/msp/keystore`
         const keyFiles = await fs.readdir(`${keystorePath}`);
         if (keyFiles.length === 0) {
+            // return undefined
             throw new Error(`No private key files found in directory ${client.mspPath}`);
         }
         const keyPath = path.resolve(keystorePath, keyFiles[0]);

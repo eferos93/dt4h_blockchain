@@ -11,9 +11,6 @@ const TYPE = 'DataContract';
 
 /* Dependencies */
 import {
-	connectGateway,
-	prettyJSONString,
-	prettyJSON,
 	getLogger,
 	bufferToJson
 } from './libUtil';

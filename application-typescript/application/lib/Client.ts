@@ -24,7 +24,7 @@ export class Client {
     client: IClient;
     username: string | undefined;
     signOffline: SignOffline;
-    signer: Signer;
+    signer: Signer | undefined;;
 
     constructor(peerConnection: GrpcClient, client: IClient) {
         if (!client.mspPath && !client.x509Identity) throw new Error('Missing mspPath or x509Identity')        

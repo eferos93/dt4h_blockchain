@@ -45,8 +45,12 @@ export async function isValidIdentity(cryptoMaterial: CryptoMaterial) {
 	try {
 		const x509Identity = generateIdentity(cryptoMaterial)
 		const signer = await Connection.newSigner({ x509Identity })
-		const sign = await signer(testMessage)
-		return (sign?.length > 0)		
+		if (signer) {
+			const sign = await signer(testMessage)
+			return (sign?.length > 0)		
+		} else {
+			return undefined
+		}
 	} catch(e: any){
 		logger.error(`${method} - ${e.message}`)
 		return false

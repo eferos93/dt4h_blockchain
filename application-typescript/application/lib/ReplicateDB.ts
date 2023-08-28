@@ -63,8 +63,8 @@ class User {
 		return await this.col.findOne({ username: query }).select("-__v")
 	}
 
-	async getAll() {
-		return await this.col.find().select("-__v")
+	async getAll(query={}, fields={}) {
+		return await this.col.find(query, fields).select("-__v")
 	}
 
 	async getPagination(query={}, fields={}, select='', page=1,

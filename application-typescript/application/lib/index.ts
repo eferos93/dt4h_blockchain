@@ -16,6 +16,7 @@ import App from './App'
 import * as Config from './Config'
 import Connection from './Connection'
 import Transaction from './Transactions'
+import * as Signers from './Signer'
 
 export {
 	UserContract,
@@ -31,5 +32,6 @@ export {
 	App,
 	Config,
 	Connection,
-	Transaction
+	Transaction,
+	Signers
 }
