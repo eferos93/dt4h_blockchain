@@ -20,7 +20,7 @@ export const DATABASE = {
 }
 
 export const CACONFIG = {
-    ccpPath: process.env.FABRIC_CCP_PATH || '',
+    configPath: process.env.FABRIC_CONFIG_PATH || '',
     walletPath: process.env.FABRIC_WALLET_PATH || '',
     asLocalhost: process.env.FABRIC_AS_LOCALHOST || ''
 }

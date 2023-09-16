@@ -7,6 +7,9 @@ import Connection from './Connection'
 import Client from './Client'
 import BlockListener from './BlockListener'
 import DBHandler from './Database'
+import CAServices from './CAServices'
+import { readdir, readFile } from 'fs/promises';
+import { join } from 'path';
 
 export class App {
 
@@ -28,8 +31,35 @@ export class App {
         this.clients = new Map()
     }
 
+
+    async importMSPs() {
+        try {
+            const directoryPath = './identities'
+            // Read all filenames in the directory
+            const filenames = await readdir(directoryPath);
+
+            const ca = new CAServices(null)
+            for (const filename of filenames) {
+                try {
+                    console.log(`Importing identity: ${filename}`)
+                    await ca.importMSP(filename)
+                } catch(e) {
+
+                }
+            }
+
+
+    
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    }
+
     async init() {
         this.peerConnection = await Connection.newGrpcConnection(this.peer)
+        await this.importMSPs()
+
+
     }
 
     async newClient(clientData: IClient) {

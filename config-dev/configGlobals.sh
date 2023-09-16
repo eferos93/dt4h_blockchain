@@ -29,6 +29,12 @@ export ORDERER_IDS="orderer0 orderer1"
 # -- USER INPUT - Set CouchDB Ports
 export COUCHDB_PORTS=("5100" "5200" "6100" "6200")
 
+# -- ORG ADMINS USERNAMES AND PASSWORDS --
+export ADMIN_USER=admin0
+export ADMIN_USER_PW=admin0pw
+export ORG_REGISTRAR=registrar0
+export ORG_REGISTRAR_PW=registrarpw
+
 # -- USER INPUT - Set Peer Ports
 setPorts() {
   org=$1
@@ -88,7 +94,6 @@ setParams() {
     tlsPort=10054
     peerPort=10070
   fi
-
   
   # CA 
   caHost=localhost
@@ -127,9 +132,13 @@ setParams() {
   tlsopsendpoint=${tlsHost}:${tlsOpsPort}
   tlsopscaName=tlsopsca-${org}
 
+  export TLSOPS_ENDPOINT=$tlsopsendpoint
+  export TLSOPS_CANAME=$tlsopscaName
+  export TLSOPS_PORT=$tlsOpsPort
+
   # Admin User
-  user=admin0
-  userpw=admin0pw
+  export ORG_USERS_ADMIN=admin0
+  export ORG_USERS_ADMIN_PW=admin0
 
   # Block Client 
   blockclient=blockclient

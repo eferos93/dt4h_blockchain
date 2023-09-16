@@ -7,6 +7,7 @@ LSB_RELEASE = $(shell lsb_release -cs)
 .PHONY: init
 
 
+# Azure VM, inits external disk also
 remote_init_vm:
 	- ./tools.sh transferAll .
 	- ./tools.sh cmdAll 'sudo apt-get update'

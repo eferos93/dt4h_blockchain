@@ -11,13 +11,13 @@ export CONSORTIUM_NAME=BasicConsortium
 # Set ORDERER global variables 
 
 # -- USER INPUT - Set Organization Names
-export ORG_1=tex
-export ORG_2=lynkeus
+export ORG_1=agora
+export ORG_2=athena
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}orderer.domain.com
 export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}orderer.domain.com/mspConfig/tlscacerts/ca.crt
-export ORDERER=orderer0.lynkeusorderer.domain.com:9051
+export ORDERER=orderer0.athenaorderer.domain.com:9051
 
 # -- USER INPUT - Set Organizations
 [[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_1}orderer ${ORG_2}orderer"
@@ -38,16 +38,16 @@ export CCP_CA_PORT=7055
 setPorts() {
   org=$1
   declare -Ag PORT_MAP
-  if [ "$org" == "tex" ]; then
+  if [ "$org" == "agora" ]; then
     PORT_MAP[peer0]=7070
     PORT_MAP[peer1]=7070
-  elif [ "$org" == "lynkeus" ]; then
+  elif [ "$org" == "athena" ]; then
     PORT_MAP[peer0]=7070
     PORT_MAP[peer1]=7070
-  elif [ "$org" == "texorderer" ]; then
+  elif [ "$org" == "agoraorderer" ]; then
     PORT_MAP[orderer0]=9051
     PORT_MAP[orderer1]=9051
-  elif [ "$org" == "lynkeusorderer" ]; then
+  elif [ "$org" == "athenaorderer" ]; then
     PORT_MAP[orderer0]=9051
   elif [ "$org" == "org3" ]; then
     PORT_MAP[peer0]=9051
@@ -76,7 +76,7 @@ setParams() {
 
   ##### ORG TYPE #####
   typeOfOrg=peer
-  if [ "$org" == "lynkeusorderer" ] || [ "$org" == "texorderer" ]; then
+  if [ "$org" == "athenaorderer" ] || [ "$org" == "agoraorderer" ]; then
     typeOfOrg=orderer
   fi
 
@@ -142,33 +142,33 @@ export HOSTS="# Hyperledger Fabric Host Configuration
 # Append to /etc/hosts
 
 # CAs
-20.224.189.91 ca_lynkeus
-20.224.189.91 tlsca_lynkeus
+20.224.189.91 ca_athena
+20.224.189.91 tlsca_athena
 
-20.101.138.179 ca_tex
-20.101.138.179 tlsca_tex
+20.101.138.179 ca_agora
+20.101.138.179 tlsca_agora
 
-20.101.137.150 ca_lynkeusorderer
-20.101.137.150 tlsca_lynkeusorderer
+20.101.137.150 ca_athenaorderer
+20.101.137.150 tlsca_athenaorderer
 
-20.101.75.205 ca_texorderer
-20.101.75.205 tlsca_texorderer
+20.101.75.205 ca_agoraorderer
+20.101.75.205 tlsca_agoraorderer
 
 # endCAs
 
 # Peers
-20.123.159.122 peer0.lynkeus.domain.com
-40.115.61.72 peer1.lynkeus.domain.com
+20.123.159.122 peer0.athena.domain.com
+40.115.61.72 peer1.athena.domain.com
 
-20.4.76.222 peer0.tex.domain.com
-20.101.106.73 peer1.tex.domain.com
+20.4.76.222 peer0.agora.domain.com
+20.101.106.73 peer1.agora.domain.com
 
 # endPeers
 
 # Orderers
-20.23.253.97 orderer0.lynkeusorderer.domain.com
-20.224.127.217 orderer0.texorderer.domain.com
-13.80.52.99 orderer1.texorderer.domain.com
+20.23.253.97 orderer0.athenaorderer.domain.com
+20.224.127.217 orderer0.agoraorderer.domain.com
+13.80.52.99 orderer1.agoraorderer.domain.com
 
 # endOrderers
 

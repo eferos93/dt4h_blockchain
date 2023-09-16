@@ -55,14 +55,16 @@ enrollUsersAdmin() {
 
 	# cp "$FABRIC_CA_PATH"/${ORG_NAME}/fabric-ca-client-${ORG_NAME}/${ORG_NAME}-users-ca/${USERS_CAADMIN}/msp/cacerts/*  "$CAMSPDIR"/cacerts/cacert-users.pem
 
-	createNodeOUs "${ORG_NAME}" "$CAMSPDIR"
+	set -x
+	createNodeOUs "$CAMSPDIR"
 
 	USERSMSPDIR=$USERS_HOME/../usersmsp
 	mkdir -p "$USERSMSPDIR"/cacerts
 	cp -r "$CAMSPDIR"/cacerts/cacert.pem "$USERSMSPDIR"/cacerts/cacert.pem
 	cp "$CAMSPDIR"/config.yaml "$USERSMSPDIR"
-	createNodeOUs "${ORG_NAME}" "$USERSMSPDIR"
+	createNodeOUs "$USERSMSPDIR"
 
+	set +x
 	printSuccess "enrollUsersAdmin - ${ORG_NAME} ${TYPE} ${ORG_USERS_ADMIN} enrolled succesfully"
 }
 

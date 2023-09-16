@@ -60,13 +60,13 @@ const {
 
     // Create a gateway based on the client's identity
     const clientData = {
-    //   mspPath: "./identities/blockClient",
-    //   mspId: "AgoraUsersMSP",
-        x509Identity: JSON.parse(await fs.readFile('./wallet/user0.id')),
-        type: "X.509",
-        version: 1,
-    };
-
+        //   mspPath: "./identities/blockClient",
+        //   mspId: "AgoraUsersMSP",
+            x509Identity: JSON.parse(await fs.readFile('./wallet/test.id')),
+            type: "X.509",
+            version: 1,
+        };
+    
 
 
     let res;
@@ -77,12 +77,30 @@ const {
     
     // ------------- CONTRACTS TEST ------------
 
-    // res = await client.userContract.createUser(test_data.user0)
-    // console.log(res)
-    // await Util.sleep(3000)
-    console.log(Transaction.product.create(test_data.product_analytics))
-    res = await client.signOffline.submitTx(client.signer, Transaction.product.create(test_data.product_analytics))
+    const tt = {
+        username: 'test12314',
+        isOrg: false,
+        isMemberOf: "",
+        org: {
+            instType: 'PrivateResearch',
+            orgName: 'Lynkeus',
+            // dpoFirstName: 'Bob',
+            // dpoLastName: 'Bobinson',
+            // dpoEmail: 'Bob@email.com',
+            active: true,
+            members: []
+        },
+        isBuyer: false,
+        purposes: ['Marketing'],
+        active: true
+    };
+
+    res = await client.userContract.createUser(tt)
     console.log(res)
+    // await Util.sleep(3000)
+    // console.log(Transaction.product.create(test_data.product_analytics))
+    // res = await client.signOffline.submitTx(client.signer, Transaction.product.create(test_data.product_analytics))
+    // console.log(res)
     // await Util.sleep(3000)
 
     // res = await client.userContract.updateUser(test_data.user0)

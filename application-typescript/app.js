@@ -6,7 +6,7 @@ const {
     Config,
     Transaction,
     Util
-} = require('./application/dist');
+} = require('./application');
 
 
 (async () => {
@@ -55,17 +55,7 @@ const {
             }
             break;
     }
-
-
-    // Create a gateway based on the client's identity
-    const clientData = {
-    //   mspPath: "./identities/blockClient",
-    //   mspId: "AgoraUsersMSP",
-        x509Identity: JSON.parse(await fs.readFile('./wallet/user0.id')),
-        type: "X.509",
-        version: 1,
-    };
-
+    
 
 
 })()

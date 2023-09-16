@@ -2,7 +2,7 @@
 
 ## Description
 
-Abackend code is provided in Typescript with various functionalities such as: 
+A backend code is provided in Typescript with various functionalities such as: 
 * Interaction with the CA Servers
 * Replication of the Blockchain in a MongoDB
 * Offline Signing Transactions (in the Browser)

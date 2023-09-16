@@ -25,7 +25,7 @@ require('dotenv').config();
 
 /* Env */
 const walletPath = path.join(CACONFIG.walletPath);
-const ccpPath = path.resolve(CACONFIG.ccpPath);
+const configPath = path.resolve(CACONFIG.configPath);
 
 /* Logging */
 const logger = getLogger(TYPE);
@@ -52,7 +52,8 @@ export class CAServices {
 	 *
 	 * @param {ICA} caData - The CA Data
 	 */
-	constructor(caData: ICA) {
+	constructor(caData: ICA | null) {
+		if (!caData) return
 		if (!caData.orgName || !caData.caName || !caData.orgMSP) {
 			throw new Error('Error creating CA. Missing parameters!')
 		}
@@ -61,8 +62,9 @@ export class CAServices {
 		this.orgName = caData.orgName;
 		this.orgMSP = caData.orgMSP;
 		this.registrarID = caData.registrarID
-		this.ca = this.createCA()
 		this.type = caData.type || 'main'
+		this.ca = this.createCA()
+		console.log(this.ca)
 		this.identityService = this.ca.newIdentityService();
 	}
 
@@ -115,8 +117,7 @@ export class CAServices {
 	}
 
 	/**
-	 * Creates CA instance based on existing ccp.yaml
-	 * on local file system at path: ../ccp.yaml
+	 * Creates CA instance
 	 *
 	 * @returns {Object} The CA instances
 	 */
@@ -125,15 +126,15 @@ export class CAServices {
 
 		try {
 			// Load the network config
-			let fileExists = fs.existsSync(ccpPath);
+			let fileExists = fs.existsSync(configPath);
 			if (!fileExists) {
-				throw new Error(`Connection profile path not found at file: ${ccpPath}`);
+				throw new Error(`Connection profile path not found at file: ${configPath}`);
 			}
-
-			// Load .yaml config
-			const ccpYaml = fs.readFileSync(ccpPath);
-			const ccp = yaml.load(ccpYaml.toString()) as any;
-
+			
+			// Load .json config
+			const ccpJson = fs.readFileSync(configPath, 'utf8');
+			const ccp = JSON.parse(ccpJson);
+			
 			// Set CA and use TLS
 			const caURL = ccp.certificateAuthorities[`ca_${this.orgName}`].url;
 			const tlsRelPath = ccp.certificateAuthorities[`ca_${this.orgName}`].tlsCACerts.path;
@@ -142,6 +143,7 @@ export class CAServices {
 			if (!fileExists) {
 				throw new Error(`TLS Certificate for Org: ${this.orgName} not found at file: ${tlsPath}`);
 			}
+			
 
 			logger.debug(`${method} - loaded ca_${this.orgName}`);
 			const tlsRootCert = fs.readFileSync(tlsPath, 'ascii');

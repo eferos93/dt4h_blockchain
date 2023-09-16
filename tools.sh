@@ -73,7 +73,7 @@ if [[ $# -ge 1 ]]; then
 	elif [[ "$MODE" == "sync" ]]; then
 		# cmd="sync"
 		EXPORT_FOLDERS="api chaincode config* scripts tests application-typescript"
-		EXPORT_FILES="ccp.yaml *.sh DEPLOY.md README.md Makefile"
+		EXPORT_FILES="*.sh DEPLOY.md README.md Makefile"
 		EXCLUDE=" --exclude application-typescript/node_modules --exclude config-prod/organizations --exclude config.backup"
 		EXCLUDE+=" --exclude application-typescript/identities --exclude application-typescript/wallet --exclude application-typescript/lynkeusRegistrar --exclude application-typescript/nextblock"
 		EXCLUDE+=" --exclude application-typescript/kraken-app/jsdoc"

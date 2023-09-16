@@ -57,7 +57,6 @@ make init
 <!-- - smpc-application: Application used by SMPC Coordinator to invoke chaincode on Fabric network -->
 - tests: Network tests
 - api/toolsAPI: A Customised API for various deployment operations
-ccp.yaml: Contains hostnames and IPs of Nodes and CAs
 clientCA.sh, peer.sh, tools.sh: Clients for the APIs
 configCC.sh: Configuration of the chaincode (when commit)
 grafana_dashboard: Used by grafana to monitor nodes

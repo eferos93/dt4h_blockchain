@@ -6,7 +6,7 @@ exportFolder() {
 	FABRIC_PATH=${PWD}
 
 	EXPORT_FOLDERS="api chaincode config* scripts tests application-typescript"
-	EXPORT_FILES="ccp.yaml *.sh DEPLOY.md README.md Makefile"
+	EXPORT_FILES="*.sh DEPLOY.md README.md Makefile"
 
 	mkdir $EXPORT_PATH
 	set -x

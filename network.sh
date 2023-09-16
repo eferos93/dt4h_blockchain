@@ -186,6 +186,7 @@ exportMSPs() {
 		set -x
 		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${ADMIN_USER}/. "$APP_DEST"/"$org"UsersRegistrar/
 		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
+		# cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${USERSCA_ADMIN}/. "$APP_DEST"/test_"$org"UsersRegistrar/
 		set +x
 	done
  	

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Switch network configurations to 2 modes: Development - Production
+# Switch network configuration to 2 modes: Development - Production
 switchNet() {
 	printInfo "Switching environment..."
 
@@ -24,11 +24,6 @@ switchNet() {
 	cp -f "$CONFIG"/configGlobals.sh "$FABRIC_HOME"
 	cp -f "$CONFIG"/ccp.yaml "$FABRIC_HOME"
 	cp -f "$CONFIG"/.env "$APP_PATH"
-	# if [[ "$NET" == "dev" ]]; then
-	# 	cp -r organizations "config_$DEV"/
-	# fi
-	
-	# cp -rf "$CONFIG"/organizations "$FABRIC_HOME"
 
 	set -x
 	rsync -avP  "$CONFIG"/ "$FABRIC_HOME"/config/

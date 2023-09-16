@@ -67,6 +67,8 @@ if [[ $# -ge 1 ]] ; then
 		cmd=reenroll		
 	elif [ "$MODE" == "identitylist" ]; then
 		cmd=identityList	
+	elif [ "$MODE" == "identitymodify" ]; then
+		cmd=identityModify	
 	elif [ "$MODE" == "setup_orgca" ]; then
 		cmd="createTLSCA;createCA"
 	elif [ "$MODE" == "setup_idca" ]; then
