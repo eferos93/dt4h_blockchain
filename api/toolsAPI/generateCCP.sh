@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script's functionality is used to generate a ccp.yaml from $HOSTS 
+
+
 generateCCP() {
 
   printInfo "Generating CCP using hostnames and IPs from /etc/hosts..."

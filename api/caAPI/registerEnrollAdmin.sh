@@ -1,64 +1,76 @@
 #!/bin/bash
+#
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 
-# Register Org admin to TLS and CA Servers
-# Commands executed by the admins of TLS CA and CA respectively
+# Function: registerOrgAdmin
+# Description: Register the organization's admin with the TLS and CA servers.
+# The registration is executed by the TLS CA and CA admins.
 registerOrgAdmin() {
+    # Check if the ORG_NAME variable is set
+    if [ -z "${ORG_NAME}" ]; then
+        printError "enrollOrgAdmin - No organization specified"
+        exit 1
+    fi
 
-	if [ -z "${ORG_NAME}" ]; then
-		printError "enrollOrgAdmin - No organization specified"
-		exit 1
-	fi
+    # Ensure the type is either 'peer' or 'orderer'
+    if [ "${TYPE}" != "peer" ] &&  [ "${TYPE}" != "orderer" ]; then
+        printError "enrollOrgAdmin - Not supported type of org: ${TYPE}"
+        exit 1
+    fi
 
-	if [ "${TYPE}" != "peer" ] &&  [ "${TYPE}" != "orderer" ]; then
-		printError "enrollOrgAdmin - Not supported type of org: ${TYPE}"
-		exit 1
-	fi
+    # Inform about the registration initiation
+    printInfo "registerOrgAdmin - Register the Org Admin $admin of ${ORG_NAME}"
 
-	printInfo "registerOrgAdmin - Register the Org Admin $admin of ${ORG_NAME}"
+    # Create necessary directories
+    mkdir -p organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
 
-	mkdir -p organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
+    # Register Org admin with the TLS server
+    set -x
+    fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/tls-ca/${TLS_ADMIN}/msp -u https://${TLS_ENDPOINT} --id.name $admin --id.secret $adminpw --id.type admin --caname tlsca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
+    res=$?
+    set +x
+    verifyResult $res "registerOrgAdmin - Failed to register Org Admin $admin to TLS Server"
+    
+    # Register Org admin with the CA server
+    set -x
+    fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/${ORG_NAME}-ca/${CA_ADMIN}/msp -u https://${CA_ENDPOINT} --id.name $admin --id.secret $adminpw --id.type admin --caname ca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
+    res=$?
+    set +x
+    verifyResult $res "registerOrgAdmin - Failed to register Org Admin $admin to CA Server"
 
-	# read -p "Enter admin username:" admin
-	# read -s -p "Enter admin password:" adminpw
-
-	set -x
-	fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/tls-ca/${TLS_ADMIN}/msp -u https://${TLS_ENDPOINT} --id.name $admin --id.secret $adminpw --id.type admin --caname tlsca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
-	res=$?
-	set +x
-	verifyResult $res "registerOrgAdmin - Failed to register Org Admin $admin to TLS Server"
-	
-	set -x
-	fabric-ca-client register --mspdir ${FABRIC_CA_CLIENT_HOME}/${ORG_NAME}-ca/${CA_ADMIN}/msp -u https://${CA_ENDPOINT} --id.name $admin --id.secret $adminpw --id.type admin --caname ca-${ORG_NAME} --tls.certfiles $TLS_ROOTCERT_PATH  
-	res=$?
-	set +x
-	verifyResult $res "registerOrgAdmin - Failed to register Org Admin $admin to CA Server"
-
-	printSuccess "registerOrgAdmin - Org Admin $admin registered to TLS and CA Sever succesfully"
+    # Successful registration message
+    printSuccess "registerOrgAdmin - Org Admin $admin registered to TLS and CA Sever successfully"
 }
 
-# Enroll the Org admin to acquire the Org's MSP
+# Function: enrollOrgAdmin
+# Description: Enroll the organization's admin to acquire the organization's MSP.
 enrollOrgAdmin() {
+    # Check if the ORG_NAME variable is set
+    if [ -z "${ORG_NAME}" ]; then
+        printError "enrollOrgAdmin - No organization specified"
+        exit 1
+    fi
 
-	if [ -z "${ORG_NAME}" ]; then
-		printError "enrollOrgAdmin - No organization specified"
-		exit 1
-	fi
+    # Ensure the type is either 'peer' or 'orderer'
+    if [ "${TYPE}" != "peer" ] &&  [ "${TYPE}" != "orderer" ]; then
+        printError "enrollOrgAdmin - Not supported type of org: ${TYPE}"
+        exit 1
+    fi
 
-	if [ "${TYPE}" != "peer" ] &&  [ "${TYPE}" != "orderer" ]; then
-		printError "enrollOrgAdmin - Not supported type of org: ${TYPE}"
-		exit 1
-	fi
+    # Inform about the enrollment initiation
+    printInfo "enrollOrgAdmin - Enroll the Admin of ${ORG_NAME}"
 
-	printInfo "enrollOrgAdmin - Enroll the Admin of ${ORG_NAME}"
+    # Define MSP/TLS paths
+    ORG_HOME=${FABRIC_HOME}/organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
+    CAMSPDIR=${ORG_HOME}/msp
+    TLSMSPDIR=${ORG_HOME}/tls
+    OLDMSPSDIR=${ORG_HOME}/oldmsps
+    MSP_CONFIG=${ORG_HOME}/mspConfig
 
-	# Set MSP/TLS Paths
-	ORG_HOME=${FABRIC_HOME}/organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
-	CAMSPDIR=${ORG_HOME}/msp
-	TLSMSPDIR=${ORG_HOME}/tls
-	OLDMSPSDIR=${ORG_HOME}/oldmsps
-	MSP_CONFIG=${ORG_HOME}/mspConfig
-
-	[ ! -d "$ORG_HOME" ] && mkdir -p "$ORG_HOME"
+    [ ! -d "$ORG_HOME" ] && mkdir -p "$ORG_HOME"
 
 	# Create folder to put old MSP files
 	[ -d "$CAMSPDIR" ] && [ ! -d "$OLDMSPSDIR" ] && mkdir -p "$OLDMSPSDIR"
@@ -108,7 +120,5 @@ enrollOrgAdmin() {
 	cp -r "$CAMSPDIR"/. ${MSP_CONFIG}
 	rm -r ${MSP_CONFIG}/keystore
 	rm -r ${MSP_CONFIG}/signcerts
-
-	printSuccess "enrollOrgAdmin - Org admin enrolled to TLS and CA Server succesfully"
+    printSuccess "enrollOrgAdmin - Org admin enrolled to TLS and CA Server successfully"
 }
-

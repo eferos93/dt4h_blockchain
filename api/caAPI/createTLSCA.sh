@@ -1,45 +1,37 @@
 #!/bin/bash
+#
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 
-# TLS
+# Create and initialize the TLS Server
 createTLSServer() {
-	if [ -d "$FABRIC_CA_SERVER_HOME" ]; then
-		printError "createTLSServer - Server for ${ORG_NAME} exists"
-		exit 1
-	fi
-	
-	printInfo "createTLSServer - Creating ${ORG_NAME} TLS Server..."
+    if [ -d "$FABRIC_CA_SERVER_HOME" ]; then
+        printError "TLS server for ${ORG_NAME} already exists."
+        exit 1
+    fi
 
-	# Create the TLS Server directory
-	mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
+    printInfo "Creating ${ORG_NAME} TLS Server..."
+    
+    # Create the TLS Server directory and initialize
+    mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
+    fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW}
+    mv msp/keystore/*sk msp/keystore/rootkey.pem
 
-	printInfo "createTLSServer - Initializing the server with bootstrap identity ${TLS_ADMIN}"
-	
-	fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW}
-	yes | mv msp/keystore/*sk msp/keystore/rootkey.pem
+    # Import existing and configured fabric-ca-server-config.yaml file
+	BASE_CONFIG="$FABRIC_CA_CFG_PATH/base_tlsca_config.yaml"
+    cp "$BASE_CONFIG" ./fabric-ca-server-config.yaml || {
+        printError "Failed to copy config"
+        exit 1
+    }
 
-	# sleep 10000
-	
-	# ls "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore
-	# mv msp/keystore/key.pem "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore/key.pem
+    cd "$FABRIC_HOME" || exit 1
+    createDockerTLSCA "${ORG_NAME}"
+    export DOCK_COMPOSE_FILE=${DOCKER_HOME}/docker-compose-tls-${ORG_NAME}.yaml
 
-	# Import existing and configured fabric-ca-server-config.yaml file
-	# CONF_FILE="$FABRIC_CA_CFG_PATH/fca-tls-${ORG_NAME}-config.yaml"
-	CONF_FILE="$FABRIC_CA_CFG_PATH/base_tlsca_config.yaml"
-	yes | cp "$CONF_FILE" ./fabric-ca-server-config.yaml
-	verifyResult $? "createTLSServer - Failed to cp config"
-
-	##### IMPORTANT!!
-	##### If the csr values on the fabric-ca-server-config.yaml 
-	##### are changed, then the previous certificates must be 
-	##### deleted and start the server to generate new ones.  
-	# rm -rf $FABRIC_CA_SERVER_HOME/msp
-	# rm $FABRIC_CA_SERVER_HOME/ca-cert.pem
-	cd "$FABRIC_HOME" || exit 1
-	createDockerTLSCA "${ORG_NAME}"
-	export DOCK_COMPOSE_FILE=${DOCKER_HOME}/docker-compose-tls-${ORG_NAME}.yaml
-
-	printSuccess "createTLSServer - TLS Server for ${ORG_NAME} initialized successfully"
-	sleep 5
+    printSuccess "TLS Server for ${ORG_NAME} initialized successfully."
+    sleep 5
 }
 
 

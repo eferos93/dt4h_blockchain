@@ -2,6 +2,12 @@
 
 export STAGE=prod
 
+# Base deployed machine directory
+export REMOTE_BASE_DIRECTORY=~/workspace/deploy
+export EXPORT_DEPLOYMENT_DIRECTORY=~/Desktop/deploy
+export VM_USER=athena
+
+
 # Profile used from configtx.yaml
 export CHANNEL_PROFILE=MarketplaceChannel
 

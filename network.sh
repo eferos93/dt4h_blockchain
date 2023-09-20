@@ -1,63 +1,48 @@
 #!/bin/bash
+# Purpose: This script sets up and manages a Hyperledger Fabric Network.
 
-# This script brings up a Hyperledger Fabric Network
+# Directory setup.
 [ ! -d logs ] && mkdir logs
+[ ! -d ${CHANNEL_ARTIFACTS} ] && mkdir channel-artifacts
 
-. util.sh
-. configGlobals.sh
-. configCC.sh
-. scripts/createUsersAdmin.sh
+# Import required scripts.
+. util.sh  # Utility functions for logging and error handling
+. configGlobals.sh # User configuration on the network specifics
+. configCC.sh # Chaincode configuration
 . scripts/createChannel.sh
 . scripts/deployCC.sh
 
-[ ! -d ${CHANNEL_ARTIFACTS} ] && mkdir channel-artifacts
+### FUNCTIONS ###
 
-# Start the network
-networkUp() {
-	printHead "Bringing up the network"
-
-  # set -e
-	createOrgs 
-	createNodes
-	createConsortium
-	startNodes
-	rm -rf channel-artifacts
-	createChannel
-	deployCC
-	exportMSPs
-	setupMonitor
-
-	docker ps -a
-}
-
-# Create Orgs, Register and Enroll TLS,CA and Org Admins
+# Create Organizations, Register and Enroll TLS,CA and Org Admins.
 createOrgs() {
-	printInfo "Setting up CAs - Org MSPs"
+    printInfo "Setting up CAs - Org MSPs"
 
-	if [ -d ${FABRIC_HOME}/organizations ]; then
-		printError "Orgs exist. Exiting..."
-		exit 0
-	fi
+    if [ -d ${FABRIC_HOME}/organizations ]; then
+        printError "Orgs exist. Exiting..."
+        exit 0
+    fi
 
-	mkdir -p docker organizations/fabric-ca 
+    mkdir -p docker organizations/fabric-ca 
 
-	for org in $ORDERER_ORGS; do
-		setParams "$org"
-		./clientCA.sh setup_orgca -o "$org"
-		./clientCA.sh setup_orgmsp -o "$org" -t "orderer"
-		./clientCA.sh setup_orgops -o "$org"
-	done
+    # Setup for orderer organizations.
+    for org in $ORDERER_ORGS; do
+        setParams "$org"
+        ./clientCA.sh setup_orgca -o "$org"
+        ./clientCA.sh setup_orgmsp -o "$org" -t "orderer"
+        ./clientCA.sh setup_orgops -o "$org"
+    done
 
-	for org in $PEER_ORGS; do
-		setParams "$org"
-		./clientCA.sh setup_orgca -o "$org"
-		./clientCA.sh setup_orgmsp -o "$org" -t "peer"
-		./clientCA.sh setup_orgops -o "$org"
-	done
+    # Setup for peer organizations.
+    for org in $PEER_ORGS; do
+        setParams "$org"
+        ./clientCA.sh setup_orgca -o "$org"
+        ./clientCA.sh setup_orgmsp -o "$org" -t "peer"
+        ./clientCA.sh setup_orgops -o "$org"
+    done
 
-	printSuccess "Organizations created successfully"
+    printSuccess "Organizations created successfully"
 }
-
 # Create Orderers and Peers
 createNodes() {
 	printInfo "Register and enroll orderers and peers"
@@ -161,53 +146,51 @@ startNodes() {
 	printSuccess "Nodes are up and running!"
 }
 
-# Create a channel
+# Creates a new channel.
 createChannel() {
-	printInfo "Creating Channel ${CHANNEL_NAME}"
+    printInfo "Creating Channel ${CHANNEL_NAME}"
 
-	createChannelA "$PEER_ORGS"
-	res=$?
-	verifyResult "$res" "network - createChannel - Channel creation failed!" && printSuccess "network - createChannel - Channel ${CHANNEL_NAME} Created!"
+    createChannelA "$PEER_ORGS"
+    res=$?
+    verifyResult "$res" "network - createChannel - Channel creation failed!" && printSuccess "network - createChannel - Channel ${CHANNEL_NAME} Created!"
 }
 
-# Deploy chaincode
+# Deploys chaincode to the specified channel.
 deployCC() {
-	printInfo "Deploy Chaincode to Channel"
-
-	deployChaincode "$PEER_ORGS" 
+    printInfo "Deploy Chaincode to Channel"
+    
+    deployChaincode "$PEER_ORGS" 
 }
 
-# Export org identities used by the app
+# Export identities used by the app for authentication and authorization.
 exportMSPs() {
-	APP_DEST="${APP_PATH}"/identities
-	mkdir -p "$APP_DEST"
+    APP_DEST="${APP_PATH}"/identities
+    mkdir -p "$APP_DEST"
 
-	for org in $PEER_ORGS; do
-		set -x
-		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${ADMIN_USER}/. "$APP_DEST"/"$org"UsersRegistrar/
-		cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
-		# cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${USERSCA_ADMIN}/. "$APP_DEST"/test_"$org"UsersRegistrar/
-		set +x
-	done
- 	
- 	set -x
-	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
-	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/peers/peer0.agora.domain.com/. "$APP_DEST"/peer0agora/
-	cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/prometheus .
-	set +x
+    # Copying MSPs for Peer Orgs.
+    for org in $PEER_ORGS; do
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${ADMIN_USER}/. "$APP_DEST"/"$org"UsersRegistrar/
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
+    done
+
+    # Copying specific organization data.
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/peers/peer0.agora.domain.com/. "$APP_DEST"/peer0agora/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/prometheus .
 }
 
-# Setup blockchain explorer and prometheus/grafana
+# Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.
 setupMonitor() {
-	printInfo "Setup Explorer and Prometheus"
+    printInfo "Setup Explorer and Prometheus"
 
-	pushd blockchain-explorer || exit
-	docker-compose up -d
-	popd || exit
+    # Setting up Blockchain Explorer.
+    pushd blockchain-explorer || exit
+    docker-compose up -d
+    popd || exit
 
-	createMetrics
-	docker-compose -f ${DOCKER_HOME}/prometheus.yaml up -d
-
+    # Setting up Prometheus and Grafana.
+    createMetrics
+    docker-compose -f ${DOCKER_HOME}/prometheus.yaml up -d
 }
 
 # Bring down the network
@@ -268,133 +251,176 @@ function removeUnwantedImages() {
   fi
 }
 
+# Creates a new organization.
+# Currently set up for Org3MSP. Extendable for others.
 createNewOrg() {
-	printInfo "Creating new organization Org3MSP"
-	
-	. scripts/addOrg.sh "org3"
-
-	printSuccess "Org3 successfully created"
+    printInfo "Creating new organization Org3MSP"
+    
+    # Source the organization addition script.
+    . scripts/addOrg.sh "org3"
+    
+    printSuccess "Org3 successfully created"
 }
 
+# Removes all containers, volumes, and crypto files related to the network except CAs.
 removeAllExceptCA() {
-	printInfo "Removing all containers except CAs"
+    printInfo "Removing all containers except CAs"
 
-	# Remove peer containers
-	docker container rm -vf $(docker ps --filter name="peer" -aq)
-	
-	# Remove orderer containers 
-	docker container rm -vf $(docker ps --filter name="orderer.\." -aq)
-	
-	# Remove chaincode containers
-	docker container rm -vf $(docker ps --filter name=dev. --filter status=exited -aq)
-	
-	# Remove dangling volumes
-	docker volume rm $(docker volume ls -qf dangling=true)
+    # Remove Peer, Orderer and Chaincode Containers.
+    docker container rm -vf $(docker ps --filter name="peer" -aq)
+    docker container rm -vf $(docker ps --filter name="orderer.\." -aq)
+    docker container rm -vf $(docker ps --filter name=dev. --filter status=exited -aq)
+    
+    # Remove Dangling Docker Volumes.
+    docker volume rm $(docker volume ls -qf dangling=true)
 
-	# Remove chaincode images
-	removeUnwantedImages
+    # Remove chaincode images.
+    removeUnwantedImages
 
-	# Remove crypto files
-	sudo rm -rf channel-artifacts/
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/peers
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/users
-	sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/orderers
-	sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/users
-	docker container rm -vf explorer.mynetwork.com explorerdb.mynetwork.com
+    # Remove crypto files.
+    sudo rm -rf channel-artifacts/
+    sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/peers
+    sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/users
+    sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/orderers
+    sudo rm -rf "$FABRIC_HOME"/organizations/ordererOrganizations/*/users
+    docker container rm -vf explorer.mynetwork.com explorerdb.mynetwork.com
 
-	# Remove users
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/*-users
-	sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/usersmsp
+    # Remove user data.
+    sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/*-users
+    sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/usersmsp
 
-	# Clean App
-	cleanApp
-	sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
-	sed -i -E "/^export CC_VERSION/s/=.*$/=\"1.0\"/g" "${FABRIC_HOME}"/configCC.sh
-
-	# rm -rf grpc-comms/node_modules
-	printSuccess "All containers deleted except CAs"
+    # Clean up application data and reset config.
+    cleanApp
+    sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
+    sed -i -E "/^export CC_VERSION/s/=.*$/=\"1.0\"/g" "${FABRIC_HOME}"/configCC.sh
+    
+    printSuccess "All containers deleted except CAs"
 }
+
+
+# Start the network
+networkUp() {
+	printHead "Bringing up the network"
+
+	createOrgs 
+	createNodes
+	createConsortium
+	startNodes
+	rm -rf channel-artifacts
+	createChannel
+	deployCC
+	exportMSPs
+	setupMonitor
+
+	docker ps -a
+}
+
+
+if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$1" ]; then
+    echo "Usage: $0 <mode>"
+    echo
+    echo "Available modes:"
+    echo "  step1            - Step1: Create CAs"
+    echo "  step2            - Step2: Create Orderers and Peers"
+    echo "  step3            - Step3: Create Genesis block and define consortium"
+    echo "  step4            - Step4: Start the nodes"
+    echo "  step5            - Step5: Create and Join Channel"
+    echo "  step6            - Step6: Deploy Chaincode"
+    echo "  step7            - Step7: Exporting MSPs for the APP"
+    echo "  metrics          - Starting prometheus - grafana"
+    echo "  addorg           - Adding new Organization"
+    echo "  up               - Start the network"
+    echo "  down             - Bring the network down"
+    echo "  remake_certs     - Bring the network down except CAs and recreate them"
+    echo "  start            - Start the halted network"
+    echo "  stop             - Halt the running network"
+    echo "  rm               - Remove all configurations"
+    echo
+    echo "Help options:"
+    echo "  --help or -h     - Show this help menu"
+    exit 0
+fi
 
 
 MODE=$1
 
-if [ "${MODE}" == "step1" ]; then
-	printHead "Step1: Create CAs"
+# Depending on the mode, perform the corresponding task.
+case "$MODE" in
+    "step1")
+        printHead "Step1: Create CAs"
+        createOrgs
+        ;;
+    "step2")
+        printHead "Step2: Create Orderers and Peers"
+        createNodes
+        ;;
+    "step3")
+        printHead "Step3: Create Genesis block and define consortium"
+        createConsortium
+        ;;
+    "step4")
+        printHead "Step4: Start the nodes"
+        startNodes
+        ;;
+    "step5")
+        printHead "Step5: Create and Join Channel"
+        createChannel
+        ;;
+    "step6")
+        printHead "Step6: Deploy Chaincode"
+        deployCC
+        ;;
+    "step7")
+        printHead "Step7: Exporting MSPs for the APP"
+        exportMSPs
+        ;;
+    "metrics")
+        printHead "Starting prometheus - grafana"
+        createMetrics
+        docker-compose -f docker/prometheus.yaml up -d
+        ;;
+    "addorg")
+        printHead "Adding new Organization"
+        createNewOrg 
+        ;;
+    "up")
+        networkUp
+        ;;
+    "down")
+        networkDown
+        ;;
+    "remake_certs")
+        # Remove all first
+        removeAllExceptCA
+        # Remake
+        createNodes    
+        createConsortium
+        startNodes
+        createChannel
+        deployCC
+        exportMSPs
+        sudo rm -rf channel-artifacts
+        ;;
+    "start")
+        printHead "Starting the network..."
+        docker start $(docker ps -aq -f network=${COMPOSE_PROJECT_NAME}_${STAGE})
+        printSuccess "All containers are up"
+        ;;
+    "stop")
+        printHead "Stopping the network..."
+        docker stop $(docker ps -aq -f network=${COMPOSE_PROJECT_NAME}_${STAGE})
+        printSuccess "All containers are halted"
+        ;;
+    "rm")
+        removeAllExceptCA
+        ;;
+    *)
+        printError "Unknown mode: $MODE"
+        exit 1
+        ;;
+esac
 
-	createOrgs
-elif [ "${MODE}" == "step2" ]; then
-	printHead "Step2: Create Orderers and Peers"
-
-	createNodes
-elif [ "${MODE}" == "step3" ]; then
-	printHead "Step3: Create Genesis block and define consortium"
-
-	createConsortium
-elif [ "${MODE}" == "step4" ]; then
-	printHead "Step4: Start the nodes"
-
-	startNodes
-elif [ "${MODE}" == "step5" ]; then
-	printHead "Step5: Create and Join Channel"
-
-	createChannel
-elif [ "${MODE}" == "step6" ]; then
-	printHead "Step6: Deploy Chaincode"
-
-	deployCC
-elif [ "${MODE}" == "step7" ]; then
-	printHead "Step7: Exporting MSPs for the APP"
-
-	exportMSPs
-elif [ "${MODE}" == "metrics" ]; then
-	printHead "Starting prometheus - grafana"
-
-	createMetrics
-	docker-compose -f docker/prometheus.yaml up -d
-elif [ "${MODE}" == "addorg" ]; then
-	printHead "Adding new Organization"
-
-	createNewOrg 
-fi 
-
-
-if [ "${MODE}" == "up" ]; then
-	networkUp
-elif [ "${MODE}" == "down" ]; then	
-	networkDown
-elif [ "${MODE}" == "remake_certs" ]; then
-	
-	# Remove all first
-	removeAllExceptCA
-
-	# Remake
-	createNodes	
-	createConsortium
-	startNodes
-	createChannel
-	deployCC
-	exportMSPs
-	sudo rm -rf channel-artifacts
-
-	# pushd blockchain-explorer || exit
-	# docker-compose up -d
-	# popd
-elif [ "${MODE}" == "start" ]; then
-	printHead "Starting the network..."
-
-	docker start $(docker ps -aq -f network=${COMPOSE_PROJECT_NAME}_${STAGE})
-
-	printSuccess "All containers are up"
-elif [ "${MODE}" == "stop" ]; then
-	printHead "Stopping the network..."
-
-	docker stop $(docker ps -aq -f network=${COMPOSE_PROJECT_NAME}_${STAGE})
-
-	printSuccess "All containers are halted"
-elif [ "${MODE}" == "rm" ]; then
-	removeAllExceptCA
-fi
-
+# Check and print errors, if any.
 if [ ! -z "$ERRORS" ]; then 
-	printError "$ERRORS"
+    printError "$ERRORS"
 fi

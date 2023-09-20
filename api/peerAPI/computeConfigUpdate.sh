@@ -1,36 +1,52 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality to perform channel configuration updates
+
 # Add anchor peers Update
 addAnchorPeerUpdate() {
-	printInfo "Creating new configuration - Updating Anchor Peers..."
-	
-	pushd ${CHANNEL_ARTIFACTS} || exit
-	if [ -z "${ORG_MSPID}" ]; then
-		printError "Organization MSPID is not defined"
-		exit 1
-	fi
+    # Printing the initial message
+    printInfo "Creating new configuration - Updating Anchor Peers..."
+    
+    # Navigate to the channel artifacts directory or exit the script if the directory does not exist
+    pushd ${CHANNEL_ARTIFACTS} || exit
 
-	yq_out=$(cat ${FABRIC_CA_CFG_PATH}/configtx.yaml | yq)
+    # Check if the MSPID for the organization is set
+    if [ -z "${ORG_MSPID}" ]; then
+        printError "Organization MSPID is not defined"
+        exit 1
+    fi
 
-	# echo 'yq_out' $yq_out
-	jq_out=$(echo "$yq_out" | jq -s '.[].Organizations | map(select(.ID == "'"$ORG_MSPID"'")) | .[].AnchorPeers')
-	ANCHOR_PEERS=( `echo $jq_out | jq `)
-	# echo "$jq_out"  
+    # Extracting the configuration for anchor peers from the configtx.yaml file
+    yq_out=$(cat ${FABRIC_CA_CFG_PATH}/configtx.yaml | yq)
 
-	ANCHOR_PEERS=$(echo "${ANCHOR_PEERS[@]}" | awk '{print tolower($0)}' | tr -d [:space:])
-	echo $ANCHOR_PEERS
+    # Filtering the JSON output to get the details of the specific organization's anchor peers
+    jq_out=$(echo "$yq_out" | jq -s '.[].Organizations | map(select(.ID == "'"$ORG_MSPID"'")) | .[].AnchorPeers')
+    ANCHOR_PEERS=( `echo $jq_out | jq `)
 
-	set -x
-	# configtxgen -profile AthLynkChannel -outputAnchorPeersUpdate ${FABRIC_HOME}/channel-artifacts/${ORG_NAME}anchors.tx -channelID ${CHANNEL_NAME} -asOrg ${ORG_MSPID} >& log.txt
-	jq '.channel_group.groups.Application.groups."'"$ORG_MSPID"'".values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": '"$ANCHOR_PEERS"'},"version": "0"}}' config.json > modified_config.json
-	res=$?
-	set +x
+    # Converting the anchor peers array to lowercase and removing spaces
+    ANCHOR_PEERS=$(echo "${ANCHOR_PEERS[@]}" | awk '{print tolower($0)}' | tr -d [:space:])
 
-	computeUpdate
-	verifyResult "$res" "Error adding anchor peers to modified_config" && printSuccess "Anchor Peer update transaction created successfully"
-	
-	popd
+    # Modifying the original configuration to add the new anchor peers
+    set -x
+    jq '.channel_group.groups.Application.groups."'"$ORG_MSPID"'".values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": '"$ANCHOR_PEERS"'},"version": "0"}}' config.json > modified_config.json
+    res=$?
+    set +x
+
+    # Call function to compute and create the update for the channel configuration
+    computeUpdate
+
+    # Verifying if the operation was successful
+    verifyResult "$res" "Error adding anchor peers to modified_config" && printSuccess "Anchor Peer update transaction created successfully"
+    
+    popd
 }
+
 
 
 # Add organization Update

@@ -1,9 +1,17 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: Transfers local directory appropriate files to all the remote machines
+
 # Transfer files to all Virtual Machine hosts
 transferAll() {
 	FILE=$1
-	DEST=/home/${VM_USER}/workspace/deploy/$2
+	DEST=/home/${VM_USER}/${REMOTE_BASE_DIRECTORY}/$2
 	DELETE=$3
 
 	if [ -z "$FILE" ]; then
@@ -22,13 +30,13 @@ transferAll() {
 
 	IP_ARRAY_LEN=${#VM_IPS[@]}
 
-	exclude="--exclude smpc-application --exclude bin --exclude organizations --exclude .git"
+	exclude="--exclude bin --exclude organizations --exclude .git"
 	# exclude+=" --exclude application-typescript"
 	exclude+=" --exclude application-typescript/identities"
 	exclude+=" --exclude blockchain-explorer"
-	exclude+=" --exclude application-typescript/node_modules --exclude application-typescript/kraken-app/docs --exclude application-typescript/kraken-app/jsdoc"
+	exclude+=" --exclude application-typescript/node_modules "
 	exclude+=" --exclude chaincode-docker-devmode"
-	exclude+=" --exclude logs --exclude grpc-comms --exclude prometheus --exclude share"
+	exclude+=" --exclude logs  --exclude prometheus --exclude share"
 	exclude+=" --exclude system-genesis-block"
 	for (( i = 0; i < IP_ARRAY_LEN; i++ )); do
 		echo -e "Sending to ${VM_IPS[$i]}..."

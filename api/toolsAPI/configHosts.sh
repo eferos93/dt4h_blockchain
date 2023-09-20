@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality to configure hosts for Fabric nodes to communicate
+
 # Configure IPs and append to /etc/hosts
 configHosts() {
   printInfo "Configuring hosts..."

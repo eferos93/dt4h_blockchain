@@ -1,16 +1,22 @@
 #!/bin/bash
 
-# Submit proposal to create channel
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality to list channels for a peer 
+#              in a Hyperledger Fabric network.
+
 channelList() {
-	printInfo "channelList - Listing channels for peer ${NODE_ID}.${ORG_NAME}"
+    printInfo "channelList - Listing channels for peer ${NODE_ID}.${ORG_NAME}"
 
-	# Create channel block
-	set -x
-	peer channel list >& log.txt
-	res=$?
-	set +x
+    # List channels
+    set -x
+    peer channel list >& log.txt
+    res=$?
+    set +x
 
-	verifyResult "$res" "$(cat log.txt)" && cat log.txt
+    verifyResult "$res" "$(cat log.txt)" && cat log.txt
 }
-
-# createChannel

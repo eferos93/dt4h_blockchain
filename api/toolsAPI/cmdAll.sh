@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality execute mass commands in all the VMs in $VM_IPS
+
 # Execute a command to all Virtual Machine hosts
 cmdAll() {
 	local cmd="$@"
@@ -19,7 +27,7 @@ cmdAll() {
 
 	for (( i = 0; i < IP_ARRAY_LEN; i++ )); do
 		echo -e "Requesting to ${VM_IPS[$i]}..."
-		ssh -i ${SSH_KEY_PATH} ${VM_USER}@${VM_IPS[$i]} "cd ~/workspace/deploy >/dev/null || mkdir -p ~/workspace/deploy && cd ~/workspace/deploy && $cmd"
+		ssh -i ${SSH_KEY_PATH} ${VM_USER}@${VM_IPS[$i]} "cd ${REMOTE_BASE_DIRECTORY} >/dev/null || mkdir -p ${REMOTE_BASE_DIRECTORY} && cd ${REMOTE_BASE_DIRECTORY} && $cmd"
 	done
 
 }

@@ -23,12 +23,6 @@ export ORDERER=localhost:9051
 [[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_1} ${ORG_2}"
 [[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}orderer ${ORG_2}orderer"
 
-
-# [[ -z $ORGS ]] && export ORGS="${ORG_1} "
-# [[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_1} "
-# [[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}orderer ${ORG_2}orderer"
-
-
 export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
 

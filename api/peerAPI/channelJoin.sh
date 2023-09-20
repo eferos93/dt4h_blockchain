@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script contains a function to join a peer to a channel 
+#              in a Hyperledger Fabric network.
+
 # Join Peer to Channel (Admin only)
 joinChannel() {
 	printInfo "joinChannel - Joining peer ${NODE_ID}.${ORG_NAME} to channel ${CHANNEL_NAME}..."

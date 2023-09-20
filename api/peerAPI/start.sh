@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality to start peers and orderers
+
 # Start peer docker container
 startPeer() {
 	DOCK_COMPOSE_COUCH=${DOCKER_HOME}/docker-couchDB-${NODE_ID}-${ORG_NAME}.yaml

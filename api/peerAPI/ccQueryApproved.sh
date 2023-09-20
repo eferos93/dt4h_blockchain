@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# Query approved chaincode
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script contains a function to query 
+#              the approval status of a Hyperledger Fabric chaincode.
 
 queryApproved() {
-	printInfo "queryApproved - Querying approval status of CC ${CC_NAME} on channel ${CHANNEL_NAME}"
+    
+    printInfo "queryApproved - Querying approval status of CC ${CC_NAME} on channel ${CHANNEL_NAME}"
 
-	set -x
-	peer lifecycle chaincode queryapproved -n ${CC_NAME} -C ${CHANNEL_NAME} >& log.txt
-	res=$?
-	set +x
+    # Execute the command to query the chaincode approval status and redirect output to log
+    set -x
+    peer lifecycle chaincode queryapproved -n ${CC_NAME} -C ${CHANNEL_NAME} >& log.txt
+    res=$?
+    set +x
 
-	verifyResult "$res" "$(cat log.txt)" || printSuccess "queryApproved - Approved chaincode ${CC_NAME} for ${org}"
+    verifyResult "$res" "$(cat log.txt)" || printSuccess "queryApproved - Approved chaincode ${CC_NAME} for ${org}"
 }
-
-# queryApproved

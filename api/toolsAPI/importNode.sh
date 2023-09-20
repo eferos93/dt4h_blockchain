@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality to import a node folder 
+
 printImportNodeHelp() {
 	echo
 	echo -e "./tools.sh importNode filePath"
@@ -11,7 +19,6 @@ printImportNodeHelp() {
 	echo -e "	./tools.sh importNode peer0.org1.domain.com.tar.gz"
 	echo
 }
-
 
 importNode() {
 	# User Input

@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# Submit channel update transaction
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: This script provides functionality to submit a channel update 
+#              transaction to a channel in a Hyperledger Fabric network.
 
 channelUpdate() {
 	printInfo "channelUpdate - Submitting channel update to ${CHANNEL_NAME}"
@@ -19,5 +26,3 @@ channelUpdate() {
 
 	verifyResult "$res" "channelUpdate - Failed to submit channel update to ${CHANNEL_NAME}" && printSuccess "channelUpdate - Submitted channel update to ${CHANNEL_NAME} successfully"
 }
-
-# channelUpdate

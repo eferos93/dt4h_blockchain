@@ -1,10 +1,15 @@
 #!/bin/bash
+#
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 
+# Bring up the CA Server
 # Starting the server reconfigures the csr parameters from the imported
 # fabric-ca-server-config.yaml file, thus it should be called
 # before the creation of the client because the certificates
 # will be deleted and no longer be valid
-# Bring up the TLS CA Server
 startServer() {
 	printInfo "startServer - Starting ${ORG_NAME} Server..."
 	

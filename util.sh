@@ -43,6 +43,10 @@ ERROR='[ERROR]:'
 TLS_DEFAULT_EXPIRY=43830h
 CA_DEFAULT_EXPIRY=17532h
 
+if [ ! -d "${LOG_PATH}" ]; then
+  mkdir -p "${LOG_PATH}"
+fi
+
 
 # Set endorsing peers
 setPeers() {

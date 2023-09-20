@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# -----------------------------------------------------------------------------
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -----------------------------------------------------------------------------
+
+# Description: Rotates the configurations from development to production
+
 # Switch network configuration to 2 modes: Development - Production
 switchNet() {
 	printInfo "Switching environment..."
@@ -19,14 +27,13 @@ switchNet() {
 		exit 1
 	fi
 
-	CONFIG=config-"$NET"
+	CONFIG=config
 
-	cp -f "$CONFIG"/configGlobals.sh "$FABRIC_HOME"
-	cp -f "$CONFIG"/ccp.yaml "$FABRIC_HOME"
+	cp -f "$CONFIG"/configGlobals_"$NET".sh "$FABRIC_HOME"/configGlobals.sh
 	cp -f "$CONFIG"/.env "$APP_PATH"
 
-	set -x
-	rsync -avP  "$CONFIG"/ "$FABRIC_HOME"/config/
-	set +x
+	# set -x
+	# rsync -avP  "$CONFIG"/ "$FABRIC_HOME"/config/
+	# set +x
 	printSuccess "Network switched to $NET"
 }	

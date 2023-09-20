@@ -1,7 +1,19 @@
 #!/bin/bash
+#
+# Copyright Agora Labs. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 
-# Enroll node to obtain MSP
-
+##########################
+# Enroll a node in the Hyperledger Fabric network.
+# Globals:
+#   ORG_NAME, TYPE, USERNAME, SECRET, CA_TYPE
+# Arguments:
+#   None
+# Returns:
+#   None
+##########################
 enroll() {
 	printInfo "enroll - Enrolling ${ORG_NAME} ${TYPE}..."
 
@@ -110,8 +122,15 @@ enroll() {
 	printSuccess "enroll - ${ORG_NAME} $TYPE: $USERNAME enrolled succesfully"
 }
 
-# enroll
-
+##########################
+# Check if the current user executing the script is root.
+# Globals:
+#   EUID
+# Arguments:
+#   None
+# Returns:
+#   None, but exits with status 1 if not run as root.
+##########################
 is_user_root () {
 	if [[ $EUID != 0 ]]; then
     	echo "Please run as root"
