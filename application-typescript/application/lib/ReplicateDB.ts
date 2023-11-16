@@ -16,7 +16,7 @@ require('dotenv').config();
 /* Local */
 import { sleep, prettyJSON, IsJsonString, getLogger } from './libUtil';
 import { IProduct, IUser, IAgreement, IInventory } from './interfaces'
-import * as fields from './queryFields' 
+import * as fields from './queryFields'
 import { DATABASE } from './Config'
 import { ProductModel, UserModel, AgreementModel, InventoryModel } from './models'
 
@@ -46,7 +46,7 @@ class User {
 	}
 
 	async update(obj: IUser) {
-		return await this.col.updateOne({_id: obj.username}, obj)
+		return await this.col.updateOne({ _id: obj.username }, obj)
 	}
 
 	async delete(id: string) {
@@ -63,19 +63,19 @@ class User {
 		return await this.col.findOne({ username: query }).select("-__v")
 	}
 
-	async getAll(query={}, fields={}) {
+	async getAll(query = {}, fields = {}) {
 		return await this.col.find(query, fields).select("-__v")
 	}
 
-	async getPagination(query={}, fields={}, select='', page=1,
-	 limit=this.PAGE_SIZE, sortBy: {[key: string]: 1 | -1} = {timestamp: -1}) {
-		 return await this.col
-		 .find(query, fields)
-		 .select(select)
-		 //@ts-ignore
-		.sort(sortBy) 
-		.limit(limit)
-		.skip((page-1) * limit)
+	async getPagination(query = {}, fields = {}, select = '', page = 1,
+		limit = this.PAGE_SIZE, sortBy: { [key: string]: 1 | -1 } = { timestamp: -1 }) {
+		return await this.col
+			.find(query, fields)
+			.select(select)
+			//@ts-ignore
+			.sort(sortBy)
+			.limit(limit)
+			.skip((page - 1) * limit)
 	}
 
 	async getById(id: string) {
@@ -100,12 +100,12 @@ class Product {
 	async insert(obj: IProduct) {
 		obj._id = obj.id;
 		await this.col.create(obj)
-		let inv = {productID: obj.id, owner: obj.owner}
+		let inv = { productID: obj.id, owner: obj.owner }
 		return await this.inventories.insert(inv)
 	}
 
 	async update(obj: IProduct) {
-		return await this.col.updateOne({_id: obj.id}, obj)
+		return await this.col.updateOne({ _id: obj.id }, obj)
 	}
 
 	async delete(id: string) {
@@ -114,39 +114,39 @@ class Product {
 	}
 
 	async deleteByOwner(id: string) {
-		return await this.col.deleteOne({owner: id})
+		return await this.col.deleteOne({ owner: id })
 	}
 
-	async get(query: object, fields={}) {
+	async get(query: object, fields = {}) {
 		return await this.col.find(query, fields)
 	}
 
-	async getById(id: string, fields={}) {
+	async getById(id: string, fields = {}) {
 		return await this.col.findById(id, fields)
 	}
 
-	async getAll(query={}, fields={}) {
+	async getAll(query = {}, fields = {}) {
 		return await this.col.find(query, fields).select("-__v")
 	}
 
 
-	async getPagination(query={}, fields={}, select={}, populSelect={}, page=1,
-	 limit=this.PAGE_SIZE, sortBy: {[key: string]: 1 | -1} = {timestamp: -1}) {
+	async getPagination(query = {}, fields = {}, select = {}, populSelect = {}, page = 1,
+		limit = this.PAGE_SIZE, sortBy: { [key: string]: 1 | -1 } = { timestamp: -1 }) {
 		return await this.col
-		.find(query, fields)
-		.select(select)
-		.populate({ 
-			path: 'owner', 
-			model: UserModel,
-			select: populSelect
-		})
-		.sort(sortBy)
-		.limit(limit)
-		.skip((page-1) * limit)
+			.find(query, fields)
+			.select(select)
+			.populate({
+				path: 'owner',
+				model: UserModel,
+				select: populSelect
+			})
+			.sort(sortBy)
+			.limit(limit)
+			.skip((page - 1) * limit)
 	}
 
 	async getByOwner(id: string) {
-		return await this.col.find({owner: id})
+		return await this.col.find({ owner: id })
 	}
 
 
@@ -167,7 +167,7 @@ class Agreement {
 	}
 
 	async update(obj: IAgreement) {
-		return await this.col.updateOne({_id: obj.txID}, obj)
+		return await this.col.updateOne({ _id: obj.txID }, obj)
 	}
 
 	async delete(id: string) {
@@ -186,15 +186,15 @@ class Agreement {
 	async getAll() {
 		return await this.col.find()
 	}
-	
-	async getPagination(query={}, fields={}, select='', page=1,
-	 limit=500, sortBy: {[key: string]: 1 | -1} = {timestamp: -1}) {
+
+	async getPagination(query = {}, fields = {}, select = '', page = 1,
+		limit = 500, sortBy: { [key: string]: 1 | -1 } = { timestamp: -1 }) {
 		return await this.col
-		.find(query, fields)
-		.select(select)
-		.sort(sortBy)
-		.limit(limit)
-		.skip((page-1) * limit)
+			.find(query, fields)
+			.select(select)
+			.sort(sortBy)
+			.limit(limit)
+			.skip((page - 1) * limit)
 	}
 }
 
@@ -217,16 +217,16 @@ class Inventory {
 	// }
 
 	async deleteByProduct(id: string) {
-		return await this.col.deleteOne({_id: id})
+		return await this.col.deleteOne({ _id: id })
 	}
 
 	async deleteByOwner(id: string) {
-		return await this.col.deleteOne({owner: id})
+		return await this.col.deleteOne({ owner: id })
 	}
 
 	// TODO: use lean?
 	async getByOwner(id: string) {
-		return await this.col.findOne({owner: id})
+		return await this.col.findOne({ owner: id })
 	}
 
 }
@@ -284,7 +284,7 @@ export class OffchainDB {
 			logger.info(`${method} - Connecting to : ${this.url}...`)
 			this.connection = (await mongoose.connect(this.url)).connection
 			return this.connection
-		} catch(e: any) {
+		} catch (e: any) {
 			this.handleError(method, e);
 		}
 	}
@@ -300,12 +300,12 @@ export class OffchainDB {
 
 		try {
 			return await this.connection.close();
-		} catch(e: any) {
+		} catch (e: any) {
 			this.handleError(method, e);
 		}
 	}
 
-	
+
 	/**
 	 * Reconstruct DB from peer's World State Index
 	 *
@@ -357,7 +357,7 @@ export class OffchainDB {
 					break;
 			}
 
-		} catch(e: any) {
+		} catch (e: any) {
 			return this.handleError(method, e);
 		}
 
@@ -368,11 +368,18 @@ export class OffchainDB {
 	 * 
 	 */
 	async drop(): Promise<void> {
-		const method = 'drop'
-		logger.info(`${method} - Dropping database... ${this.url}`)
-		return await this.connection.db.dropDatabase()
+		const method = 'drop';
+		const dbName = this.connection.db.databaseName;
+		logger.info(`${method} - Dropping database: ${dbName} at ${this.url}`);
+		try {
+			await this.connection.db.dropDatabase();
+			logger.info(`${method} - Database ${dbName} dropped successfully`);
+		} catch (e: any) {
+			this.handleError(method, e);
+		}
 	}
 }
+
 
 export default OffchainDB
 

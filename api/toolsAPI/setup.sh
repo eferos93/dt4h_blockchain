@@ -14,6 +14,7 @@ CA_VERSION=${CA_TAG}
 ARCH=$(echo "$(uname -s|tr '[:upper:]' '[:lower:]'|sed 's/mingw64_nt.*/windows/')-$(uname -m | sed 's/x86_64/amd64/g')")
 BINARY_FILE=hyperledger-fabric-${ARCH}-${VERSION}.tar.gz
 CA_BINARY_FILE=hyperledger-fabric-ca-${ARCH}-${CA_VERSION}.tar.gz
+[ ! -d logs ] && mkdir logs
 
 setup() {
 	printInfo "Setting up Binaries, Docker Images and Golang..."

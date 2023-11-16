@@ -18,7 +18,6 @@ remote_init_vm:
 	- ./tools.sh cmdAll 'make setup'
 
 
-
 # n, p, w
 init_data_disk:
 	- sudo ./scripts/init_vm.sh init_disk -D $(DISK)
@@ -44,13 +43,8 @@ init_vm:
 	-sudo usermod -aG docker ${USER}
 	echo "Relogin to VM for docker permissions to take effect." 
 
-init_logs:
-	-rm -rf logs
-	mkdir logs
-	touch logs/info.log
-	touch logs/error.log
 
-setup: init_logs
+setup: 
 	./tools.sh setup
 
 setup_files:

@@ -64,7 +64,6 @@ export class CAServices {
 		this.registrarID = caData.registrarID
 		this.type = caData.type || 'main'
 		this.ca = this.createCA()
-		console.log(this.ca)
 		this.identityService = this.ca.newIdentityService();
 	}
 

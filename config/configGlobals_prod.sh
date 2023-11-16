@@ -7,7 +7,6 @@ export REMOTE_BASE_DIRECTORY=~/workspace/deploy
 export EXPORT_DEPLOYMENT_DIRECTORY=~/Desktop/deploy
 export VM_USER=athena
 
-
 # Profile used from configtx.yaml
 export CHANNEL_PROFILE=MarketplaceChannel
 
@@ -131,50 +130,41 @@ setParams() {
 }
 
 export VM_IPS=(
-"20.224.189.91" 
-"20.101.137.150"
-"20.123.159.122"
-"40.115.61.72"
-"20.23.253.97"
-"20.101.138.179"
-"20.224.127.217"
-"13.80.52.99"
-"20.101.75.205"
-"20.4.76.222"
-"20.101.106.73"
+"xx.xxx.xx.xx", 
+"xx.xxx.xx.xx" 
 )
 
 export HOSTS="# Hyperledger Fabric Host Configuration
 # Append to /etc/hosts
 
 # CAs
-20.224.189.91 ca_athena
-20.224.189.91 tlsca_athena
+xx.xx.xx.xx ca_${ORG_1}
+xx.xx.xx.xx tlsca_${ORG_1}
 
-20.101.138.179 ca_agora
-20.101.138.179 tlsca_agora
+xx.xx.xx.xx ca_${ORG_2}
+xx.xx.xx.xx tlsca_${ORG_2}
 
-20.101.137.150 ca_athenaorderer
-20.101.137.150 tlsca_athenaorderer
+xx.xx.xx.xx ca_${ORG_1}orderer
+xx.xx.xx.xx tlsca_${ORG_1}orderer
 
-20.101.75.205 ca_agoraorderer
-20.101.75.205 tlsca_agoraorderer
+xx.xx.xx.xx ca_${ORG_2}orderer
+xx.xx.xx.xx tlsca_${ORG_2}orderer
 
 # endCAs
 
 # Peers
-20.123.159.122 peer0.athena.domain.com
-40.115.61.72 peer1.athena.domain.com
+xx.xx.xx.xx peer0.${ORG_1}.domain.com
+xx.xx.xx.xx peer1.${ORG_1}.domain.com
 
-20.4.76.222 peer0.agora.domain.com
-20.101.106.73 peer1.agora.domain.com
+xx.xx.xx.xx peer0.${ORG_2}.domain.com
+xx.xx.xx.xx peer1.${ORG_2}.domain.com
 
 # endPeers
 
 # Orderers
-20.23.253.97 orderer0.athenaorderer.domain.com
-20.224.127.217 orderer0.agoraorderer.domain.com
-13.80.52.99 orderer1.agoraorderer.domain.com
+xx.xx.xx.xx orderer0.${ORG_1}orderer.domain.com
+xx.xx.xx.xx orderer0.${ORG_2}orderer.domain.com
+xx.xx.xx.xx orderer1.${ORG_1}orderer.domain.com
 
 # endOrderers
 

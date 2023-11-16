@@ -57,9 +57,7 @@ export class App {
 
     async init() {
         this.peerConnection = await Connection.newGrpcConnection(this.peer)
-        await this.importMSPs()
-
-
+        // await this.importMSPs()
     }
 
     async newClient(clientData: IClient) {

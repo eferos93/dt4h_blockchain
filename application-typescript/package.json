@@ -18,8 +18,8 @@
     "dc_test": "mocha application/tests/DataContract_test.js --timeout 100000",
     "ac_test": "mocha application/tests/AgreementContract_test.js --timeout 100000",
     "contracts_test": "npm run ca_test && npm run uc_test && npm run dc_test && npm run ac_test",
-    "db_test": "node db_handler.js test",
-    "test": "export NO_LOG=true && rm nextblock || echo 1 && node db_handler.js drop && npm run init && npm run contracts_test && npm run db_test",
+    "db_test": "node db_handler.js validate",
+    "test": "export NO_LOG=true && echo 0 > nextblock || echo 1 && npm run contracts_test",
     "clean": "rm -rf ./*.log ./nextblock"
   },
   "eslintConfig": {

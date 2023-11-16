@@ -106,7 +106,7 @@ createConsortium() {
 	printInfo "Generating Orderer Genesis Block"
 
 	
-	if [ "$(which configtxgen)" -ne 0 ]; then
+	if ! which configtxgen >/dev/null 2>&1; then
 		printError "Tool configtxgen does not exist."
 		exit 1
 	fi

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-. .env
 . util.sh
 . configGlobals.sh
 . configCC.sh
@@ -76,7 +75,7 @@ if [[ $# -ge 1 ]]; then
 		EXPORT_FILES="*.sh DEPLOY.md README.md Makefile"
 		EXCLUDE=" --exclude application-typescript/node_modules --exclude config-prod/organizations --exclude config.backup"
 		EXCLUDE+=" --exclude application-typescript/identities --exclude application-typescript/wallet --exclude application-typescript/lynkeusRegistrar --exclude application-typescript/nextblock"
-		EXCLUDE+=" --exclude application-typescript/kraken-app/jsdoc"
+		EXCLUDE+=" --exclude application-typescript/application/jsdoc"
 		rsync -av --update  $EXPORT_FOLDERS $EXPORT_FILES $EXCLUDE athena@bcms:/home/athena/workspace/deploy
 	else
 		echo "Command not found"

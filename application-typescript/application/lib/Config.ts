@@ -28,6 +28,7 @@ export const CACONFIG = {
 export const BLOCK_DELAY = parseInt(<string>process.env.BLOCK_DELAY) || 2500 
 
 export const BLOCK_LISTENER_CLIENT = {
+    username: 'blockClient',
     mspPath: './identities/blockClient',
     mspId: 'AgoraMSP',
     type: "X.509",
