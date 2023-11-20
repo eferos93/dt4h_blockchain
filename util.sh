@@ -25,7 +25,7 @@ export COMPOSE_PROJECT_NAME=fabric
 export COMPOSE_IGNORE_ORPHANS=True
 
 # Fabric Version of binaries
-export CA_TAG=1.5.1
+export CA_TAG=1.5.7
 export FABRIC_TAG=2.5.3
 
 # Colours
@@ -107,7 +107,7 @@ setPeer() {
   else
     # Case Peer
     export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${nodeID}.${org}.domain.com
-    export CORE_PEER_LOCALMSPID=${org^}MSP
+    export CORE_PEER_LOCALMSPID=$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}MSP
     # cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
   fi
 
@@ -427,7 +427,7 @@ services:
       - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/${CHANNEL_NAME}.block
       - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
-      - ORDERER_GENERAL_LOCALMSPID=${org^}MSP
+      - ORDERER_GENERAL_LOCALMSPID=$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}MSP
       - ORDERER_CHANNELPARTICIPATION_ENABLED=true
 
       #### ADMIN CONFIG
@@ -540,7 +540,7 @@ services:
       - CORE_PEER_LISTENADDRESS=0.0.0.0:${peerPort}
       - CORE_PEER_CHAINCODEADDRESS=${peerId}.${org}.domain.com:${chaincodePort}
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:${chaincodePort}
-      - CORE_PEER_LOCALMSPID=${org^}MSP
+      - CORE_PEER_LOCALMSPID=$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}MSP
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerId}.${org}.domain.com:${peerPort}
       - CORE_PEER_GOSSIP_BOOTSTRAP=${peerId}.${org}.domain.com:${peerPort}
 
