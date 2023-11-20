@@ -200,9 +200,9 @@ done
 setPeer "$ORG_NAME" "$NODE_ID"
 
 [ ! -z $ADMIN ] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.domain.com/users/${ADMIN_USER}/msp
-[ ! -z $ADMIN ] && [[ $TYPE == 'orderer' ]] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_NAME}.domain.com/users/${ADMIN_USER}/msp && export CORE_PEER_LOCALMSPID=${ORG_NAME^}MSP
-[ ! -z $USERS ] && export ORG_MSPID="${ORG_NAME^}UsersMSP"
-[ -z $USERS ] && export ORG_MSPID="${ORG_NAME^}MSP"
+[ ! -z $ADMIN ] && [[ $TYPE == 'orderer' ]] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_NAME}.domain.com/users/${ADMIN_USER}/msp && export CORE_PEER_LOCALMSPID=$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP
+[ ! -z $USERS ] && export ORG_MSPID="$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}UsersMSP"
+[ -z $USERS ] && export ORG_MSPID="$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP"
 
 
 $cmd

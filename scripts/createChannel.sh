@@ -31,7 +31,7 @@ createChannelA() {
 
 	set +x
 	for org in $orgs; do
-		ORG_MSP="${org^}"MSP
+		ORG_MSP="$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}"MSP
 		# sleep 3
 		# ./peer.sh fetchconfig -n peer0."$org".domain.com
 		# ./peer.sh updateanchorpeers -o "$org" -O "$ORG_MSP"

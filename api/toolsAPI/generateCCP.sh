@@ -131,7 +131,7 @@ organizations:
 
   for org in $ORGS; do
   ccp+="  ${org}:
-    mspid: ${org^}MSP
+    mspid: $(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}MSP
     peers:  
 "
     

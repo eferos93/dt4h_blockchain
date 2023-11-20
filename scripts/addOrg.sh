@@ -53,7 +53,7 @@ startNodes
 ./peer.sh fetchconfig -n peer0.lynkeus.domain.com -o lynkeus
 
 # Modify the configuration to append the new org
-./peer.sh addorgupdate -O ${ORG_NAME^}MSP
+./peer.sh addorgupdate -O $(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP
 
 ./peer.sh signconfigtx -n peer0.tex.domain.com -A
 ./peer.sh channelupdate -n peer0.lynkeus.domain.com -A

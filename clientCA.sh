@@ -103,7 +103,7 @@ while [[ $# -ge 1 ]]; do
 		exit 0	
 		;;
 	-o|--org )
-		export ORG_NAME="${2,,}"
+		export ORG_NAME=$(echo "$2" | tr '[:upper:]' '[:lower:]')
 		export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_PATH/${ORG_NAME}/fabric-ca-client-${ORG_NAME}
 		export FABRIC_CA_SERVER_HOME=$FABRIC_CA_PATH/${ORG_NAME}/fabric-tlsca-server-${ORG_NAME}
 		;;
