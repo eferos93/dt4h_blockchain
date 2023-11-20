@@ -12,7 +12,7 @@ CA_VERSION=${CA_TAG}
 ARCH=$(echo "$(uname -s|tr '[:upper:]' '[:lower:]'|sed 's/mingw64_nt.*/windows/')-$(uname -m | sed 's/x86_64/amd64/g')")
 MARCH=$(uname -m)
 
-. util.sh
+. ../util.sh
 
 printHelp() {
     echo "Usage: downloadFabric.sh [version [ca_version]] [options]"
