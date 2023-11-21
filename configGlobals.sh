@@ -35,23 +35,70 @@ export ADMIN_USER_PW=admin0pw
 export ORG_REGISTRAR=registrar0
 export ORG_REGISTRAR_PW=registrarpw
 
+# Helper functions for PORT_MAP associative array working for bash versions prior to 4.0
+# Declare indexed arrays for keys and values
+declare -a keys
+declare -a values
+
+function PORT_MAP_set_pair {
+    local key="$1"
+    local value="$2"
+    for ((i = 0; i < ${#keys[@]}; i++)); do
+        if [ "${keys[$i]}" = "$key" ]; then
+            values[$i]=$value
+            return
+        fi
+    done
+    keys+=("$1")
+    values+=("$2")
+}
+
+function PORT_MAP_get_value_by_key {
+    local key="$1"
+    for ((i = 0; i < ${#keys[@]}; i++)); do
+        if [ "${keys[$i]}" = "$key" ]; then
+            echo "${values[$i]}"
+            return
+        fi
+    done
+    echo "Key not found: $key"
+}
+
 # -- USER INPUT - Set Peer Ports
 setPorts() {
   org=$1
-  declare -Ag PORT_MAP
+
+  # The lines below works only for bash 4.x. Associative arrays are not a thing for bash 3.x.
+  # declare -Ag PORT_MAP
+
+  # if [ "$org" == "${ORG_1}" ]; then
+  #   PORT_MAP[peer0]=7070
+  #   PORT_MAP[peer1]=7080
+  # elif [ "$org" == "${ORG_2}" ]; then
+  #   PORT_MAP[peer0]=8080
+  #   PORT_MAP[peer1]=8090
+  # elif [ "$org" == "${ORG_1}orderer" ]; then
+  #   PORT_MAP[orderer0]=9051
+  #   PORT_MAP[orderer1]=9061
+  # elif [ "$org" == "${ORG_2}orderer" ]; then
+  #   PORT_MAP[orderer0]=9071
+  # elif [ "$org" == "${ORG_3}" ]; then
+  #   PORT_MAP[peer0]=10070
+  # fi
+
   if [ "$org" == "${ORG_1}" ]; then
-    PORT_MAP[peer0]=7070
-    PORT_MAP[peer1]=7080
+    PORT_MAP_set_pair "peer0" 7070
+    PORT_MAP_set_pair "peer1" 7080
   elif [ "$org" == "${ORG_2}" ]; then
-    PORT_MAP[peer0]=8080
-    PORT_MAP[peer1]=8090
+    PORT_MAP_set_pair "peer0" 8080
+    PORT_MAP_set_pair "peer1" 8090
   elif [ "$org" == "${ORG_1}orderer" ]; then
-    PORT_MAP[orderer0]=9051
-    PORT_MAP[orderer1]=9061
+    PORT_MAP_set_pair "orderer0" 9051
+    PORT_MAP_set_pair "orderer1" 9061
   elif [ "$org" == "${ORG_2}orderer" ]; then
-    PORT_MAP[orderer0]=9071
+    PORT_MAP_set_pair "orderer0" 9071
   elif [ "$org" == "${ORG_3}" ]; then
-    PORT_MAP[peer0]=10070
+    PORT_MAP_set_pair "peer0" 10070
   fi
 
 }
