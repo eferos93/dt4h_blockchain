@@ -68,24 +68,6 @@ function PORT_MAP_get_value_by_key {
 setPorts() {
   org=$1
 
-  # The lines below works only for bash 4.x. Associative arrays are not a thing for bash 3.x.
-  # declare -Ag PORT_MAP
-
-  # if [ "$org" == "${ORG_1}" ]; then
-  #   PORT_MAP[peer0]=7070
-  #   PORT_MAP[peer1]=7080
-  # elif [ "$org" == "${ORG_2}" ]; then
-  #   PORT_MAP[peer0]=8080
-  #   PORT_MAP[peer1]=8090
-  # elif [ "$org" == "${ORG_1}orderer" ]; then
-  #   PORT_MAP[orderer0]=9051
-  #   PORT_MAP[orderer1]=9061
-  # elif [ "$org" == "${ORG_2}orderer" ]; then
-  #   PORT_MAP[orderer0]=9071
-  # elif [ "$org" == "${ORG_3}" ]; then
-  #   PORT_MAP[peer0]=10070
-  # fi
-
   if [ "$org" == "${ORG_1}" ]; then
     PORT_MAP_set_pair "peer0" 7070
     PORT_MAP_set_pair "peer1" 7080
