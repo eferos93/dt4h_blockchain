@@ -65,6 +65,7 @@ function PORT_MAP_get_value_by_key {
 }
 
 # -- USER INPUT - Set Peer Ports
+# -- Improvement proposal: Make it work dynamically with the number of peers
 setPorts() {
   org=$1
 
@@ -79,6 +80,7 @@ setPorts() {
     PORT_MAP_set_pair "orderer1" 9061
   elif [ "$org" == "${ORG_2}orderer" ]; then
     PORT_MAP_set_pair "orderer0" 9071
+    PORT_MAP_set_pair "orderer1" 9081
   elif [ "$org" == "${ORG_3}" ]; then
     PORT_MAP_set_pair "peer0" 10070
   fi
