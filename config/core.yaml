@@ -12,7 +12,7 @@ peer:
 
     # The peer id provides a name for this peer instance and is used when
     # naming docker resources.
-    id: 
+    id: jdoe
 
     # The networkId allows for logical separation of networks and is used when
     # naming docker resources.
@@ -20,7 +20,7 @@ peer:
 
     # The Address at local network interface this Peer will listen on.
     # By default, it will listen on all network interfaces
-    listenAddress: 
+    listenAddress: 0.0.0.0:7051
 
     # The endpoint this peer uses to listen for inbound chaincode connections.
     # If this is commented-out, the listen address is selected to be
@@ -280,22 +280,23 @@ peer:
         clientAuthRequired: false
         # X.509 certificate used for TLS server
         cert:
-            file: 
+            file: tls/server.crt
         # Private key used for TLS server
         key:
-            file: 
+            file: tls/server.key
         # rootcert.file represents the trusted root certificate chain used for verifying certificates
         # of other nodes during outbound connections.
         # It is not required to be set, but can be used to augment the set of TLS CA certificates
         # available from the MSPs of each channel’s configuration.
         rootcert:
-            file: 
+            file: tls/ca.crt
         # If mutual TLS is enabled, clientRootCAs.files contains a list of additional root certificates
         # used for verifying certificates of client connections.
         # It augments the set of TLS CA certificates available from the MSPs of each channel’s configuration.
         # Minimally, set your organization's TLS CA root certificate so that the peer can receive join channel requests.
         clientRootCAs:
             files:
+              - tls/ca.crt
         # Private key used for TLS when making client connections.
         # If not set, peer.tls.key.file will be used instead
         clientKey:
@@ -309,7 +310,8 @@ peer:
     # client messages
     authentication:
         # the acceptable difference between the current server time and the
-        # client's time as specified in a client request message
+        # client's time as specified in a client request message.
+        # timewindow is checked on requests to the delivery service only.
         timewindow: 15m
 
     # Path on the file system where peer will store data (eg ledger). This

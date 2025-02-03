@@ -13,20 +13,31 @@
 ################################################################################
 General:
     # Listen address: The IP on which to bind to listen.
-    ListenAddress:
+    ListenAddress: 127.0.0.1
 
     # Listen port: The port on which to bind to listen.
-    ListenPort:
+    ListenPort: 7050
 
     # TLS: TLS settings for the GRPC server.
     TLS:
+        # Require server-side TLS
         Enabled: false
         # PrivateKey governs the file location of the private key of the TLS certificate.
-        PrivateKey:
+        PrivateKey: tls/server.key
         # Certificate governs the file location of the server TLS certificate.
-        Certificate:
+        Certificate: tls/server.crt
+        # RootCAs contains a list of additional root certificates used for verifying certificates
+        # of other orderer nodes during outbound connections.
+        # It is not required to be set, but can be used to augment the set of TLS CA certificates
+        # available from the MSPs of each channel’s configuration.
         RootCAs:
+          - tls/ca.crt
+        # Require client certificates / mutual TLS for inbound connections.
         ClientAuthRequired: false
+        # If mutual TLS is enabled, ClientRootCAs contains a list of additional root certificates
+        # used for verifying certificates of client connections.
+        # It is not required to be set, but can be used to augment the set of TLS CA certificates
+        # available from the MSPs of each channel’s configuration.
         ClientRootCAs:
     # Keepalive settings for the GRPC server.
     Keepalive:
@@ -39,18 +50,30 @@ General:
         # ServerTimeout is the duration the server waits for a response from
         # a client before closing the connection.
         ServerTimeout: 20s
+
+    # Since all nodes should be consistent it is recommended to keep
+    # the default value of 100MB for MaxRecvMsgSize & MaxSendMsgSize
+    # Max message size in bytes the GRPC server and client can receive
+    MaxRecvMsgSize: 104857600
+    # Max message size in bytes the GRPC server and client can send
+    MaxSendMsgSize: 104857600
+
     # Cluster settings for ordering service nodes that communicate with other ordering service nodes
     # such as Raft based ordering service.
     Cluster:
         # SendBufferSize is the maximum number of messages in the egress buffer.
         # Consensus messages are dropped if the buffer is full, and transaction
         # messages are waiting for space to be freed.
-        SendBufferSize: 10
+        SendBufferSize: 100
+
         # ClientCertificate governs the file location of the client TLS certificate
         # used to establish mutual TLS connections with other ordering service nodes.
+        # If not set, the server General.TLS.Certificate is re-used.
         ClientCertificate:
         # ClientPrivateKey governs the file location of the private key of the client TLS certificate.
+        # If not set, the server General.TLS.PrivateKey is re-used.
         ClientPrivateKey:
+
         # The below 4 properties should be either set together, or be unset together.
         # If they are set, then the orderer node uses a separate listener for intra-cluster
         # communication. If they are unset, then the general orderer listener is used.
@@ -69,7 +92,7 @@ General:
 
     # Bootstrap method: The method by which to obtain the bootstrap block
     # system channel is specified. The option can be one of:
-    #   "file" - path to a faile containing the genesis block or config block of system channel
+    #   "file" - path to a file containing the genesis block or config block of system channel
     #   "none" - allows an orderer to start without a system channel configuration
     BootstrapMethod: file
 
@@ -92,7 +115,7 @@ General:
     # ID of one of the organizations defined in the orderer system channel's
     # /Channel/Orderer configuration. The sample organization defined in the
     # sample configuration provided has an MSP ID of "SampleOrg".
-    LocalMSPID: 
+    LocalMSPID: SampleOrg
 
     # Enable an HTTP service for Go "pprof" profiling as documented at:
     # https://golang.org/pkg/net/http/pprof
@@ -139,7 +162,8 @@ General:
     # client messages
     Authentication:
         # the acceptable difference between the current server time and the
-        # client's time as specified in a client request message
+        # client's time as specified in a client request message.
+        # TimeWindow is checked on requests to the delivery service only.
         TimeWindow: 15m
 
 
@@ -147,14 +171,12 @@ General:
 #
 #   SECTION: File Ledger
 #
-#   - This section applies to the configuration of the file or json ledgers.
+#   - This section applies to the configuration of the file ledger.
 #
 ################################################################################
 FileLedger:
 
     # Location: The directory to store the blocks in.
-    # NOTE: If this is unset, a new temporary location will be chosen every time
-    # the orderer is restarted, using the prefix specified by Prefix.
     Location: /var/hyperledger/production/orderer
 
     # The prefix to use when generating a ledger directory in temporary space.
@@ -313,6 +335,31 @@ Operations:
         # Paths to PEM encoded ca certificates to trust for client authentication
         ClientRootCAs: []
 
+################################################################################
+#
+#   Metrics Configuration
+#
+#   - This configures metrics collection for the orderer
+#
+################################################################################
+Metrics:
+    # The metrics provider is one of statsd, prometheus, or disabled
+    Provider: disabled
+
+    # The statsd configuration
+    Statsd:
+      # network type: tcp or udp
+      Network: udp
+
+      # the statsd server address
+      Address: 127.0.0.1:8125
+
+      # The interval at which locally cached counters and gauges are pushed
+      # to statsd; timings are pushed immediately
+      WriteInterval: 30s
+
+      # The prefix is prepended to all emitted statsd metrics
+      Prefix:
 
 ################################################################################
 #
@@ -323,7 +370,7 @@ Operations:
 ################################################################################
 Admin:
     # host and port for the admin server
-    ListenAddress: 
+    ListenAddress: # TODO
 
     # TLS configuration for the admin endpoint
     TLS:
@@ -349,29 +396,20 @@ Admin:
 
 ################################################################################
 #
-#   Metrics  Configuration
+#   Channel participation API Configuration
 #
-#   - This configures metrics collection for the orderer
+#   - This provides the channel participation API configuration for the orderer.
+#   - Channel participation uses the ListenAddress and TLS settings of the Admin
+#     service.
 #
 ################################################################################
-Metrics:
-    # The metrics provider is one of statsd, prometheus, or disabled
-    Provider: disabled
+ChannelParticipation:
+    # Channel participation API is enabled.
+    Enabled: false
 
-    # The statsd configuration
-    Statsd:
-      # network type: tcp or udp
-      Network: udp
+    # The maximum size of the request body when joining a channel.
+    MaxRequestBodySize: 1 MB
 
-      # the statsd server address
-      Address: 127.0.0.1:8125
-
-      # The interval at which locally cached counters and gauges are pushed
-      # to statsd; timings are pushed immediately
-      WriteInterval: 30s
-
-      # The prefix is prepended to all emitted statsd metrics
-      Prefix:
 
 ################################################################################
 #
