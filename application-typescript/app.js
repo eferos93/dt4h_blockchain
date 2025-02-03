@@ -37,6 +37,7 @@ const {
                     //  ------------- BLOCK LISTENER ------------
                     console.log('Initiating blockchain event DB listener.')
                     const listener = await app.newBlockListener(Config.BLOCK_LISTENER_CLIENT)
+                    console.log('Listener initialized.')
                     await listener.run()
                     break;
                 case 'validate':

@@ -39,4 +39,4 @@ export CONN_TIMEOUT=3
 export MAX_RETRY=10
 
 # Package IDentifier
-export PACKAGE_ID=agoraCC_1.0:1eeffcacf1ceef9de5f8cc0e45d873500b288d3b5b8cd0bda57e6574c8965e72
+export PACKAGE_ID=agoraCC_1.0:1cb78f8cd458b4e367ccfb04ceade2b5f5966be442791b58b41627133c015afc

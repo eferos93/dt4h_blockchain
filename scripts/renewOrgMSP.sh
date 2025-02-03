@@ -13,7 +13,7 @@
 ### WHICH ARE THE ROOT CA CERTIFICATES FOR ID AND TLS 
 ### WE DO NOT USE THIS ADMIN TO SIGN OPERATIONS, WE ENROLL ANOTHER ADMIN
 ### FOR THE PURPOSE OF ADMIN OPERATIONS
-org=lynkeus
+org=orgexample
 type=peer
 ./clientCA.sh enrollorgadmin -o "${org}" -t "${type}" --catype ca
 

@@ -86,7 +86,7 @@ tls:
 #############################################################################
 ca:
   # Name of this CA
-  name: ca-lynkeus-tls
+  name: ca-orgexample-tls
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -311,8 +311,8 @@ csr:
         OU: Fabric
    hosts:
      - localhost
-     - lynkeus.domain.com
-     - tlsca_lynkeus
+     - orgexample.domain.com
+     - tlsca_orgexample
    ca:
       expiry: 131400h
       pathlength: 1

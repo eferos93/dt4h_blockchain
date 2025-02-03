@@ -312,7 +312,7 @@ csr:
    hosts:
      - localhost
      - org3.domain.com
-     - tlscaops_lynkeus
+     - tlscaops_orgexample
    ca:
       expiry: 131400h
       pathlength: 1

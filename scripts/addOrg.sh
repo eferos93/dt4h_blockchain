@@ -50,13 +50,13 @@ startNodes
 
 ######### TRANSFERS ORG DEFINITION TO AN ORG ALREADY JOINED 
 ######### FOLLOWING IS FROM ANOTHER ORG
-./peer.sh fetchconfig -n peer0.lynkeus.domain.com -o lynkeus
+./peer.sh fetchconfig -n peer0.orgexample.domain.com -o orgexample
 
 # Modify the configuration to append the new org
 ./peer.sh addorgupdate -O $(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP
 
 ./peer.sh signconfigtx -n peer0.tex.domain.com -A
-./peer.sh channelupdate -n peer0.lynkeus.domain.com -A
+./peer.sh channelupdate -n peer0.orgexample.domain.com -A
 
 ######### New Org
 ./peer.sh fetchconfig -n peer0.${ORG_NAME}.domain.com -o ${ORG_NAME}

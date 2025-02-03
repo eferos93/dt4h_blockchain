@@ -26,7 +26,7 @@ peer chaincode instantiate -n mycc -v 0 -c '{"Args":[]}' -C myc
   "isMemberOf": "companyA",
   "org": {
     "instType": "privateHospitals",
-    "orgName": "Lynkeus",
+    "orgName": "Org1",
     "active": true,
     "members": []
   },

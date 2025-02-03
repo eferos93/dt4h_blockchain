@@ -57,6 +57,7 @@ export class App {
 
     async init() {
         this.peerConnection = await Connection.newGrpcConnection(this.peer)
+        console.log('Peer connection established')
         // await this.importMSPs()
     }
 

@@ -29,11 +29,11 @@ timeshake=120h
 ./peer.sh fetchconfig -c $channel -t orderer -n ${orderer}.${org}.domain.com -A --tlshandshake $timeshake
 
 # CREATE UPDATE CONFIG
-./peer.sh updateorderertls -c $channel -n peer0.lynkeus.domain.com --orderer-id ${orderer}.${org}.domain.com
+./peer.sh updateorderertls -c $channel -n peer0.orgexample.domain.com --orderer-id ${orderer}.${org}.domain.com
 
 # SIGN ACCORDING TO POLICY
 ./peer.sh signconfigtx -n peer0.tex.domain.com -A
-./peer.sh signconfigtx -n peer0.lynkeus.domain.com -A
+./peer.sh signconfigtx -n peer0.orgexample.domain.com -A
 
 # SUBMIT CHANNEL UPDATE
 ./peer.sh channelupdate -c $channel -t orderer -n ${orderer}.${org}.domain.com -A --tlshandshake $timeshake
