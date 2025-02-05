@@ -1,3 +1,4 @@
+install-fabric.sh
 *.tar.gz
 organizations/
 channel-artifacts/
