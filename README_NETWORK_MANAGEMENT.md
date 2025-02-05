@@ -16,7 +16,7 @@ This file provides a streamlined and robust guide for managing the project on th
    - Alternatively, the setup can be run step-by-step:
      - Run each of the following commands sequentially:
        ```bash
-       ./network.sh step1
+       sudo ./network.sh step1
        ./network.sh step2
        ./network.sh step3
        ./network.sh step4
@@ -24,7 +24,7 @@ This file provides a streamlined and robust guide for managing the project on th
        sudo ./network.sh step6
        sudo ./network.sh step7
        ```
-   - Steps 5 through 7 require `sudo` privileges for successful completion.
+   - Step 1 and Steps 5 through 7 require `sudo` privileges for successful completion.
    - To shut down the network, use:
      ```bash
      sudo ./network.sh down
