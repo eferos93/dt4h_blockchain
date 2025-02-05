@@ -1,5 +1,5 @@
 {
-    "gopls": {
-        "experimentalWorkspaceModule": true,
-    }
+    // "gopls": {
+    //     "experimentalWorkspaceModule": true,
+    // }
 }
