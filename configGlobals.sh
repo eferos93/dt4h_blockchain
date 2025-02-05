@@ -3,25 +3,26 @@
 export STAGE=dev
 
 # Profile used from configtx.yaml
-export CHANNEL_PROFILE=AgoraChannel
+export CHANNEL_PROFILE=DT4HChannel
 
 # Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium
 
 # Set ORDERER global variables 
 
-# -- USER INPUT - Set Organization Names
-export ORG_1=agora
-export ORG_2=athena
+# -- USER INPUT - Sest Organization Names
+export ORG_1=athena
+export ORG_2=ub
+export ORG_3=bsc
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}orderer.domain.com
 export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}orderer.domain.com/mspConfig/tlscacerts/ca.crt
 export ORDERER=localhost:9051
 
-[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_1}orderer ${ORG_2}orderer"
-[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_1} ${ORG_2}"
-[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}orderer ${ORG_2}orderer"
+[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3}"
+[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_2} ${ORG_3}"
+[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}"
 
 export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
@@ -97,7 +98,7 @@ setParams() {
   export TLSOPS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tlsops-root-cert/tls-ca-cert.pem
 
   if [ "$org" == "${ORG_1}" ]; then
-    typeOfOrg=peer
+    typeOfOrg=orderer
     caPort=7055
     tlsPort=7054
     peerPort=7070
@@ -108,16 +109,6 @@ setParams() {
     tlsPort=8054
     peerPort=8080  
     tlsOpsPort=8020
-  elif [ "$org" == "${ORG_1}orderer" ]; then
-    typeOfOrg=orderer
-    caPort=9055
-    tlsPort=9054
-    tlsOpsPort=9020  
-  elif [ "$org" == "${ORG_2}orderer" ];  then
-    typeOfOrg=orderer
-    caPort=11055
-    tlsPort=11054
-    tlsOpsPort=11020
   elif [ "$org" == "${ORG_3}" ]; then
     typeOfOrg=peer
     tlsOpsPort=10020
