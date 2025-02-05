@@ -25,8 +25,8 @@ export COMPOSE_PROJECT_NAME=fabric
 export COMPOSE_IGNORE_ORPHANS=True
 
 # Fabric Version of binaries
-export CA_TAG=1.5.7
-export FABRIC_TAG=2.5.3
+export CA_TAG=latest #1.5.7
+export FABRIC_TAG=latest #2.5.3
 
 # Colours
 RED='\033[0;31m'
