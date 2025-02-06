@@ -71,21 +71,15 @@ setPorts() {
   org=$1
 
   if [ "$org" == "${ORG_1}" ]; then
-    PORT_MAP_set_pair "peer0" 7070
-    PORT_MAP_set_pair "peer1" 7080
+    PORT_MAP_set_pair "orderer0" 7070
+    PORT_MAP_set_pair "orderer1" 7080
   elif [ "$org" == "${ORG_2}" ]; then
     PORT_MAP_set_pair "peer0" 8080
     PORT_MAP_set_pair "peer1" 8090
-  elif [ "$org" == "${ORG_1}orderer" ]; then
-    PORT_MAP_set_pair "orderer0" 9051
-    PORT_MAP_set_pair "orderer1" 9061
-  elif [ "$org" == "${ORG_2}orderer" ]; then
-    PORT_MAP_set_pair "orderer0" 9071
-    PORT_MAP_set_pair "orderer1" 9081
   elif [ "$org" == "${ORG_3}" ]; then
-    PORT_MAP_set_pair "peer0" 10070
+    PORT_MAP_set_pair "peer0" 9051
+    PORT_MAP_set_pair "peer1" 9061
   fi
-
 }
 
 
