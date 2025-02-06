@@ -647,7 +647,7 @@ networks:
 services:
   ${peerId}couchDB${org}:
     container_name: ${peerId}couchDB${org}
-    image: couchdb:3.1
+    image: couchdb:latest
     # deploy:
     #   restart_policy:
     #     condition: on-failure
