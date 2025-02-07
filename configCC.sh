@@ -39,4 +39,4 @@ export CONN_TIMEOUT=3
 export MAX_RETRY=10
 
 # Package IDentifier
-export PACKAGE_ID=dt4hCC_1.0:1cb78f8cd458b4e367ccfb04ceade2b5f5966be442791b58b41627133c015afc
+export PACKAGE_ID=
