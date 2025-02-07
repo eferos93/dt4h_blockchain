@@ -3,7 +3,7 @@
 export STAGE=dev
 
 # Profile used from configtx.yaml
-export CHANNEL_PROFILE=DT4HChannel
+export CHANNEL_PROFILE=dt4h
 
 # Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium

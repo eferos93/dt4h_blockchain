@@ -6,7 +6,7 @@ export FABRIC_HOME=${PWD}
 ##### Channel parameters
 
 # Name of channel
-export CHANNEL_NAME=DT4HChannel
+export CHANNEL_NAME=dt4h
 
 ##### Set Chaincode Parameters
 
@@ -15,10 +15,10 @@ export CHANNEL_NAME=DT4HChannel
 export CC_VERSION="1.0"
 
 # Path to the chaincode
-export CC_PATH=${FABRIC_HOME}/chaincode/DT4HCC
+export CC_PATH=${FABRIC_HOME}/chaincode/dt4hCC
 
 # Name of the chaincode package
-export CC_NAME=DT4HCC
+export CC_NAME=dt4hCC
 
 # Should be incremented by 1 on every chaincode update commit
 export CC_SEQUENCE=1
@@ -39,4 +39,4 @@ export CONN_TIMEOUT=3
 export MAX_RETRY=10
 
 # Package IDentifier
-export PACKAGE_ID=DT4HCC_1.0:1cb78f8cd458b4e367ccfb04ceade2b5f5966be442791b58b41627133c015afc
+export PACKAGE_ID=dt4hCC_1.0:1cb78f8cd458b4e367ccfb04ceade2b5f5966be442791b58b41627133c015afc

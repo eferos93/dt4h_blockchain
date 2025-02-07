@@ -696,7 +696,7 @@ Profiles:
     #             - *Agora
     #             - *AgoraUsers
 
-    DT4HChannel:
+    dt4h:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
