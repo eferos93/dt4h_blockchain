@@ -36,6 +36,42 @@ export ADMIN_USER_PW=admin0pw
 export ORG_REGISTRAR=registrar0
 export ORG_REGISTRAR_PW=registrarpw
 
+# softhsm
+export SOFTHSM2_CONF="${SOFTHSM2_CONF:-${HOME}/softhsm2.conf}"
+
+LocateHsmLib() {
+  local POSSIBLE_LIB_LOC=( \
+    '/usr/lib/softhsm/libsofthsm2.so' \
+    '/usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so' \
+    '/usr/local/lib/softhsm/libsofthsm2.so' \
+    '/usr/lib/libacsp-pkcs11.so' \
+    '/opt/homebrew/lib/softhsm/libsofthsm2.so' \
+  )
+  for TEST_LIB in "${POSSIBLE_LIB_LOC[@]}"; do
+    if [ -f "${TEST_LIB}" ]; then
+      echo "${TEST_LIB}"
+      return
+    fi
+  done
+}
+
+HSM2_LIB="${PKCS11_LIB:-$(LocateHsmLib)}"
+[ -z "${HSM2_LIB}" ] && echo No SoftHSM PKCS11 Library found, ensure you have installed softhsm2 && exit 1
+
+# create a softhsm2.conf file if one doesn't exist
+if [ ! -f "${SOFTHSM2_CONF}" ]; then
+  TMPDIR="${TMPDIR:-/tmp}"
+  mkdir -p "${TMPDIR}/softhsm"
+  echo "directories.tokendir = ${TMPDIR}/softhsm" > "${SOFTHSM2_CONF}"
+fi
+
+# create a softhsm2.conf file if one doesn't exist
+if [ ! -f "${SOFTHSM2_CONF}" ]; then
+  TMPDIR="${TMPDIR:-/tmp}"
+  mkdir -p "${TMPDIR}/softhsm"
+  echo "directories.tokendir = ${TMPDIR}/softhsm" > "${SOFTHSM2_CONF}"
+fi
+
 # Helper functions for PORT_MAP associative array working for bash versions prior to 4.0
 # Declare indexed arrays for keys and values
 declare -a keys

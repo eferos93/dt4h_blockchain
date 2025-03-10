@@ -352,13 +352,17 @@ idemix:
 # crypto library implementation to use
 #############################################################################
 bccsp:
-    default: SW
-    sw:
-        hash: SHA2
-        security: 256
-        filekeystore:
-            # The directory used for the software file-based keystore
-            keystore: msp/keystore
+  default: PKCS11
+  pkcs11:
+    Library: /usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so
+    Pin: 98765432
+    Label: ForFabric
+    hash: SHA2
+    security: 256
+    filekeystore:
+      # The directory used for the software file-based keystore
+      keystore: msp/keystore
+
 
 #############################################################################
 # Multi CA section

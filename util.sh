@@ -245,6 +245,7 @@ services:
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_PROFILES_TLS_EXPIRY=${TLS_DEFAULT_EXPIRY}
       ${ops_listenaddress}
+      - SOFTHSM2_CONF=/etc/hyperledger/fabric/config.file
     ports:
       - ${tlsPort}:${tlsPort}
     extra_hosts:
@@ -253,6 +254,9 @@ services:
     command: sh -c 'fabric-ca-server start -b ${admin}:${adminpw} -d'
     volumes:
       - ${FABRIC_HOME}/organizations/fabric-ca/${org}/fabric-tlsca-server-${org}:/etc/hyperledger/fabric-ca-server
+      - /home/softhsm/config.file:/etc/hyperledger/fabric/config.file
+      - /usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so:/etc/hyperledger/fabric/libsofthsm2.so
+
     container_name: tlsca_${org}
     networks:
       - ${STAGE}" > docker/docker-compose-tls-${org}.yaml
@@ -295,6 +299,7 @@ services:
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_PROFILES_TLS_EXPIRY=${TLS_DEFAULT_EXPIRY}
       ${ops_listenaddress}
+      - SOFTHSM2_CONF=/etc/hyperledger/fabric/config.file
     ports:
       - ${tlsOpsPort}:${tlsOpsPort}
     extra_hosts:
@@ -302,6 +307,8 @@ services:
     command: sh -c 'fabric-ca-server start -b ${admin}:${adminpw} -d'
     volumes:
       - ${FABRIC_HOME}/organizations/fabric-ca/${org}/fabric-tlscaops-server-${org}:/etc/hyperledger/fabric-ca-server
+      - /home/softhsm/config.file:/etc/hyperledger/fabric/config.file
+      - /usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so:/etc/hyperledger/fabric/libsofthsm2.so
     container_name: tlscaops_${org}
     networks:
       - ${STAGE}" > docker/docker-compose-tlsops-${org}.yaml
@@ -354,6 +361,7 @@ services:
       - FABRIC_CA_SERVER_SIGNING_TLS_DEFAULT_EXPIRY=${CA_DEFAULT_EXPIRY}
       - FABRIC_CA_SERVER_AFFILIATIONS_${org}=MEMBERS,USERS
       ${ops_listenaddress}
+      - SOFTHSM2_CONF=/etc/hyperledger/fabric/config.file
     ports:
       - ${CA_PORT}:${CA_PORT}
     extra_hosts:
@@ -361,6 +369,8 @@ services:
     command: sh -c '${command}'
     volumes:
       - ${FABRIC_HOME}/organizations/fabric-ca/${org}/fabric-ca-server-${org}:/etc/hyperledger/fabric-ca-server
+      - /home/softhsm/config.file:/etc/hyperledger/fabric/config.file
+      - /usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so:/etc/hyperledger/fabric/libsofthsm2.so
     container_name: ca_${org}
     networks:
       - ${STAGE}
