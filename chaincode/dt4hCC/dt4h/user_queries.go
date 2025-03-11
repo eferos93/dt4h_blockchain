@@ -1,4 +1,4 @@
-package agora
+package dt4h
 
 import (
 	"encoding/json"
@@ -16,7 +16,6 @@ func (s *UserContract) ReadUser(ctx TransactionContextInterface, username string
 
 	return user, nil
 }
-
 
 // getUser Fetch user from world state
 func (s *UserContract) getUserBytes(ctx TransactionContextInterface, username string) ([]byte, error) {
@@ -45,7 +44,6 @@ func (s *UserContract) getUser(ctx TransactionContextInterface, username string)
 		return nil, nil
 	}
 
-
 	fmt.Printf("3333")
 	user, err := s.parseUserBytes(userBytes)
 	if err != nil {
@@ -58,7 +56,7 @@ func (s *UserContract) getUser(ctx TransactionContextInterface, username string)
 // Query all users
 func (s *UserContract) GetAllUsers(ctx TransactionContextInterface) ([]*User, error) {
 	method := "GetAllUsers"
-	
+
 	resultsIterator, err := ctx.GetStub().GetStateByPartialCompositeKey(USER_OBJECT_TYPE, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
@@ -122,9 +120,9 @@ func getInventory(ctx TransactionContextInterface) (*UserInventory, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
 	}
-	
+
 	var inv *UserInventory
-	err = json.Unmarshal(invBytes, &inv);
+	err = json.Unmarshal(invBytes, &inv)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
 	}
@@ -149,7 +147,7 @@ func (s *UserContract) parseUserBytes(userBytes []byte) (*User, error) {
 
 	if version == CURRENT_USER_VERSION {
 		fmt.Printf("%s - Latest Version: %v", method, version)
-		
+
 		// Change value here
 		// mapping[VERSION_FIELD] = 1
 		// mapping["desc"] = "Test desc change"
@@ -159,12 +157,11 @@ func (s *UserContract) parseUserBytes(userBytes []byte) (*User, error) {
 		}
 	}
 
-
 	var user *User
 	err = json.Unmarshal(userBytes, &user)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", method, err)
-	}	
+	}
 
 	return user, nil
 }
