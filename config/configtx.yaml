@@ -312,8 +312,8 @@ Orderer: &OrdererDefaults
     # as TLS validation.  The preferred way to specify orderer addresses is now
     # to include the OrdererEndpoints item in your org definition
     Addresses:
-        - orderer0.athena.domain.com:7071
-        - orderer1.athena.domain.com:7081
+        - orderer0.athena.domain.com:7070
+        - orderer1.athena.domain.com:7080
 
     # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
@@ -374,11 +374,11 @@ Orderer: &OrdererDefaults
         # replicated under the Orderer.Addresses key above.
         Consenters:
             - Host: orderer0.athena.domain.com
-              Port: 7072
+              Port: 7070
               ClientTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer0.athena.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer0.athena.domain.com/tls/signcerts/cert.pem
             - Host: orderer1.athena.domain.com
-              Port: 7082
+              Port: 7080
               ClientTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer1.athena.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer1.athena.domain.com/tls/signcerts/cert.pem
 
