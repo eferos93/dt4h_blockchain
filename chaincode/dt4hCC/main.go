@@ -34,8 +34,12 @@ func main() {
 	managementSC.TransactionContextHandler = new(dt4h.TransactionContext)
 	managementSC.BeforeTransaction = dt4h.BeforeTransaction
 
+	querySC := new(dt4h.QueryContract)
+	querySC.TransactionContextHandler = new(dt4h.TransactionContext)
+	querySC.BeforeTransaction = dt4h.BeforeTransaction
+
 	// Assemble Chaincode
-	dt4hCC, err := contractapi.NewChaincode(userSC, productSC, agreementSC, managementSC)
+	dt4hCC, err := contractapi.NewChaincode(userSC, productSC, agreementSC, managementSC, querySC)
 
 	// Start Chaincode
 	if err != nil {

@@ -93,10 +93,15 @@ type AgreementContract struct {
 	contractapi.Contract
 }
 
+type QueryContract struct {
+	contractapi.Contract
+}
+
 var agreementContract = new(AgreementContract)
 var userContract = new(UserContract)
 var managementContract = new(ManagementContract)
 var dataContract = new(DataContract)
+var queryContract = new(QueryContract)
 
 /*{
 	username:"user" + i,
