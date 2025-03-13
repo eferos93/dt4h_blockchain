@@ -115,11 +115,11 @@ setPeer() {
   export CORE_PEER_TLS_CERT=${PEER_HOME}/tls/signcerts/cert.pem
   export CORE_PEER_TLS_KEY=${PEER_HOME}/tls/keystore/key.pem
   
-  export CORE_PEER_ADDRESS=${hostname}:"$(PORT_MAP_get_value_by_key $nodeID)"
+  export CORE_PEER_ADDRESS=${hostname}:${PORT_MAP[$nodeID]}
 
   # MSP (Need Admin to join channel)
   export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
-  [ -z $NODE_PORT ] && export NODE_PORT="$(PORT_MAP_get_value_by_key $nodeID)"
+  [ -z $NODE_PORT ] && export NODE_PORT=${PORT_MAP[$nodeID]}
   export ADMIN_PORT=$((NODE_PORT + 2))
   export CORE_PEER_TLS_ENABLED=true
 
