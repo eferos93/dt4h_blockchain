@@ -174,9 +174,9 @@ exportMSPs() {
     done
 
     # Copying specific organization data.
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/peers/peer0.agora.domain.com/. "$APP_DEST"/peer0agora/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/prometheus .
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.
