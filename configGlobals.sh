@@ -28,7 +28,7 @@ export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
 
 # -- USER INPUT - Set CouchDB Ports
-export COUCHDB_PORTS=("5100" "5200" "6100" "6200")
+export COUCHDB_PORTS=("5100" "5200" "6100")
 
 # -- ORG ADMINS USERNAMES AND PASSWORDS --
 export ADMIN_USER=admin0
@@ -95,7 +95,6 @@ setParams() {
     typeOfOrg=orderer
     caPort=7055
     tlsPort=7054
-    peerPort=7070
     tlsOpsPort=7020
   elif [ "$org" == "${ORG_2}" ]; then
     typeOfOrg=peer
