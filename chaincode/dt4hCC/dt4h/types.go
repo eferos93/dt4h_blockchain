@@ -1,4 +1,4 @@
-package agora
+package dt4h
 
 import (
 	"time"
@@ -52,7 +52,7 @@ const (
 	AUTOMATED_DECISION_MAKING = "Automated"
 )
 
-var AUTHORIZED_MSPS = []string{"AgoraMSP", "AthenaMSP"}
+var AUTHORIZED_MSPS = []string{"UbMSP", "AthenaMSP", "BscMSP"}
 var AGREEMENT_STATUS = []string{"Eligible", "Paid", "Access", "Withdrawn"}
 var PURPOSES = []string{"Marketing", "PubliclyFundedResearch", "PrivateResearch", "Management", "Automated", "StudyRecommendations", "JobOffers", "StatisticalResearch"}
 var PROTECTIONS = []string{"Anonymization", "Encryption", "SMPC"}

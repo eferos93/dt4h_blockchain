@@ -126,9 +126,9 @@ startNodes() {
 	for org in $ORDERER_ORGS; do
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
-			set -x
-			./peer.sh start -t orderer -n "$orderer"."$org".domain.com -p "$(PORT_MAP_get_value_by_key "$orderer")"
-			set +x
+			# set -x
+			./peer.sh start -t orderer -n "$orderer"."$org".domain.com -p "${PORT_MAP[${orderer}]}"
+			# set +x
 		done
 	done
 
@@ -136,9 +136,9 @@ startNodes() {
 	for org in $PEER_ORGS; do
 		setPorts "$org"
 		for peer in $PEER_IDS; do
-			set -x
-			./peer.sh start -t peer -n "$peer"."$org".domain.com -p "$(PORT_MAP_get_value_by_key "$peer")" -D "${COUCHDB_PORTS[${COUNT}]}"
-			set +x
+			# set -x
+			./peer.sh start -t peer -n "$peer"."$org".domain.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
+			# set +x
 			((COUNT++))
 		done
 	done
@@ -174,9 +174,9 @@ exportMSPs() {
     done
 
     # Copying specific organization data.
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/peers/peer0.agora.domain.com/. "$APP_DEST"/peer0agora/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/agora.domain.com/users/prometheus .
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.

@@ -7,7 +7,7 @@ joinOrderers() {
 	for org in $ORDERER_ORGS; do
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
-			./peer.sh osnjoin -t orderer -n ${orderer}.$org.domain.com -p "$(PORT_MAP_get_value_by_key ${orderer})"
+			./peer.sh osnjoin -t orderer -n ${orderer}.$org.domain.com -p ${PORT_MAP[$orderer]}
 		done
 	done
 	

@@ -11,17 +11,19 @@ export CONSORTIUM_NAME=BasicConsortium
 # Set ORDERER global variables 
 
 # -- USER INPUT - Set Organization Names
-export ORG_1=agora
-export ORG_2=athena
+export ORG_1=athena
+export ORG_2=ub
+export ORG_3=bsc
 
 # Auto set orderer of Org 1
-export ORDERER_HOSTNAME=orderer0.${ORG_1}orderer.domain.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}orderer.domain.com/mspConfig/tlscacerts/ca.crt
+export ORDERER_HOSTNAME=orderer0.${ORG_1}.domain.com
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.domain.com/mspConfig/tlscacerts/ca.crt
 export ORDERER=localhost:9051
 
-[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_1}orderer ${ORG_2}orderer"
-[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_1} ${ORG_2}"
-[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}orderer ${ORG_2}orderer"
+
+[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3}"
+[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_2} ${ORG_3}"
+[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}"
 
 export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"

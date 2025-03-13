@@ -1,4 +1,4 @@
-package agora
+package dt4h
 
 import (
 	"encoding/json"
@@ -47,7 +47,7 @@ func (s *DataContract) GetAllProducts(ctx TransactionContextInterface) ([]*Produ
 	return products, nil
 }
 
-//  GetProductHistory fetch modification history of a product
+// GetProductHistory fetch modification history of a product
 func (s *DataContract) GetProductHistory(ctx TransactionContextInterface, productID string) ([]ProductHistoryQueryResult, error) {
 	method := "GetProductHistory"
 

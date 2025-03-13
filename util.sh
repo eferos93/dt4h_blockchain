@@ -52,26 +52,26 @@ fi
 setPeers() {
 
   if [ ${STAGE} == 'dev' ]; then
-    peer0Org1="--peerAddresses localhost:7070"
-    peer1Org1="--peerAddresses localhost:7080"
-
     peer0Org2="--peerAddresses localhost:8080"
     peer1Org2="--peerAddresses localhost:8090"
-  else
-    peer0Org1="--peerAddresses peer0.${ORG_1}.domain.com:${CCP_PEER_PORT}"
-    peer1Org1="--peerAddresses peer1.${ORG_1}.domain.com:${CCP_PEER_PORT}"
 
+    peer0Org3="--peerAddresses localhost:9051"
+    peer1Org3="--peerAddresses localhost:9061"
+  else
     peer0Org2="--peerAddresses peer0.${ORG_2}.domain.com:${CCP_PEER_PORT}"
     peer1Org2="--peerAddresses peer1.${ORG_2}.domain.com:${CCP_PEER_PORT}"
+
+    peer0Org3="--peerAddresses peer0.${ORG_3}.domain.com:${CCP_PEER_PORT}"
+    peer1Org3="--peerAddresses peer1.${ORG_3}.domain.com:${CCP_PEER_PORT}"
   fi
 
-  export TLS_ROOTCERT_ORG1=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_1}.domain.com/mspConfig/tlscacerts/ca.crt
   export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.domain.com/mspConfig/tlscacerts/ca.crt
+  export TLS_ROOTCERT_ORG3=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_3}.domain.com/mspConfig/tlscacerts/ca.crt
 
-  tlsOrg1="--tlsRootCertFiles ${TLS_ROOTCERT_ORG1}"
   tlsOrg2="--tlsRootCertFiles ${TLS_ROOTCERT_ORG2}"
+  tlsOrg3="--tlsRootCertFiles ${TLS_ROOTCERT_ORG3}"
 
-  PEERS="$peer0Org1 $tlsOrg1 $peer1Org1 $tlsOrg1 $peer0Org2 $tlsOrg2 $peer1Org2 $tlsOrg2"
+  PEERS="$peer0Org2 $tlsOrg2 $peer1Org2 $tlsOrg2 $peer0Org3 $tlsOrg3 $peer1Org3 $tlsOrg3"
 }
 
 # Set peer parameters for the peer cli 
@@ -115,11 +115,11 @@ setPeer() {
   export CORE_PEER_TLS_CERT=${PEER_HOME}/tls/signcerts/cert.pem
   export CORE_PEER_TLS_KEY=${PEER_HOME}/tls/keystore/key.pem
   
-  export CORE_PEER_ADDRESS=${hostname}:"$(PORT_MAP_get_value_by_key $nodeID)"
+  export CORE_PEER_ADDRESS=${hostname}:${PORT_MAP[$nodeID]}
 
   # MSP (Need Admin to join channel)
   export CORE_PEER_MSPCONFIGPATH=${PEER_HOME}/msp
-  [ -z $NODE_PORT ] && export NODE_PORT="$(PORT_MAP_get_value_by_key $nodeID)"
+  [ -z $NODE_PORT ] && export NODE_PORT=${PORT_MAP[$nodeID]}
   export ADMIN_PORT=$((NODE_PORT + 2))
   export CORE_PEER_TLS_ENABLED=true
 
@@ -407,7 +407,7 @@ services:
     #     condition: on-failure
     environment:
       #### GENERAL
-      - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_LOGGING_SPEC=DEBUG
       # - FABRIC_LOGGING_SPEC=DEBUG
       #### CORE ORDERER
       - ORDERER_GENERAL_LISTENPORT=${ordererPort}

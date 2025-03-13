@@ -1,7 +1,7 @@
-package agora
+package dt4h
 
 import (
-	"github.com/hyperledger/fabric-contract-api-go/contractapi"	
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 type TransactionContextInterface interface {
@@ -15,7 +15,7 @@ type TransactionContext struct {
 	data User
 }
 
-func (tc *TransactionContext) GetData() (User) {
+func (tc *TransactionContext) GetData() User {
 	return tc.data
 }
 
