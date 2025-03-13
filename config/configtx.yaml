@@ -45,18 +45,18 @@ Organizations:
                 Type: Signature
                 # If your MSP is configured with the new NodeOUs, you might
                 # want to use a more specific rule like the following:
-                Rule: "OR('AthenaMSP.admin', 'AthenaMSP.peer', 'AthenaMSP.client')"
+                Rule: "OR('AthenaMSP.member')"
             Writers:
                 Type: Signature
                 # If your MSP is configured with the new NodeOUs, you might
                 # want to use a more specific rule like the following:
-                Rule: "OR('AthenaMSP.admin', 'AthenaMSP.peer', 'AthenaMSP.client')"
+                Rule: "OR('AthenaMSP.member')"
             Admins:
                 Type: Signature
                 Rule: "OR('AthenaMSP.admin')"
-            Endorsement:
+            Invokers: # Endorsement:
                 Type: Signature
-                Rule: "OR('AthenaMSP.peer')"
+                Rule: "OR('AthenaMSP.member')"
 
         # AnchorPeers defines the location of peers which can be used for
         # cross-org gossip communication.
@@ -266,19 +266,19 @@ Application: &ApplicationDefaults
     Policies: &ApplicationDefaultPolicies
         LifecycleEndorsement:
             Type: Signature
-            Rule: "AND('AthenaMSP.peer', 'AgoraMSP.peer')"
+            Rule: "AND('BscMSP.peer', 'UbMSP.peer')"
         Endorsement:
             Type: Signature
-            Rule: "AND('AthenaMSP.peer', 'AgoraMSP.peer')"
+            Rule: "AND('BscMSP.peer', 'UbMSP.peer')"
         Readers:
             Type: Signature
-            Rule: "OR('AthenaMSP.client', 'AthenaMSP.admin', 'AthenaMSP.peer', 'AgoraMSP.peer', 'AgoraMSP.admin', 'AgoraMSP.client')"
+            Rule: "OR('BscMSP.client', 'UbMSP.admin', 'BscMSP.peer', 'UbMSP.peer', 'BscMSP.admin', 'UbMSP.client')"
         Writers:
             Type: ImplicitMeta
             Rule: "ANY Writers"
         Admins:
             Type: Signature
-            Rule: "AND('AthenaMSP.admin', 'AgoraMSP.admin')"
+            Rule: "AND('BscMSP.admin', 'UbMSP.admin')"
         # BlockReaders:
         #     Type: Signature
         #     Rule: "OR('AthenaMSP.client', 'AthenaMSP.admin', 'AthenaMSP.peer', 'AgoraMSP.peer', 'AgoraMSP.admin', 'AgoraMSP.client')"
@@ -374,11 +374,11 @@ Orderer: &OrdererDefaults
         # replicated under the Orderer.Addresses key above.
         Consenters:
             - Host: orderer0.athena.domain.com
-              Port: 7070
+              Port: 7071
               ClientTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer0.athena.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer0.athena.domain.com/tls/signcerts/cert.pem
             - Host: orderer1.athena.domain.com
-              Port: 7080
+              Port: 7081
               ClientTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer1.athena.domain.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.domain.com/orderers/orderer1.athena.domain.com/tls/signcerts/cert.pem
 
@@ -424,7 +424,7 @@ Orderer: &OrdererDefaults
             Rule: "ANY Writers"
         Admins:
             Type: Signature
-            Rule: "AND('AthenaMSP.admin', 'AgoraMSP.admin')"
+            Rule: "AND('BscMSP.admin', 'UbMSP.admin')"
         # BlockValidation specifies what signatures must be included in the block
         # from the orderer for the peer to validate it.
         BlockValidation:
@@ -705,6 +705,6 @@ Profiles:
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Athena
+                # - *Athena
                 - *Ub
                 - *Bsc
