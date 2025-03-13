@@ -407,7 +407,7 @@ services:
     #     condition: on-failure
     environment:
       #### GENERAL
-      - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_LOGGING_SPEC=DEBUG
       # - FABRIC_LOGGING_SPEC=DEBUG
       #### CORE ORDERER
       - ORDERER_GENERAL_LISTENPORT=${ordererPort}
