@@ -6,7 +6,7 @@ package dt4h
 
 func (s *QueryContract) LogQuery(ctx TransactionContextInterface, query string) error {
 	user := ctx.GetData()
-	err := ctx.GetStub().PutState(user.Username, []byte(query))
+	err := ctx.GetStub().PutState(user, []byte(query))
 	return err
 }
 
