@@ -20,26 +20,26 @@ func main() {
 	userSC.BeforeTransaction = dt4h.BeforeTransaction
 
 	// Handle Product Contract
-	productSC := new(dt4h.DataContract)
-	productSC.TransactionContextHandler = new(dt4h.TransactionContext)
-	productSC.BeforeTransaction = dt4h.BeforeTransaction
+	// productSC := new(dt4h.DataContract)
+	// productSC.TransactionContextHandler = new(dt4h.TransactionContext)
+	// productSC.BeforeTransaction = dt4h.BeforeTransaction
 
-	// Handle Agreement Contract
-	agreementSC := new(dt4h.AgreementContract)
-	agreementSC.TransactionContextHandler = new(dt4h.TransactionContext)
-	agreementSC.BeforeTransaction = dt4h.BeforeTransaction
+	// // Handle Agreement Contract
+	// agreementSC := new(dt4h.AgreementContract)
+	// agreementSC.TransactionContextHandler = new(dt4h.TransactionContext)
+	// agreementSC.BeforeTransaction = dt4h.BeforeTransaction
 
-	// Handle Management Contract
-	managementSC := new(dt4h.ManagementContract)
-	managementSC.TransactionContextHandler = new(dt4h.TransactionContext)
-	managementSC.BeforeTransaction = dt4h.BeforeTransaction
+	// // Handle Management Contract
+	// managementSC := new(dt4h.ManagementContract)
+	// managementSC.TransactionContextHandler = new(dt4h.TransactionContext)
+	// managementSC.BeforeTransaction = dt4h.BeforeTransaction
 
 	querySC := new(dt4h.QueryContract)
 	querySC.TransactionContextHandler = new(dt4h.TransactionContext)
 	querySC.BeforeTransaction = dt4h.BeforeTransaction
 
 	// Assemble Chaincode
-	dt4hCC, err := contractapi.NewChaincode(userSC, productSC, agreementSC, managementSC, querySC)
+	dt4hCC, err := contractapi.NewChaincode(userSC, querySC)
 
 	// Start Chaincode
 	if err != nil {
