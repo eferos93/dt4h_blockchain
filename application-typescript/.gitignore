@@ -4,6 +4,7 @@ coverage
 # Dependency directories
 node_modules/
 jspm_packages/
+*.d.ts
 
 # Compiled TypeScript files
 dt4hApp
