@@ -5,6 +5,7 @@ coverage
 node_modules/
 jspm_packages/
 *.d.ts
+*.d.ts.map
 
 # Compiled TypeScript files
-dt4hApp
+./dt4hApp
