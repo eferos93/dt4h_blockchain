@@ -8,4 +8,4 @@ jspm_packages/
 *.d.ts.map
 
 # Compiled TypeScript files
-./dt4hApp
+dt4h
