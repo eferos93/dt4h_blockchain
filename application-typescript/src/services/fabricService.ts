@@ -114,7 +114,7 @@ export const executeQuery = async (queryString: string): Promise<string> => {
     // Submit a transaction to the ledger with query
     const resultBytes = await contract.evaluateTransaction('LogQuery', queryString);
     const resultJson = Buffer.from(resultBytes).toString('utf8');
-    return resultJson;
+    return JSON.parse(resultJson);
   } catch (error) {
     console.error('Failed to execute query:', error);
     throw error;

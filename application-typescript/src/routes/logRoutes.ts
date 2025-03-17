@@ -1,20 +1,23 @@
-import { Express, Request, Response } from 'express';
+import { Express, Request, Response, Router } from 'express';
 import { executeQuery } from '../services/fabricService';
+
+const router = Router(); 
 
 interface LogQueryRequest {
   query: string;
 }
 
-export const setLogRoutes = (app: Express): void => {
-  app.post('/logQuery', async (req: Request, res: Response) => {
+
+router.post('/logQuery', async (req: Request, res: Response) => {
     try {
       const { query } = req.body as LogQueryRequest;
       
       if (!query) {
-        return res.status(400).json({ 
+        res.status(400).json({ 
           error: 'Missing required parameter',
           message: 'Query string is required' 
         });
+        return
       }
       
       const result = await executeQuery(query);
@@ -26,5 +29,6 @@ export const setLogRoutes = (app: Express): void => {
         message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
-  });
-};
+});
+
+export default router;
