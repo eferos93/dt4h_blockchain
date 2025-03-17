@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
-import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
-import { connect, Contract, Gateway, Identity, Network } from '@hyperledger/fabric-gateway';
+import { connect, Gateway, Identity, Network } from '@hyperledger/fabric-gateway';
 import * as crypto from 'crypto';
 
 let gateway: Gateway | null = null;
@@ -141,6 +140,6 @@ export const getQueryHistory = async (key: string): Promise<any> => {
   }
 };
 
-function envOrDefault(key: string, defaultValue: string): string {
-  return process.env[key] || defaultValue;
-}
+// function envOrDefault(key: string, defaultValue: string): string {
+//   return process.env[key] || defaultValue;
+// }

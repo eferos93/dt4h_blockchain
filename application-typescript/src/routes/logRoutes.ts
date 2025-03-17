@@ -1,4 +1,4 @@
-import { Express, Request, Response, Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { executeQuery } from '../services/fabricService';
 
 const router = Router(); 
