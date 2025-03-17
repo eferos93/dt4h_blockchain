@@ -3,7 +3,7 @@ import { getQueryHistory } from '../services/fabricService';
 
 const router = Router();
 
-router.get('/queryhistory', async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
     try {
       const key = req.query.key as string;
       

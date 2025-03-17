@@ -18,7 +18,7 @@ interface ConnectRequest {
 }
 
 
-  router.post('/connect', async (req: Request, res: Response) => {
+  router.post('/', async (req: Request, res: Response) => {
     try {
       const { certPath, keyPath, config } = req.body as ConnectRequest;
       

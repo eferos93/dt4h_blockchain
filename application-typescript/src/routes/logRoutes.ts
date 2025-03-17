@@ -8,7 +8,7 @@ interface LogQueryRequest {
 }
 
 
-router.post('/logQuery', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
     try {
       const { query } = req.body as LogQueryRequest;
       

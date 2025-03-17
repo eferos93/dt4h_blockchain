@@ -25,12 +25,8 @@ const requireConnection = (req: Request, res: Response, next: NextFunction): voi
   next();
 };
 
-// Apply middleware to protected routes
 app.use('/logQuery', requireConnection, logQueryRoutes);
 app.use('/queryHistory', requireConnection, historyRoutes);
-// Set up protected routes
-// setLogRoutes(app);
-// setHistoryRoutes(app);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
