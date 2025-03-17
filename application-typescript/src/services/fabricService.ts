@@ -26,7 +26,7 @@ export const isConnected = (): boolean => {
 /**
  * Connect to the Hyperledger Fabric network using the provided certificate and private key
  */
-export const connectToNetwork = async (certPath: string, keyPath: string, config: NetworkSetup): Promise<Network> => {
+export const connectToNetwork = async (certPath: string, keyPath: string, config: NetworkSetup): Promise<void> => {
   try {
     // The gRPC client connection should be shared by all Gateway connections to this endpoint
     // const peerEndpoint = envOrDefault('PEER_ENDPOINT', 'localhost:7051'); 
@@ -61,7 +61,7 @@ export const connectToNetwork = async (certPath: string, keyPath: string, config
       client.close();
       client = null;
     }
-    contract = null;
+    // contract = null;
     throw error;
   }
 };
@@ -104,17 +104,17 @@ async function newGrpcConnection(endpoint: string, tlsRootCertPath: string): Pro
 /**
  * Execute a query on the ledger
  */
-export const executeQuery = async (queryString: string): Promise<any> => {
+export const executeQuery = async (queryString: string): Promise<string> => {
   if (!isConnected() || !network) {
     throw new Error('Not connected to Hyperledger Fabric network');
   }
   
   try {
-    const contract = network.getContract('query') //TODO: see correct chaicode name
+    const contract = network.getContract('dt4hCC') //TODO: see correct chaicode name
     // Submit a transaction to the ledger with query
-    const resultBytes = await contract.evaluateTransaction('query', queryString);
+    const resultBytes = await contract.evaluateTransaction('LogQuery', queryString);
     const resultJson = Buffer.from(resultBytes).toString('utf8');
-    return JSON.parse(resultJson);
+    return resultJson;
   } catch (error) {
     console.error('Failed to execute query:', error);
     throw error;
@@ -131,8 +131,8 @@ export const getQueryHistory = async (key: string): Promise<any> => {
   
   try {
     // Get transaction history for a key
-    const contract = await network.getContract('history') //TODO: check contract name 
-    const resultBytes = await contract.evaluateTransaction('getHistory', key);
+    const contract = await network.getContract('dt4hCC') //TODO: check contract name 
+    const resultBytes = await contract.evaluateTransaction('GetUserHistory', key);
     const resultJson = Buffer.from(resultBytes).toString('utf8');
     return JSON.parse(resultJson);
   } catch (error) {
