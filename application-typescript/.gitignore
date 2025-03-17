@@ -7,5 +7,7 @@ jspm_packages/
 *.d.ts
 *.d.ts.map
 
+package-lock.json
+
 # Compiled TypeScript files
 dt4h
