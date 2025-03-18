@@ -16,6 +16,7 @@ router.get('/', async (req: Request, res: Response) => {
       }
       
       const history = await getQueryHistory(key);
+      console.log("query history for client ", req.query.key, ": ", history)
       res.status(200).json({ history });
     } catch (error) {
       console.error('Error getting query history:', error);

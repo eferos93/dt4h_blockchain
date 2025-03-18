@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs';
 import * as grpc from '@grpc/grpc-js';
-import { connect, Gateway, Identity, Network } from '@hyperledger/fabric-gateway';
+import { connect, Gateway, Identity, Network, signers } from '@hyperledger/fabric-gateway';
 import * as crypto from 'crypto';
+import { none } from '@hyperledger/fabric-gateway/dist/hash/hashes';
 
 let gateway: Gateway | null = null;
 // let contract: Contract | null = null;
@@ -30,7 +31,7 @@ export const connectToNetwork = async (certPath: string, keyPath: string, config
     // The gRPC client connection should be shared by all Gateway connections to this endpoint
     // const peerEndpoint = envOrDefault('PEER_ENDPOINT', 'localhost:7051'); 
     
-    client = await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath);
+    client = await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath, 'peer0.bsc.domain.com');
 
     // Load the certificate and private key
     const credentials = await loadCredentials(certPath, keyPath);
@@ -45,6 +46,20 @@ export const connectToNetwork = async (certPath: string, keyPath: string, config
       client,
       identity,
       signer: await newSigner(keyPath),
+      // Default timeouts for different gRPC calls
+      evaluateOptions: () => {
+        return { deadline: Date.now() + 5000 }; // 5 seconds
+      },
+      endorseOptions: () => {
+          return { deadline: Date.now() + 15000 }; // 15 seconds
+      },
+      submitOptions: () => {
+          return { deadline: Date.now() + 5000 }; // 5 seconds
+      },
+      commitStatusOptions: () => {
+          return { deadline: Date.now() + 60000 }; // 1 minute
+      },
+      hash: none
     });
 
     // Get network and contract
@@ -80,24 +95,17 @@ async function loadCredentials(certPath: string, keyPath: string): Promise<Uint8
 async function newSigner(keyPath: string): Promise<any> {
   const privateKeyPem = await fs.readFile(keyPath);
   const privateKey = crypto.createPrivateKey(privateKeyPem);
-  
-  return {
-    sign: async (digest: Uint8Array): Promise<Uint8Array> => {
-      const signature = crypto.sign(undefined, Buffer.from(digest), privateKey);
-      return Uint8Array.from(signature);
-    }
-  };
+  return signers.newPrivateKeySigner(privateKey);
 }
 
 /**
  * Create a new gRPC connection to the peer
  */
-async function newGrpcConnection(endpoint: string, tlsRootCertPath: string): Promise<grpc.Client> {
-  // Use TLS if the peer requires it
-  const tlsRootCert = await fs.readFile(tlsRootCertPath); // Replace with your TLS CA cert path
+async function newGrpcConnection(endpoint: string, tlsRootCertPath: string, peerHostAlias: string): Promise<grpc.Client> {
+  const tlsRootCert = await fs.readFile(tlsRootCertPath); 
   const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
   
-  return new grpc.Client(endpoint, tlsCredentials, {});
+  return new grpc.Client(endpoint, tlsCredentials, { 'grpc.ssl_target_name_override': peerHostAlias });
 }
 
 /**
@@ -109,8 +117,7 @@ export const executeQuery = async (queryString: string): Promise<string> => {
   }
   
   try {
-    const contract = network.getContract('dt4hCC') //TODO: see correct chaicode name
-    // Submit a transaction to the ledger with query
+    const contract = network.getContract('dt4hCC') 
     const resultBytes = await contract.evaluateTransaction('LogQuery', queryString);
     const resultJson = Buffer.from(resultBytes).toString('utf8');
     return JSON.parse(resultJson);
@@ -129,7 +136,6 @@ export const getQueryHistory = async (key: string): Promise<any> => {
   }
   
   try {
-    // Get transaction history for a key
     const contract = await network.getContract('dt4hCC') //TODO: check contract name 
     const resultBytes = await contract.evaluateTransaction('GetUserHistory', key);
     const resultJson = Buffer.from(resultBytes).toString('utf8');

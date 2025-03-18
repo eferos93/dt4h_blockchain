@@ -22,7 +22,7 @@ interface ConnectRequest {
     try {
       const { certPath, keyPath, config } = req.body as ConnectRequest;
       
-      if (!certPath || !keyPath) {
+      if (!certPath || !keyPath || !config) {
         res.status(400).json({ 
           error: 'Missing required parameters',
           message: 'Both certPath and keyPath are required' 
