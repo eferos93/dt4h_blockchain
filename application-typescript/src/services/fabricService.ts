@@ -28,20 +28,7 @@ export const isConnected = (): boolean => {
  */
 export const connectToNetwork = async (certPath: string, keyPath: string, config: NetworkSetup): Promise<void> => {
   try {
-    // The gRPC client connection should be shared by all Gateway connections to this endpoint
     // const peerEndpoint = envOrDefault('PEER_ENDPOINT', 'localhost:7051'); 
-    
-    // client = await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath, 'peer0.bsc.domain.com');
-
-    // // Load the certificate and private key
-    // const credentials = await loadCredentials(certPath, keyPath);
-    
-    // // Identity to use for signing transactions
-    // const identity: Identity = {
-    //   mspId: config.mspId, 
-    //   credentials: credentials,
-    // };
-
     gateway = connect({
       client: await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath, 'peer0.bsc.domain.com'),
       identity: {
@@ -65,11 +52,8 @@ export const connectToNetwork = async (certPath: string, keyPath: string, config
       hash: none
     });
 
-    // Get network and contract
     network = gateway.getNetwork(config.channelName);
-    // return network;
   } catch (error) {
-    // Clean up on error
     if (gateway) {
       gateway.close();
       gateway = null;

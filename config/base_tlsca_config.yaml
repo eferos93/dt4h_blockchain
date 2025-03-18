@@ -308,7 +308,7 @@ csr:
         ST: ITST
         L:
         O: Hyperledger
-        OU: Fabric
+        OU: 
    hosts:
      - localhost
      - orgexample.domain.com

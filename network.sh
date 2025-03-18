@@ -177,6 +177,7 @@ exportMSPs() {
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
+    sudo chmod +rx -R "${APP_DEST}"
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.
@@ -310,7 +311,7 @@ networkUp() {
 	createChannel
 	deployCC
 	exportMSPs
-	setupMonitor
+	# setupMonitor
 
 	docker ps -a
 }
