@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import * as grpc from '@grpc/grpc-js';
-import { connect, Gateway, Identity, Network, signers } from '@hyperledger/fabric-gateway';
+import { connect, Gateway, Network, signers } from '@hyperledger/fabric-gateway';
 import * as crypto from 'crypto';
 import { none } from '@hyperledger/fabric-gateway/dist/hash/hashes';
 
@@ -31,20 +31,23 @@ export const connectToNetwork = async (certPath: string, keyPath: string, config
     // The gRPC client connection should be shared by all Gateway connections to this endpoint
     // const peerEndpoint = envOrDefault('PEER_ENDPOINT', 'localhost:7051'); 
     
-    client = await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath, 'peer0.bsc.domain.com');
+    // client = await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath, 'peer0.bsc.domain.com');
 
-    // Load the certificate and private key
-    const credentials = await loadCredentials(certPath, keyPath);
+    // // Load the certificate and private key
+    // const credentials = await loadCredentials(certPath, keyPath);
     
-    // Identity to use for signing transactions
-    const identity: Identity = {
-      mspId: config.mspId, 
-      credentials: credentials,
-    };
+    // // Identity to use for signing transactions
+    // const identity: Identity = {
+    //   mspId: config.mspId, 
+    //   credentials: credentials,
+    // };
 
     gateway = connect({
-      client,
-      identity,
+      client: await newGrpcConnection(config.peerEndpoint, config.tlsRootCertPath, 'peer0.bsc.domain.com'),
+      identity: {
+        mspId: config.mspId, 
+        credentials: await loadCredentials(certPath, keyPath),
+      },
       signer: await newSigner(keyPath),
       // Default timeouts for different gRPC calls
       evaluateOptions: () => {
