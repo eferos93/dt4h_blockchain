@@ -243,7 +243,9 @@ ldap:
 # which are always stored in lower case.
 #############################################################################
 affiliations:
-   ${ORG}
+   ${ORG}:
+      - USERS
+      - MEMBERS
 
 #############################################################################
 #  Signing section
@@ -311,8 +313,8 @@ csr:
       - C: ITALY
         ST: ${ORG}
         L:
-        O: ${ORG}
-        OU: 
+        O: Hyperledger
+        OU: Fabric
    hosts:
      - localhost
      - ca_${ORG}
