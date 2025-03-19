@@ -85,7 +85,7 @@ createNodes() {
 		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
 		# Create Org-Users Admin which will be used to register users in the app as a registrar
-		./clientCA.sh setup_orgusersca -o "$org" -t admin
+		# ./clientCA.sh setup_orgusersca -o "$org" -t admin
 
 		# Create a block listener client for the app
 		./clientCA.sh register -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
