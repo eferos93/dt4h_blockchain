@@ -333,12 +333,12 @@ ops_listenaddress="- FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:7002"
 
   command='fabric-ca-server start -b ${CA_ADMIN}:${CA_ADMINPW} -d'
 
-  # Check if org does not contain 'orderer'
-  if [[ "$1" != *"orderer"* ]]; then
-      echo $1
-      # Append the additional command if org does not contain 'orderer'
-      command+=' --cafiles users-ca/fabric-ca-server-config.yaml'
-  fi
+  # # Check if org does not contain 'orderer'
+  # if [[ "$1" != *"orderer"* ]]; then
+  #     echo $1
+  #     # Append the additional command if org does not contain 'orderer'
+  #     command+=' --cafiles ./fabric-ca-server-config.yaml'
+  # fi
 
   echo "
 # Docker compose file for creating Fabric CAs
