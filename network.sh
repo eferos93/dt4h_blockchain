@@ -169,14 +169,15 @@ exportMSPs() {
 
     # Copying MSPs for Peer Orgs.
     for org in $PEER_ORGS; do
-        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${ADMIN_USER}/. "$APP_DEST"/"$org"UsersRegistrar/
         cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
+        
     done
 
     # Copying specific organization data.
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
+    sudo chmod +rx -R "$APP_DEST"
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.

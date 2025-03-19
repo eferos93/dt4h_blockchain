@@ -16,8 +16,8 @@ createTLSServer() {
     
     # Create the TLS Server directory and initialize
     mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
-    fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW}
-    mv msp/keystore/*sk msp/keystore/rootkey.pem
+    # fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW} -p "$TLS_PORT" -n ca-"${ORG_NAME}"-tls --csr.cn 
+    # mv msp/keystore/*sk msp/keystore/rootkey.pem
 
     # Import existing and configured fabric-ca-server-config.yaml file
 	echo "$(yaml_ccp_tlsca ${ORG_NAME} $TLS_PORT ${TLS_ADMIN} ${TLS_ADMINPW})" > ${FABRIC_CA_CFG_PATH}/tlsca-${ORG_NAME}-config.yaml

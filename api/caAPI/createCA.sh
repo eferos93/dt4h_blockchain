@@ -30,10 +30,10 @@ createCAServer() {
     # cp ${FABRIC_CA_CLIENT_HOME}/tls-ca/${CA_ADMIN}/msp/keystore/*.pem users-ca/tls/key.pem
 
     printInfo "createCAServer - about to init server ${ORG_NAME}"
-    # Initialize the CA server.
+    # Initialize the CA config file.
     echo "$(yaml_ccp_ca ${ORG_NAME} $CA_PORT ${CA_ADMIN} ${CA_ADMINPW})" > ${FABRIC_CA_CFG_PATH}/ca-${ORG_NAME}-config.yaml
     yes | cp "${FABRIC_CA_CFG_PATH}"/ca-"${ORG_NAME}"-config.yaml ./fabric-ca-server-config.yaml
-    fabric-ca-server init -b ${CA_ADMIN}:${CA_ADMINPW} #--cafiles fabric-ca-server-config.yaml 
+    # fabric-ca-server init -b ${CA_ADMIN}:${CA_ADMINPW} #--cafiles fabric-ca-server-config.yaml 
     # cd users-ca
     # fabric-ca-server init -b ${USERSCA_ADMIN}:${USERSCA_ADMINPW}
     # cd ..
