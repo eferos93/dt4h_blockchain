@@ -36,11 +36,13 @@ createCAServer() {
     cd ..
 
     # Add the org's configuration on the org's fabric ca folder
-    yes | cp "$FABRIC_CA_CFG_PATH"/base_ca_config.yaml ./fabric-ca-server-config.yaml
-    if [[ "${ORG_NAME}" != *"orderer"* ]]; then
-        echo "$(yaml_ccp_fca_users ${ORG_NAME} $CA_PORT ${USERSCA_ADMIN} ${USERSCA_ADMINPW})" > ${FABRIC_CFG_PATH}/fca-usersca-${ORG_NAME}-config.yaml
-        yes | cp "$FABRIC_CA_CFG_PATH"/fca-usersca-"${ORG_NAME}"-config.yaml users-ca/fabric-ca-server-config.yaml
-    fi
+    echo "$(yaml_ccp_ca ${ORG_NAME} $CA_PORT ${CA_ADMIN} ${CA_ADMINPW})" > ${FABRIC_CA_CFG_PATH}/ca-${ORG_NAME}-config.yaml
+    yes | cp "${FABRIC_CA_CFG_PATH}"/ca-"${ORG_NAME}"-config.yaml ./fabric-ca-server-config.yaml
+
+    # if [[ "${ORG_NAME}" != *"orderer"* ]]; then
+    #     echo "$(yaml_ccp_fca_users ${ORG_NAME} $CA_PORT ${USERSCA_ADMIN} ${USERSCA_ADMINPW})" > ${FABRIC_CFG_PATH}/fca-usersca-${ORG_NAME}-config.yaml
+    #     yes | cp "$FABRIC_CA_CFG_PATH"/fca-usersca-"${ORG_NAME}"-config.yaml users-ca/fabric-ca-server-config.yaml
+    # fi
     
     # Return to main directory.
     cd "$FABRIC_HOME" || exit

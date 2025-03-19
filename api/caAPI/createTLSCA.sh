@@ -20,8 +20,9 @@ createTLSServer() {
     mv msp/keystore/*sk msp/keystore/rootkey.pem
 
     # Import existing and configured fabric-ca-server-config.yaml file
-	BASE_CONFIG="$FABRIC_CA_CFG_PATH/base_tlsca_config.yaml"
-    cp "$BASE_CONFIG" ./fabric-ca-server-config.yaml || {
+	echo "$(yaml_ccp_tlsca ${ORG_NAME} $TLS_PORT ${TLS_ADMIN} ${TLS_ADMINPW})" > ${FABRIC_CA_CFG_PATH}/tlsca-${ORG_NAME}-config.yaml
+	ORG_CONFIG="${FABRIC_CA_CFG_PATH}/tlsca-${ORG_NAME}-config.yaml"
+    cp "$ORG_CONFIG" ./fabric-ca-server-config.yaml || {
         printError "Failed to copy config"
         exit 1
     }
