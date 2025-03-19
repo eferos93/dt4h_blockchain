@@ -204,6 +204,22 @@ yaml_ccp_fca_users() {
         "$FABRIC_CA_CFG_PATH"/base_causers_config.yaml | sed -e $'s/\\\\n/\\\n          /g' 
 }
 
+yaml_ccp_ca() {
+  sed -e "s/\${ORG}/$1/" \
+      -e "s/\${CA_PORT}/$2/" \
+      -e "s/\${CA_ADMIN}/$3/" \
+      -e "s/\${CA_ADMINPW}/$4/" \
+      "$FABRIC_CA_CFG_PATH"/base_ca_config.yaml | sed -e $'s/\\\\n/\\\n          /g'c
+}
+
+yaml_ccp_tls_ca() {
+  sed -e "s/\${ORG}/$1/" \
+      -e "s/\${CA_PORT}/$2/" \
+      -e "s/\${TLSCA_ADMIN}/$3/" \
+      -e "s/\${TLSCA_ADMINPW}/$4/" \
+      "$FABRIC_CA_CFG_PATH"/base_tlsca_config.yaml | sed -e $'s/\\\\n/\\\n          /g'c
+}
+
 
 # Create docker compose for TLS CA
 createDockerTLSCA() {
