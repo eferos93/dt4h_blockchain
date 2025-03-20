@@ -1,8 +1,9 @@
 import { promises as fs } from 'fs';
 import * as grpc from '@grpc/grpc-js';
-import { connect, Gateway, Network, signers } from '@hyperledger/fabric-gateway';
+import { connect, Gateway, Network, Signer, signers } from '@hyperledger/fabric-gateway';
 import * as crypto from 'crypto';
 import { none } from '@hyperledger/fabric-gateway/dist/hash/hashes';
+import path from 'path';
 
 let gateway: Gateway | null = null;
 // let contract: Contract | null = null;
@@ -88,17 +89,31 @@ export const connectToNetwork = async (certPath: string, keyPath: string, config
  */
 async function loadCredentials(certPath: string, keyPath: string): Promise<Uint8Array> {
   // Load certificate
-  const certificate = await fs.readFile(certPath);
+  console.log(certPath)
+  const cert = await getFirstDirFileName(path.resolve(__dirname, '..', '..', 'identities', 'blockClient', 'msp', 'signcerts'))
+  const certificate = await fs.readFile(cert);
   return certificate;
 }
 
 /**
  * Create a new signer from the private key
  */
-async function newSigner(keyPath: string): Promise<any> {
-  const privateKeyPem = await fs.readFile(keyPath);
+async function newSigner(keyPath: string): Promise<Signer> {
+  console.log(keyPath)
+  const p = path.resolve(__dirname, '..', '..', 'identities', 'blockClient', 'msp', 'keystore');
+  const key = await getFirstDirFileName(p);
+  const privateKeyPem = await fs.readFile(key);
   const privateKey = crypto.createPrivateKey(privateKeyPem);
   return signers.newPrivateKeySigner(privateKey);
+}
+
+async function getFirstDirFileName(dirPath: string): Promise<string> {
+  const files = await fs.readdir(dirPath);
+  const file = files[0];
+  if (!file) {
+      throw new Error(`No files in directory: ${dirPath}`);
+  }
+  return path.join(dirPath, file);
 }
 
 /**
