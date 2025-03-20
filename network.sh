@@ -30,7 +30,7 @@ createOrgs() {
         setParams "$org"
         ./clientCA.sh setup_orgca -o "$org"
         ./clientCA.sh setup_orgmsp -o "$org" -t "orderer"
-        ./clientCA.sh setup_orgops -o "$org"
+        # ./clientCA.sh setup_orgops -o "$org"
     done
 
     # Setup for peer organizations.
@@ -38,7 +38,7 @@ createOrgs() {
         setParams "$org"
         ./clientCA.sh setup_orgca -o "$org"
         ./clientCA.sh setup_orgmsp -o "$org" -t "peer"
-        ./clientCA.sh setup_orgops -o "$org"
+        # ./clientCA.sh setup_orgops -o "$org"
     done
 
     printSuccess "Organizations created successfully"
@@ -63,10 +63,10 @@ createNodes() {
 		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
 		# Enroll an Operations Client to monitor nodes securely
-		./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
+		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
 
-		PROMETHEUS_PATH=organizations/ordererOrganizations/${org}.domain.com/users/prometheus
-		tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
+		# PROMETHEUS_PATH=organizations/ordererOrganizations/${org}.domain.com/users/prometheus
+		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 	done
 
 	for org in $PEER_ORGS; do
@@ -92,10 +92,10 @@ createNodes() {
 		./clientCA.sh enroll -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
 
 		# Enroll an Operations Client to monitor nodes securely
-		./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
+		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
 
-		PROMETHEUS_PATH=organizations/peerOrganizations/${org}.domain.com/users/prometheus
-		tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
+		# PROMETHEUS_PATH=organizations/peerOrganizations/${org}.domain.com/users/prometheus
+		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 	done
 
 	printSuccess "Orderers and peers enrolled"
@@ -176,8 +176,8 @@ exportMSPs() {
     # Copying specific organization data.
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
-    sudo chmod +rx -R "$APP_DEST"
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
+    sudo chmod 755 -R ${APP_DEST}
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.
