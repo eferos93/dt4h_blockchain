@@ -59,6 +59,10 @@ createTLSClient() {
 	# Copy ca-cert.pem to the client folder 
 	cp "$FABRIC_CA_SERVER_HOME"/ca-cert.pem "$FABRIC_CA_CLIENT_HOME"/tls-root-cert/tls-ca-cert.pem
 
+	# creating base config file of the client
+	echo "$(yaml_ccp_ca_client ${ORG_NAME})" > ${FABRIC_CA_CFG_PATH}/ca-client-${ORG_NAME}-config.yaml
+	yes | cp "${FABRIC_CA_CFG_PATH}"/ca-client-"${ORG_NAME}"-config.yaml ./fabric-ca-client-config.yaml
+
 	# Enroll the TLS CA admin user to issue keys and certs
 	printInfo "createTLSClient - Enrolling the TLS CA Admin: ${TLS_ADMIN}"
 	set -x

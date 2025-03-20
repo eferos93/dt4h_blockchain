@@ -214,10 +214,15 @@ yaml_ccp_ca() {
 
 yaml_ccp_tlsca() {
   sed -e "s/\${ORG}/$1/" \
-      -e "s/\${CA_PORT}/$2/" \
+      -e "s/\${TLSCA_PORT}/$2/" \
       -e "s/\${TLSCA_ADMIN}/$3/" \
       -e "s/\${TLSCA_ADMINPW}/$4/" \
       "$FABRIC_CA_CFG_PATH"/base_tlsca_config.yaml | sed -e $'s/\\\\n/\\\n          /g'
+}
+
+yaml_ccp_ca_client() {
+  sed -e "s/\${ORG}/$1/" \
+      "$FABRIC_CA_CFG_PATH"/base_ca_client_config.yaml | sed -e $'s/\\\\n/\\\n          /g'
 }
 
 

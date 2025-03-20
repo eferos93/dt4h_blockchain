@@ -126,9 +126,9 @@ startNodes() {
 	for org in $ORDERER_ORGS; do
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
-			# set -x
+			set -x
 			./peer.sh start -t orderer -n "$orderer"."$org".domain.com -p "${PORT_MAP[${orderer}]}"
-			# set +x
+			set +x
 		done
 	done
 
@@ -136,9 +136,9 @@ startNodes() {
 	for org in $PEER_ORGS; do
 		setPorts "$org"
 		for peer in $PEER_IDS; do
-			# set -x
+			set -x
 			./peer.sh start -t peer -n "$peer"."$org".domain.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
-			# set +x
+			set +x
 			((COUNT++))
 		done
 	done

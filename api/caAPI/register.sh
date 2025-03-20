@@ -62,26 +62,26 @@ register() {
     # verifyResult "$res" "Registration of peer to CA Server failed"
 
     # If USERS variable is not set, register to TLS Server and TLS Operations Server.
-    if [ -z $USERS ]; then
+    # if [ -z $USERS ]; then
 
-        # Register the node to TLS Server.
-        set -x
-        fabric-ca-client register -M "$TLSMSPDIR" -u https://"${TLS_ENDPOINT}" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "${TLS_CANAME}" ${attrs}
-        res=$?
-        set +x 
-        # Uncomment the below line to verify the result after registration.
-        # verifyResult "$res" "Registration of peer to TLS Server failed"
+    #     # Register the node to TLS Server.
+    #     set -x
+    #     fabric-ca-client register -M "$TLSMSPDIR" -u https://"${TLS_ENDPOINT}" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "${TLS_CANAME}" ${attrs}
+    #     res=$?
+    #     set +x 
+    #     # Uncomment the below line to verify the result after registration.
+    #     # verifyResult "$res" "Registration of peer to TLS Server failed"
 
-        # Register the node to TLS Operations Server.
-        set -x
-        fabric-ca-client register -M "$TLSOPSDIR" -u https://"${TLSOPS_ENDPOINT}" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
-        res=$?
-        set +x 
-        # Uncomment the below line to verify the result after registration.
-        # verifyResult "$res" "Registration of peer to TLS Server failed"
+    #     # Register the node to TLS Operations Server.
+    #     set -x
+    #     fabric-ca-client register -M "$TLSOPSDIR" -u https://"${TLSOPS_ENDPOINT}" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
+    #     res=$?
+    #     set +x 
+    #     # Uncomment the below line to verify the result after registration.
+    #     # verifyResult "$res" "Registration of peer to TLS Server failed"
 
-        printSuccess "register - ${ORG_NAME} ${USERNAME} registered successfully"
-    fi
+    #     printSuccess "register - ${ORG_NAME} ${USERNAME} registered successfully"
+    # fi
 }
 
 # Function to validate the node type.
