@@ -42,7 +42,7 @@ register() {
 
     # Set MSP directory paths.
     TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp
-    TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${TLS_ADMIN}/msp
+    # TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${TLS_ADMIN}/msp
 
     # Set attributes based on the type of the node.
     if [ "$TYPE" == "admin" ]; then
