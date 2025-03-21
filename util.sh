@@ -14,6 +14,7 @@ export TX=${CHANNEL_ARTIFACTS}/update_in_envelope.pb
 
 # Application Path
 export APP_PATH=${FABRIC_HOME}/application-typescript/
+export GO_APP_PATH=${FABRIC_HOME}/application-go/
 
 # API Paths
 export FABRIC_PEER_API=${FABRIC_HOME}/api/peerAPI
