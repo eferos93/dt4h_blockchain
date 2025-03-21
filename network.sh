@@ -317,7 +317,7 @@ networkUp() {
 	createChannel
 	deployCC
 	exportMSPs
-	setupMonitor
+	# setupMonitor
 
 	docker ps -a
 }
