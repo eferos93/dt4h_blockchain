@@ -1,5 +1,7 @@
 package dt4h
 
+import "log"
+
 /* Import required libs */
 
 // "github.com/hyperledger/fabric-contract-api-go/contractapi"
@@ -10,21 +12,23 @@ func (s *QueryContract) LogQuery(ctx TransactionContextInterface, query string) 
 	return err
 }
 
-func (s *QueryContract) GetUserHistory(ctx TransactionContextInterface, user string) ([]string, error) {
-	resultIterator, err := ctx.GetStub().GetHistoryForKey(user)
+func (s *QueryContract) GetUserHistory(ctx TransactionContextInterface, user string) (*UserHistory, error) {
+	userId := ctx.GetData()
+	log.Default().Printf("UserID: %s", userId)
+	resultIterator, err := ctx.GetStub().GetHistoryForKey(userId)
 	if err != nil {
 		return nil, err
 	}
 	defer resultIterator.Close()
 
-	var history []string
+	var history []Query
 	for resultIterator.HasNext() {
 		queryResponse, err := resultIterator.Next()
 		if err != nil {
 			return nil, err
 		}
-		history = append(history, string(queryResponse.Value))
+		history = append(history, Query{string(queryResponse.Value), string(queryResponse.GetTimestamp().AsTime().String())})
 	}
 
-	return history, nil
+	return &UserHistory{userId, history}, nil
 }
