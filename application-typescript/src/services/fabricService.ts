@@ -113,7 +113,7 @@ async function getFirstDirFileName(dirPath: string): Promise<string> {
   if (!file) {
       throw new Error(`No files in directory: ${dirPath}`);
   }
-  return path.join(dirPath, file);
+  return path.resolve(dirPath, file);
 }
 
 /**
