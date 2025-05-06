@@ -15,9 +15,9 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// Handle User Contract
-	userSC := new(dt4h.UserContract)
-	userSC.TransactionContextHandler = new(dt4h.TransactionContext)
-	userSC.BeforeTransaction = dt4h.BeforeTransaction
+	// userSC := new(dt4h.UserContract)
+	// userSC.TransactionContextHandler = new(dt4h.TransactionContext)
+	// userSC.BeforeTransaction = dt4h.BeforeTransaction
 
 	// Handle Product Contract
 	// productSC := new(dt4h.DataContract)
@@ -39,7 +39,7 @@ func main() {
 	querySC.BeforeTransaction = dt4h.BeforeTransaction
 
 	// Assemble Chaincode
-	dt4hCC, err := contractapi.NewChaincode(userSC, querySC)
+	dt4hCC, err := contractapi.NewChaincode(querySC)
 
 	// Start Chaincode
 	if err != nil {

@@ -16,12 +16,13 @@ createTLSServer() {
     
     # Create the TLS Server directory and initialize
     mkdir -p "$FABRIC_CA_SERVER_HOME" && cd "$FABRIC_CA_SERVER_HOME" || exit 1
-    fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW}
-    mv msp/keystore/*sk msp/keystore/rootkey.pem
+    # fabric-ca-server init -b ${TLS_ADMIN}:${TLS_ADMINPW} -p "$TLS_PORT" -n ca-"${ORG_NAME}"-tls --csr.cn 
+    # mv msp/keystore/*sk msp/keystore/rootkey.pem
 
     # Import existing and configured fabric-ca-server-config.yaml file
-	BASE_CONFIG="$FABRIC_CA_CFG_PATH/base_tlsca_config.yaml"
-    cp "$BASE_CONFIG" ./fabric-ca-server-config.yaml || {
+	echo "$(yaml_ccp_tlsca ${ORG_NAME} $TLS_PORT ${TLS_ADMIN} ${TLS_ADMINPW})" > ${FABRIC_CA_CFG_PATH}/tlsca-${ORG_NAME}-config.yaml
+	# ORG_CONFIG="${FABRIC_CA_CFG_PATH}/tlsca-${ORG_NAME}-config.yaml"
+    yes | cp "${FABRIC_CA_CFG_PATH}/tlsca-${ORG_NAME}-config.yaml" ./fabric-ca-server-config.yaml || {
         printError "Failed to copy config"
         exit 1
     }
@@ -57,6 +58,10 @@ createTLSClient() {
 
 	# Copy ca-cert.pem to the client folder 
 	cp "$FABRIC_CA_SERVER_HOME"/ca-cert.pem "$FABRIC_CA_CLIENT_HOME"/tls-root-cert/tls-ca-cert.pem
+
+	# creating base config file of the client
+	echo "$(yaml_ccp_ca_client ${ORG_NAME})" > ${FABRIC_CA_CFG_PATH}/ca-client-${ORG_NAME}-config.yaml
+	yes | cp "${FABRIC_CA_CFG_PATH}"/ca-client-"${ORG_NAME}"-config.yaml ./fabric-ca-client-config.yaml
 
 	# Enroll the TLS CA admin user to issue keys and certs
 	printInfo "createTLSClient - Enrolling the TLS CA Admin: ${TLS_ADMIN}"

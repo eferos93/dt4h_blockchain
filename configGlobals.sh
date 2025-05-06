@@ -112,6 +112,7 @@ setParams() {
   export TLS_HOST=$tlsHost
   export TLS_ENDPOINT=$tlsendpoint
   export TLS_CANAME=$tlscaName
+  export TLS_PORT=$tlsPort
 
   # TLS Ops
   tlsopsendpoint=${tlsHost}:${tlsOpsPort}

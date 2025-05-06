@@ -1,6 +1,6 @@
 module github.com/chaincode/dt4hCC
 
-go 1.23.5
+go 1.24.1
 
 require (
 	github.com/golang/protobuf v1.5.4

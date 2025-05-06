@@ -74,6 +74,15 @@ type RevokedCertificate struct {
 	Key            string    `json:"key"`
 }
 
+type Query struct {
+	Query     string `json:"query"`
+	Timestamp string `json:"timestamp"`
+}
+type UserHistory struct {
+	User    string  `json:"user"`
+	Queries []Query `json:"queries"`
+}
+
 type Error struct {
 	Code int
 	Err  error

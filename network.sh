@@ -30,7 +30,7 @@ createOrgs() {
         setParams "$org"
         ./clientCA.sh setup_orgca -o "$org"
         ./clientCA.sh setup_orgmsp -o "$org" -t "orderer"
-        ./clientCA.sh setup_orgops -o "$org"
+        # ./clientCA.sh setup_orgops -o "$org"
     done
 
     # Setup for peer organizations.
@@ -38,7 +38,7 @@ createOrgs() {
         setParams "$org"
         ./clientCA.sh setup_orgca -o "$org"
         ./clientCA.sh setup_orgmsp -o "$org" -t "peer"
-        ./clientCA.sh setup_orgops -o "$org"
+        # ./clientCA.sh setup_orgops -o "$org"
     done
 
     printSuccess "Organizations created successfully"
@@ -63,10 +63,10 @@ createNodes() {
 		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
 		# Enroll an Operations Client to monitor nodes securely
-		./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
+		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
 
-		PROMETHEUS_PATH=organizations/ordererOrganizations/${org}.domain.com/users/prometheus
-		tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
+		# PROMETHEUS_PATH=organizations/ordererOrganizations/${org}.domain.com/users/prometheus
+		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 	done
 
 	for org in $PEER_ORGS; do
@@ -85,17 +85,17 @@ createNodes() {
 		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
 		# Create Org-Users Admin which will be used to register users in the app as a registrar
-		./clientCA.sh setup_orgusersca -o "$org" -t admin
+		# ./clientCA.sh setup_orgusersca -o "$org" -t admin
 
 		# Create a block listener client for the app
 		./clientCA.sh register -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
 		./clientCA.sh enroll -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
 
 		# Enroll an Operations Client to monitor nodes securely
-		./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
+		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
 
-		PROMETHEUS_PATH=organizations/peerOrganizations/${org}.domain.com/users/prometheus
-		tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
+		# PROMETHEUS_PATH=organizations/peerOrganizations/${org}.domain.com/users/prometheus
+		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 	done
 
 	printSuccess "Orderers and peers enrolled"
@@ -126,9 +126,9 @@ startNodes() {
 	for org in $ORDERER_ORGS; do
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
-			# set -x
+			set -x
 			./peer.sh start -t orderer -n "$orderer"."$org".domain.com -p "${PORT_MAP[${orderer}]}"
-			# set +x
+			set +x
 		done
 	done
 
@@ -136,9 +136,9 @@ startNodes() {
 	for org in $PEER_ORGS; do
 		setPorts "$org"
 		for peer in $PEER_IDS; do
-			# set -x
+			set -x
 			./peer.sh start -t peer -n "$peer"."$org".domain.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
-			# set +x
+			set +x
 			((COUNT++))
 		done
 	done
@@ -165,18 +165,25 @@ deployCC() {
 # Export identities used by the app for authentication and authorization.
 exportMSPs() {
     APP_DEST="${APP_PATH}"/identities
+    GO_APP_DEST="${GO_APP_PATH}"/identities
     mkdir -p "$APP_DEST"
+    mkdir -p "$GO_APP_DEST"
 
     # Copying MSPs for Peer Orgs.
     for org in $PEER_ORGS; do
-        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/"$org"-users/users/${ADMIN_USER}/. "$APP_DEST"/"$org"UsersRegistrar/
         cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$GO_APP_DEST"/"$org"Registrar/
     done
 
     # Copying specific organization data.
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$GO_APP_DEST"/blockClient/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$GO_APP_DEST"/peer0bsc/
+
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
+    sudo chmod 755 -R ${APP_DEST}
+    sudo chmod 755 -R ${GO_APP_DEST}
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.
@@ -310,7 +317,7 @@ networkUp() {
 	createChannel
 	deployCC
 	exportMSPs
-	setupMonitor
+	# setupMonitor
 
 	docker ps -a
 }

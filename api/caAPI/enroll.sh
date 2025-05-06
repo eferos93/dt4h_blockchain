@@ -67,7 +67,7 @@ enroll() {
 	# Set MSP directory to store the files
 	CAMSPDIR=$NODE_HOME/msp
 	TLSMSPDIR=$NODE_HOME/tls
-	TLSOPSDIR=$NODE_HOME/tlsops
+	# TLSOPSDIR=$NODE_HOME/tlsops
 	OLDMSPSDIR=$NODE_HOME/oldmsps
 
 	# Create the node's directory
@@ -105,17 +105,17 @@ enroll() {
 		cp -R "$TLSMSPDIR"/tlscacerts "$CAMSPDIR"/
 	fi
 
-	#### TLS OPS #####
-	if [ -z "$CA_TYPE" ] || [ "$CA_TYPE" == 'tlsops' ]; then
-		[ -d "$TLSOPSDIR" ] && mv "$TLSOPSDIR" "$OLDMSPSDIR"/$msp_no
-		set -x 
-		fabric-ca-client enroll -M "$TLSOPSDIR" -u https://"$USERNAME":"$SECRET"@"${TLSOPS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
-		res=$?
-		set +x
-		verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to TLS CA Operations Server"
-		mv "$TLSOPSDIR"/keystore/* "$TLSOPSDIR"/keystore/key.pem
-		mv "$TLSOPSDIR"/tlscacerts/* "$TLSOPSDIR"/tlscacerts/ca.crt
-	fi
+	# #### TLS OPS #####
+	# if [ -z "$CA_TYPE" ] || [ "$CA_TYPE" == 'tlsops' ]; then
+	# 	[ -d "$TLSOPSDIR" ] && mv "$TLSOPSDIR" "$OLDMSPSDIR"/$msp_no
+	# 	set -x 
+	# 	fabric-ca-client enroll -M "$TLSOPSDIR" -u https://"$USERNAME":"$SECRET"@"${TLSOPS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME".${ORG_NAME}.domain.com
+	# 	res=$?
+	# 	set +x
+	# 	verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to TLS CA Operations Server"
+	# 	mv "$TLSOPSDIR"/keystore/* "$TLSOPSDIR"/keystore/key.pem
+	# 	mv "$TLSOPSDIR"/tlscacerts/* "$TLSOPSDIR"/tlscacerts/ca.crt
+	# fi
 
 	# Create config.yaml on MSP folder for NODE OUs
 	createNodeOUs "$CAMSPDIR"

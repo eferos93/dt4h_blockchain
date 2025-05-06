@@ -14,6 +14,7 @@ export TX=${CHANNEL_ARTIFACTS}/update_in_envelope.pb
 
 # Application Path
 export APP_PATH=${FABRIC_HOME}/application-typescript/
+export GO_APP_PATH=${FABRIC_HOME}/application-go/
 
 # API Paths
 export FABRIC_PEER_API=${FABRIC_HOME}/api/peerAPI
@@ -204,6 +205,27 @@ yaml_ccp_fca_users() {
         "$FABRIC_CA_CFG_PATH"/base_causers_config.yaml | sed -e $'s/\\\\n/\\\n          /g' 
 }
 
+yaml_ccp_ca() {
+  sed -e "s/\${ORG}/$1/" \
+      -e "s/\${CA_PORT}/$2/" \
+      -e "s/\${CA_ADMIN}/$3/" \
+      -e "s/\${CA_ADMINPW}/$4/" \
+      "$FABRIC_CA_CFG_PATH"/base_ca_config.yaml | sed -e $'s/\\\\n/\\\n          /g'
+}
+
+yaml_ccp_tlsca() {
+  sed -e "s/\${ORG}/$1/" \
+      -e "s/\${TLSCA_PORT}/$2/" \
+      -e "s/\${TLSCA_ADMIN}/$3/" \
+      -e "s/\${TLSCA_ADMINPW}/$4/" \
+      "$FABRIC_CA_CFG_PATH"/base_tlsca_config.yaml | sed -e $'s/\\\\n/\\\n          /g'
+}
+
+yaml_ccp_ca_client() {
+  sed -e "s/\${ORG}/$1/" \
+      "$FABRIC_CA_CFG_PATH"/base_ca_client_config.yaml | sed -e $'s/\\\\n/\\\n          /g'
+}
+
 
 # Create docker compose for TLS CA
 createDockerTLSCA() {
@@ -317,12 +339,12 @@ ops_listenaddress="- FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS=0.0.0.0:7002"
 
   command='fabric-ca-server start -b ${CA_ADMIN}:${CA_ADMINPW} -d'
 
-  # Check if org does not contain 'orderer'
-  if [[ "$1" != *"orderer"* ]]; then
-      echo $1
-      # Append the additional command if org does not contain 'orderer'
-      command+=' --cafiles users-ca/fabric-ca-server-config.yaml'
-  fi
+  # # Check if org does not contain 'orderer'
+  # if [[ "$1" != *"orderer"* ]]; then
+  #     echo $1
+  #     # Append the additional command if org does not contain 'orderer'
+  #     command+=' --cafiles ./fabric-ca-server-config.yaml'
+  # fi
 
   echo "
 # Docker compose file for creating Fabric CAs
@@ -444,13 +466,13 @@ services:
       # - ORDERER_GENERAL_AUTHENTICATION_NOEXPIRATIONCHECKS=true
 
       #### OPERATIONS
-      - ORDERER_OPERATIONS_TLS_ENABLED=true
-      - ORDERER_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/orderer/tlsops/signcerts/cert.pem
-      - ORDERER_OPERATIONS_TLS_PRIVATEKEY=/var/hyperledger/orderer/tlsops/keystore/key.pem
-      - ORDERER_OPERATIONS_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tlsops/tlscacerts/ca.crt
-      - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=true
-      - ORDERER_METRICS_PROVIDER=prometheus
-      ${ops_listenaddress}
+      # - ORDERER_OPERATIONS_TLS_ENABLED=true
+      # - ORDERER_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/orderer/tlsops/signcerts/cert.pem
+      # - ORDERER_OPERATIONS_TLS_PRIVATEKEY=/var/hyperledger/orderer/tlsops/keystore/key.pem
+      # - ORDERER_OPERATIONS_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tlsops/tlscacerts/ca.crt
+      # - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=true
+      # - ORDERER_METRICS_PROVIDER=prometheus
+      # ${ops_listenaddress}
       ${cl_lAddress}
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
@@ -460,7 +482,7 @@ services:
       - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/msp:/var/hyperledger/orderer/msp
       - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tls:/var/hyperledger/orderer/tls
       - ${ordererId}.${org}.domain.com:/var/hyperledger/production/orderer
-      - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tlsops:/var/hyperledger/orderer/tlsops
+      # - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tlsops:/var/hyperledger/orderer/tlsops
       - ${CHANNEL_ARTIFACTS}:/var/hyperledger/orderer/channel-artifacts
     ports:
       - ${CLUSTER_PORT}:${CLUSTER_PORT}
@@ -545,13 +567,13 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=${peerId}.${org}.domain.com:${peerPort}
 
       #### OPERATIONS CONFIG
-      - CORE_OPERATIONS_TLS_ENABLED=true
-      - CORE_OPERATIONS_TLS_CERT_FILE=/etc/hyperledger/fabric/tlsops/signcerts/cert.pem
-      - CORE_OPERATIONS_TLS_KEY_FILE=/etc/hyperledger/fabric/tlsops/keystore/key.pem
-      - CORE_OPERATIONS_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tlsops/tlscacerts/ca.crt
-      ${ops_listenaddress}
-      #### METRICS CONFIG
-      - CORE_METRICS_PROVIDER=prometheus 
+      # - CORE_OPERATIONS_TLS_ENABLED=true
+      # - CORE_OPERATIONS_TLS_CERT_FILE=/etc/hyperledger/fabric/tlsops/signcerts/cert.pem
+      # - CORE_OPERATIONS_TLS_KEY_FILE=/etc/hyperledger/fabric/tlsops/keystore/key.pem
+      # - CORE_OPERATIONS_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tlsops/tlscacerts/ca.crt
+      # ${ops_listenaddress}
+      # #### METRICS CONFIG
+      # - CORE_METRICS_PROVIDER=prometheus 
 
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
@@ -560,7 +582,7 @@ services:
       - /var/run/:/host/var/run/
       - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/msp:/etc/hyperledger/fabric/msp
       - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls:/etc/hyperledger/fabric/tls
-      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tlsops:/etc/hyperledger/fabric/tlsops
+      # - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tlsops:/etc/hyperledger/fabric/tlsops
       - ${peerId}.${org}.domain.com:/var/hyperledger/production
     ports:
       - "${peerPort}:${peerPort}"
@@ -616,7 +638,7 @@ echo  "
       - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/msp:/etc/hyperledger/fabric/msp
       - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls:/etc/hyperledger/fabric/tls
       # - ${FABRIC_HOME}/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
-      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tlsops:/etc/hyperledger/fabric/tlsops      
+      # - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tlsops:/etc/hyperledger/fabric/tlsops      
       - ${peerId}.${org}.domain.com:/var/hyperledger/production
     depends_on:
       - ${peerId}.${org}.domain.com
