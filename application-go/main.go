@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	//Initialize setup for bsc
+	//Initialize setup for bsc blockclient identity
 	cryptoPath := "identities/blockClient/"
 	orgConfig := web.OrgSetup{
 		OrgName:      "bsc",
