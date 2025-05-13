@@ -2,26 +2,22 @@ package main
 
 import (
 	"fmt"
-	"rest-api-go/web"
+	"net/http"
+
+	clientapi "rest-api-go/client"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	//Initialize setup for bsc blockclient identity
-	cryptoPath := "identities/blockClient/"
-	orgConfig := web.OrgSetup{
-		OrgName:      "bsc",
-		MSPID:        "BscMSP",
-		CertPath:     cryptoPath + "msp/signcerts/cert.pem",
-		KeyPath:      cryptoPath + "msp/keystore/",
-		TLSCertPath:  cryptoPath + "tls/tlscacerts/ca.crt",
-		PeerEndpoint: "dns:///localhost:9051",
-		GatewayPeer:  "peer0.bsc.domain.com",
-	}
+	r := mux.NewRouter()
 
-	fmt.Printf("")
-	orgSetup, err := web.Initialize(orgConfig)
-	if err != nil {
-		fmt.Println("Error initializing setup for bsc: ", err)
-	}
-	web.Serve(web.OrgSetup(*orgSetup))
+	// Group under /client
+	clientRouter := r.PathPrefix("/client").Subrouter()
+	clientRouter.HandleFunc("/", clientapi.ClientHandler).Methods("POST")
+	clientRouter.HandleFunc("/invoke", clientapi.InvokeHandler).Methods("POST")
+	clientRouter.HandleFunc("/query", clientapi.QueryHandler).Methods("POST")
+
+	fmt.Println("Listening (http://localhost:3000/)...")
+	http.ListenAndServe(":3000", r)
 }
