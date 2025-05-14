@@ -1,3 +1,4 @@
+install-fabric.sh
 *.tar.gz
 organizations/
 channel-artifacts/
@@ -377,5 +378,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# GO Stuff
+*.sum
+go.work.sum
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux,java,intellij,python,visualstudiocode

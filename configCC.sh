@@ -6,7 +6,7 @@ export FABRIC_HOME=${PWD}
 ##### Channel parameters
 
 # Name of channel
-export CHANNEL_NAME=agora
+export CHANNEL_NAME=dt4h
 
 ##### Set Chaincode Parameters
 
@@ -15,10 +15,10 @@ export CHANNEL_NAME=agora
 export CC_VERSION="1.0"
 
 # Path to the chaincode
-export CC_PATH=${FABRIC_HOME}/chaincode/agoraCC
+export CC_PATH=${FABRIC_HOME}/chaincode/dt4hCC
 
 # Name of the chaincode package
-export CC_NAME=agoraCC
+export CC_NAME=dt4hCC
 
 # Should be incremented by 1 on every chaincode update commit
 export CC_SEQUENCE=1
@@ -39,4 +39,4 @@ export CONN_TIMEOUT=3
 export MAX_RETRY=10
 
 # Package IDentifier
-export PACKAGE_ID=agoraCC_1.0:1cb78f8cd458b4e367ccfb04ceade2b5f5966be442791b58b41627133c015afc
+export PACKAGE_ID=dt4hCC_1.0:65e8c2fa615415ecf9830aacc6220840fbe4912b298fb9dec19c271627c304d7

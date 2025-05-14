@@ -1,6 +1,0 @@
-jsdoc
-dist
-node_modules
-lib/protos
-lib/libGrpc.ts
-build_proto_ts.sh

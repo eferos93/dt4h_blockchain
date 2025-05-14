@@ -42,7 +42,7 @@ register() {
 
     # Set MSP directory paths.
     TLSMSPDIR="$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp
-    TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${TLS_ADMIN}/msp
+    # TLSOPSDIR=$FABRIC_CA_CLIENT_HOME/tlsops-ca/${TLS_ADMIN}/msp
 
     # Set attributes based on the type of the node.
     if [ "$TYPE" == "admin" ]; then
@@ -67,14 +67,6 @@ register() {
         # Register the node to TLS Server.
         set -x
         fabric-ca-client register -M "$TLSMSPDIR" -u https://"${TLS_ENDPOINT}" --tls.certfiles "$TLS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET"  --caname "${TLS_CANAME}" ${attrs}
-        res=$?
-        set +x 
-        # Uncomment the below line to verify the result after registration.
-        # verifyResult "$res" "Registration of peer to TLS Server failed"
-
-        # Register the node to TLS Operations Server.
-        set -x
-        fabric-ca-client register -M "$TLSOPSDIR" -u https://"${TLSOPS_ENDPOINT}" --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --id.type "$TYPE" --id.name "$USERNAME" --id.secret "$SECRET" ${attrs}
         res=$?
         set +x 
         # Uncomment the below line to verify the result after registration.

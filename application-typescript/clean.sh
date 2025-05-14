@@ -1,4 +1,3 @@
-rm -rf wallet
 rm -rf identities
 rm nextblock
 rm -rf ./*Registrar

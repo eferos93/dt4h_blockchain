@@ -1,5 +1,6 @@
 {
-    "gopls": {
-        "experimentalWorkspaceModule": true,
-    }
+    "makefile.configureOnOpen": false
+    // "gopls": {
+    //     "experimentalWorkspaceModule": true,
+    // }
 }

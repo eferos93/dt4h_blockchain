@@ -3,25 +3,26 @@
 export STAGE=dev
 
 # Profile used from configtx.yaml
-export CHANNEL_PROFILE=AgoraChannel
+export CHANNEL_PROFILE=dt4h
 
 # Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium
 
 # Set ORDERER global variables 
 
-# -- USER INPUT - Set Organization Names
-export ORG_1=agora
-export ORG_2=athena
+# -- USER INPUT - Sest Organization Names
+export ORG_1=athena # orderer organization
+export ORG_2=ub
+export ORG_3=bsc
 
 # Auto set orderer of Org 1
-export ORDERER_HOSTNAME=orderer0.${ORG_1}orderer.domain.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}orderer.domain.com/mspConfig/tlscacerts/ca.crt
-export ORDERER=localhost:9051
+export ORDERER_HOSTNAME=orderer0.${ORG_1}.domain.com
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.domain.com/mspConfig/tlscacerts/ca.crt
+export ORDERER=localhost:7070
 
-[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_1}orderer ${ORG_2}orderer"
-[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_1} ${ORG_2}"
-[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}orderer ${ORG_2}orderer"
+[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3}"
+[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_2} ${ORG_3}"
+[[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}"
 
 export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
@@ -35,56 +36,20 @@ export ADMIN_USER_PW=admin0pw
 export ORG_REGISTRAR=registrar0
 export ORG_REGISTRAR_PW=registrarpw
 
-# Helper functions for PORT_MAP associative array working for bash versions prior to 4.0
-# Declare indexed arrays for keys and values
-declare -a keys
-declare -a values
-
-function PORT_MAP_set_pair {
-    local key="$1"
-    local value="$2"
-    for ((i = 0; i < ${#keys[@]}; i++)); do
-        if [ "${keys[$i]}" = "$key" ]; then
-            values[$i]=$value
-            return
-        fi
-    done
-    keys+=("$1")
-    values+=("$2")
-}
-
-function PORT_MAP_get_value_by_key {
-    local key="$1"
-    for ((i = 0; i < ${#keys[@]}; i++)); do
-        if [ "${keys[$i]}" = "$key" ]; then
-            echo "${values[$i]}"
-            return
-        fi
-    done
-    echo "Key not found: $key"
-}
-
-# -- USER INPUT - Set Peer Ports
-# -- Improvement proposal: Make it work dynamically with the number of peers
+# -- USER INPUT - Set Ports
 setPorts() {
   org=$1
-
+  declare -Ag PORT_MAP
   if [ "$org" == "${ORG_1}" ]; then
-    PORT_MAP_set_pair "peer0" 7070
-    PORT_MAP_set_pair "peer1" 7080
+    PORT_MAP[orderer0]=7070
+    PORT_MAP[orderer1]=7080
   elif [ "$org" == "${ORG_2}" ]; then
-    PORT_MAP_set_pair "peer0" 8080
-    PORT_MAP_set_pair "peer1" 8090
-  elif [ "$org" == "${ORG_1}orderer" ]; then
-    PORT_MAP_set_pair "orderer0" 9051
-    PORT_MAP_set_pair "orderer1" 9061
-  elif [ "$org" == "${ORG_2}orderer" ]; then
-    PORT_MAP_set_pair "orderer0" 9071
-    PORT_MAP_set_pair "orderer1" 9081
+    PORT_MAP[peer0]=8080
+    PORT_MAP[peer1]=8090
   elif [ "$org" == "${ORG_3}" ]; then
-    PORT_MAP_set_pair "peer0" 10070
+    PORT_MAP[peer0]=9051
+    PORT_MAP[peer1]=9061
   fi
-
 }
 
 
@@ -97,10 +62,9 @@ setParams() {
   export TLSOPS_ROOTCERT_PATH=$FABRIC_CA_CLIENT_HOME/tlsops-root-cert/tls-ca-cert.pem
 
   if [ "$org" == "${ORG_1}" ]; then
-    typeOfOrg=peer
+    typeOfOrg=orderer
     caPort=7055
     tlsPort=7054
-    peerPort=7070
     tlsOpsPort=7020
   elif [ "$org" == "${ORG_2}" ]; then
     typeOfOrg=peer
@@ -108,16 +72,6 @@ setParams() {
     tlsPort=8054
     peerPort=8080  
     tlsOpsPort=8020
-  elif [ "$org" == "${ORG_1}orderer" ]; then
-    typeOfOrg=orderer
-    caPort=9055
-    tlsPort=9054
-    tlsOpsPort=9020  
-  elif [ "$org" == "${ORG_2}orderer" ];  then
-    typeOfOrg=orderer
-    caPort=11055
-    tlsPort=11054
-    tlsOpsPort=11020
   elif [ "$org" == "${ORG_3}" ]; then
     typeOfOrg=peer
     tlsOpsPort=10020
@@ -158,6 +112,7 @@ setParams() {
   export TLS_HOST=$tlsHost
   export TLS_ENDPOINT=$tlsendpoint
   export TLS_CANAME=$tlscaName
+  export TLS_PORT=$tlsPort
 
   # TLS Ops
   tlsopsendpoint=${tlsHost}:${tlsOpsPort}

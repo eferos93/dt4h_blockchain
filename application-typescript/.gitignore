@@ -1,13 +1,13 @@
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependency directories
 node_modules/
-wallet/
-channel-artifacts/
-msp/
-configs
-nextblock
-*.log
-identities
-scripts/
-mpcApp
-*Registrar
-key.js
-test.js
+jspm_packages/
+*.d.ts
+*.d.ts.map
+
+package-lock.json
+identities/
+# Compiled TypeScript files
+dt4h
