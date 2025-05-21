@@ -384,5 +384,4 @@ $RECYCLE.BIN/
 go.work.sum
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux,java,intellij,python,visualstudiocode
-
-application-go/identities
+application-go/
