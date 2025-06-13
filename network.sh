@@ -164,26 +164,26 @@ deployCC() {
 
 # Export identities used by the app for authentication and authorization.
 exportMSPs() {
-    APP_DEST="${APP_PATH}"/identities
-    GO_APP_DEST="${GO_APP_PATH}"/identities
-    mkdir -p "$APP_DEST"
-    mkdir -p "$GO_APP_DEST"
+    # APP_DEST="${APP_PATH}"/identities
+    APP_ID_DEST=identities
+    # mkdir -p "$APP_DEST"
+    mkdir -p "$APP_ID_DEST"
 
     # Copying MSPs for Peer Orgs.
     for org in $PEER_ORGS; do
-        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
-        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$GO_APP_DEST"/"$org"Registrar/
+        # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_ID_DEST"/"$org"Registrar/
     done
 
     # Copying specific organization data.
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$GO_APP_DEST"/blockClient/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$GO_APP_DEST"/peer0bsc/
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_ID_DEST"/blockClient/
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_ID_DEST"/peer0bsc/
 
     # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
-    sudo chmod 755 -R ${APP_DEST}
-    sudo chmod 755 -R ${GO_APP_DEST}
+    # sudo chmod 755 -R ${APP_DEST}
+    sudo chmod 755 -R ${APP_ID_DEST}
 }
 
 # Setup monitoring tools for the blockchain: Blockchain Explorer and Prometheus/Grafana.
@@ -221,6 +221,7 @@ networkDown() {
 	rm -rf organizations
 	rm -rf system-genesis-block
 	rm -rf docker channel-artifacts
+    rm -rf identities
 	rm ./log.txt *.block *.tar.gz
 
 	# Clear explorer
