@@ -311,7 +311,7 @@ csr:
         OU: Fabric
    hosts:
      - localhost
-     - org3.domain.com
+     - org3.dt4h.com
      - tlscaops_orgexample
    ca:
       expiry: 131400h

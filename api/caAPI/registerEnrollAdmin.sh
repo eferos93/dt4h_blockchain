@@ -25,7 +25,7 @@ registerOrgAdmin() {
     printInfo "registerOrgAdmin - Register the Org Admin $admin of ${ORG_NAME}"
 
     # Create necessary directories
-    mkdir -p organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
+    mkdir -p organizations/"${TYPE}"Organizations/${ORG_NAME}.dt4h.com
 
     # Register Org admin with the TLS server
     set -x
@@ -64,7 +64,7 @@ enrollOrgAdmin() {
     printInfo "enrollOrgAdmin - Enroll the Admin of ${ORG_NAME}"
 
     # Define MSP/TLS paths
-    ORG_HOME=${FABRIC_HOME}/organizations/"${TYPE}"Organizations/${ORG_NAME}.domain.com
+    ORG_HOME=${FABRIC_HOME}/organizations/"${TYPE}"Organizations/${ORG_NAME}.dt4h.com
     CAMSPDIR=${ORG_HOME}/msp
     TLSMSPDIR=${ORG_HOME}/tls
     OLDMSPSDIR=${ORG_HOME}/oldmsps

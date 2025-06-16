@@ -41,13 +41,13 @@ reenroll() {
     is_user_root
 
     # Determine the home directory of the node
-    NODE_HOME=$FABRIC_HOME/organizations/${typeOfOrg}Organizations/${ORG_NAME}.domain.com/users/"$USERNAME"
+    NODE_HOME=$FABRIC_HOME/organizations/${typeOfOrg}Organizations/${ORG_NAME}.dt4h.com/users/"$USERNAME"
     
     # Adjust home directory based on the node type
     if [[ "$TYPE" == "peer" ]]; then
-        NODE_HOME=$FABRIC_HOME/organizations/peerOrganizations/${ORG_NAME}.domain.com/"$TYPE"s/"$USERNAME".${ORG_NAME}.domain.com
+        NODE_HOME=$FABRIC_HOME/organizations/peerOrganizations/${ORG_NAME}.dt4h.com/"$TYPE"s/"$USERNAME".${ORG_NAME}.dt4h.com
     elif [[ "$TYPE" == "orderer" ]]; then
-        NODE_HOME=$FABRIC_HOME/organizations/ordererOrganizations/${ORG_NAME}.domain.com/"$TYPE"s/"$USERNAME".${ORG_NAME}.domain.com
+        NODE_HOME=$FABRIC_HOME/organizations/ordererOrganizations/${ORG_NAME}.dt4h.com/"$TYPE"s/"$USERNAME".${ORG_NAME}.dt4h.com
     fi
 
     # Determine the directories to store MSP data
@@ -68,7 +68,7 @@ reenroll() {
         # Backup old MSP data
         [ -d "$TLSMSPDIR" ] && cp -r "$TLSMSPDIR" "$OLDMSPSDIR"/$msp_no
         set -x
-        fabric-ca-client reenroll -d ${REUSE_KEY} -M "$TLSMSPDIR" -u https://"${TLS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."${ORG_NAME}".domain.com,tlsca_"${ORG_NAME}"
+        fabric-ca-client reenroll -d ${REUSE_KEY} -M "$TLSMSPDIR" -u https://"${TLS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."${ORG_NAME}".dt4h.com,tlsca_"${ORG_NAME}"
         res=$?
         set +x
         verifyResult "$res" "reenroll - Failed to enroll $TYPE $USERNAME to TLS Server"
@@ -86,7 +86,7 @@ reenroll() {
     if [ -z "$CA_TYPE" ] || [ "$CA_TYPE" == 'ca' ]; then
         [ -d "$CAMSPDIR" ] && cp -r "$CAMSPDIR" "$OLDMSPSDIR"/$msp_no
         set -x 
-        fabric-ca-client reenroll -d ${REUSE_KEY}  -M "$CAMSPDIR" -u https://"$caendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."${ORG_NAME}".domain.com,ca_"${ORG_NAME}"
+        fabric-ca-client reenroll -d ${REUSE_KEY}  -M "$CAMSPDIR" -u https://"$caendpoint" --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."${ORG_NAME}".dt4h.com,ca_"${ORG_NAME}"
         res=$?
         set +x
         verifyResult "$res" "reenroll - Failed to enroll $TYPE $USERNAME to CA Server"

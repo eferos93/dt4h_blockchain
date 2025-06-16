@@ -11,7 +11,7 @@ export CORE_PEER_TLS_ENABLED=true
 export CORE_PEER_LOCALMSPID="Bsc1MSP"
 export FABRIC_HOME=${PWD}
 
-export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com
+export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/bsc.dt4h.com/peers/peer0.bsc.dt4h.com
 export CORE_PEER_TLS_ROOTCERT_FILE=${PEER_HOME}/tls/tlscacerts/ca.crt
 
 # Check if the TLS certificate file exists

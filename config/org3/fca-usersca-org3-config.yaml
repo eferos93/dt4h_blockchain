@@ -318,7 +318,7 @@ csr:
    hosts:
      - localhost
      - ca_tex
-     - org3.domain.com
+     - org3.dt4h.com
    ca:
       expiry: 131400h
       pathlength: 1

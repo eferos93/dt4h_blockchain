@@ -69,12 +69,12 @@ enrollClientOps() {
 	printInfo "enrollClientOps - Enrolling ${ORG_NAME} ${TYPE} $USERNAME..."
 
 	# Directory paths for the node and TLS operations
-	NODE_HOME=$FABRIC_HOME/organizations/"$typeOfOrg"Organizations/${ORG_NAME}.domain.com/users/"$USERNAME"
+	NODE_HOME=$FABRIC_HOME/organizations/"$typeOfOrg"Organizations/${ORG_NAME}.dt4h.com/users/"$USERNAME"
 	TLSOPSDIR=$NODE_HOME/tlsops
 
 	# Execute the enrollment command for TLS Operations Certificates
 	set -x 
-	fabric-ca-client enroll -M "${TLSOPSDIR}" -u https://"$USERNAME":"$SECRET"@"${TLSOPS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."$ORG_NAME".domain.com
+	fabric-ca-client enroll -M "${TLSOPSDIR}" -u https://"$USERNAME":"$SECRET"@"${TLSOPS_ENDPOINT}" --enrollment.profile tls --tls.certfiles "$TLSOPS_ROOTCERT_PATH" --csr.hosts localhost,"$USERNAME"."$ORG_NAME".dt4h.com
 	res=$?
 	set +x
 	verifyResult "$res" "enrollClientOps - Failed to enroll $TYPE to TLS CA Operations Server"

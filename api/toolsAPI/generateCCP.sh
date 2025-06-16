@@ -41,7 +41,7 @@ extractIPs() {
   ${peer[1]}:
     url: grpcs://${peer[0]}:${CCP_PEER_PORT}
     tlsCACerts:
-      path: ../organizations/peerOrganizations/${ORG_NAME}.domain.com/mspConfig/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/${ORG_NAME}.dt4h.com/mspConfig/tlscacerts/ca.crt
     grpcOptions:
       hostnameOverride: ${peer[1]}
       grpc.keepalive_timeout_ms: 20000
@@ -62,7 +62,7 @@ extractIPs() {
       hostnameOverride: ${orderer[1]}
       grpc.keepalive_timeout_ms: 20000
     tlsCACerts:
-      path: ../organizations/ordererOrganizations/${ORG_NAME}.domain.com/mspConfig/tlscacerts/ca.crt
+      path: ../organizations/ordererOrganizations/${ORG_NAME}.dt4h.com/mspConfig/tlscacerts/ca.crt
 
 "
 
@@ -82,7 +82,7 @@ extractIPs() {
     url: https://${ca[0]}:${CCP_CA_PORT}
     caName: ${ca[1]}
     tlsCACerts:
-      path: ../organizations/peerOrganizations/${ORG_NAME}.domain.com/mspConfig/tlscacerts/ca.crt
+      path: ../organizations/peerOrganizations/${ORG_NAME}.dt4h.com/mspConfig/tlscacerts/ca.crt
     httpOptions:
       verify: true
 "

@@ -41,7 +41,7 @@ usage() {
 	echo -e "  updateBlockchainRevokedCertificates \t\t Calls ManagementContract:UpdateCRL to store CRL"
 	echo -e ""
 	echo -e "Flags:"
-	echo -e "  -n --peer \t\tPeer to set for operation in full name, e.g. peer0.org.domain.com"
+	echo -e "  -n --peer \t\tPeer to set for operation in full name, e.g. peer0.org.dt4h.com"
 	echo -e "  -p --port \t\tPort node is listening at"
 	echo -e "  -s --cc-name \t\tChaincode name"
 	echo -e "  -c --channel-id \tChannel ID of operation, e.g. athlynk"
@@ -52,16 +52,16 @@ usage() {
 	echo -e "  -D --db-port \tPort of Couch DB the instance will start"
 	echo -e "  -A --asadmin \t\tPerforms a peer operation as an admin"
 	echo -e "  -x --tx \t\t Transaction to sign"
-	echo -e "     --orderer-id \t\t Full Orderer ID e.g. orderer0.ordererorg.domain.com"
+	echo -e "     --orderer-id \t\t Full Orderer ID e.g. orderer0.ordererorg.dt4h.com"
 	echo -e "  -h --help \t\tPrint help message"
 	echo -e ""
 	echo -e "Examples:"
 	echo -e "  ./peer.sh createchanneltx -c athlynk -P AthLynkChannel"
-	echo -e "  ./peer.sh joinchannel -n peer1.org.domain.com -A "
-	echo -e "  ./peer.sh queryinstalled -n peer1.org.domain.com"
-	echo -e "  ./peer.sh commit -n peer1.org.domain.com"
-	echo -e "  ./peer.sh install -n peer1.org.domain.com"
-	echo -e "  ./peer.sh start -t peer -n peer1.org.domain.com -p 7050 -D 5984"
+	echo -e "  ./peer.sh joinchannel -n peer1.org.dt4h.com -A "
+	echo -e "  ./peer.sh queryinstalled -n peer1.org.dt4h.com"
+	echo -e "  ./peer.sh commit -n peer1.org.dt4h.com"
+	echo -e "  ./peer.sh install -n peer1.org.dt4h.com"
+	echo -e "  ./peer.sh start -t peer -n peer1.org.dt4h.com -p 7050 -D 5984"
 	echo -e "  ./peer.sh addorgupdate -O Org3MSP" 
 	echo -e "  ./peer.sh updateanchorpeers -o org1 -O Org1MSP"
 	echo -e "  ./peer.sh autocrlupdate -o org1"
@@ -199,8 +199,8 @@ done
 
 setPeer "$ORG_NAME" "$NODE_ID"
 
-[ ! -z $ADMIN ] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.domain.com/users/${ADMIN_USER}/msp
-[ ! -z $ADMIN ] && [[ $TYPE == 'orderer' ]] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_NAME}.domain.com/users/${ADMIN_USER}/msp && export CORE_PEER_LOCALMSPID=$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP
+[ ! -z $ADMIN ] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.dt4h.com/users/${ADMIN_USER}/msp
+[ ! -z $ADMIN ] && [[ $TYPE == 'orderer' ]] && export CORE_PEER_MSPCONFIGPATH=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_NAME}.dt4h.com/users/${ADMIN_USER}/msp && export CORE_PEER_LOCALMSPID=$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP
 [ ! -z $USERS ] && export ORG_MSPID="$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}UsersMSP"
 [ -z $USERS ] && export ORG_MSPID="$(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP"
 

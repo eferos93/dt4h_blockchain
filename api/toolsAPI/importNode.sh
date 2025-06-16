@@ -16,7 +16,7 @@ printImportNodeHelp() {
 	echo -e "	filePath -- Path to peer.org.tar.gz file"
 	echo
 	echo "Example"
-	echo -e "	./tools.sh importNode peer0.org1.domain.com.tar.gz"
+	echo -e "	./tools.sh importNode peer0.org1.dt4h.com.tar.gz"
 	echo
 }
 

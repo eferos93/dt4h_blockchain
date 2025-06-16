@@ -7,7 +7,7 @@ joinOrderers() {
 	for org in $ORDERER_ORGS; do
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
-			./peer.sh osnjoin -t orderer -n ${orderer}.$org.domain.com -p ${PORT_MAP[$orderer]}
+			./peer.sh osnjoin -t orderer -n ${orderer}.$org.dt4h.com -p ${PORT_MAP[$orderer]}
 		done
 	done
 	
@@ -33,12 +33,12 @@ createChannelA() {
 	for org in $orgs; do
 		ORG_MSP="$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}"MSP
 		# sleep 3
-		# ./peer.sh fetchconfig -n peer0."$org".domain.com
+		# ./peer.sh fetchconfig -n peer0."$org".dt4h.com
 		# ./peer.sh updateanchorpeers -o "$org" -O "$ORG_MSP"
 		# sleep 3
-		# ./peer.sh channelupdate -n peer0.$org.domain.com -A
-		./peer.sh joinchannel -n peer0."$org".domain.com -A 
-		./peer.sh joinchannel -n peer1."$org".domain.com -A 
+		# ./peer.sh channelupdate -n peer0.$org.dt4h.com -A
+		./peer.sh joinchannel -n peer0."$org".dt4h.com -A 
+		./peer.sh joinchannel -n peer1."$org".dt4h.com -A 
 	done
 
 }

@@ -50,14 +50,14 @@ enrollUsersAdmin() {
 	printInfo "enrollUsersAdmin - Enrolling ${ORG_NAME}-users ${TYPE}..."
 
 	# Directory paths and setup for user's MSP
-	USERS_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.domain.com/${ORG_NAME}-users/
+	USERS_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_NAME}.dt4h.com/${ORG_NAME}-users/
 	USER_HOME=${USERS_HOME}/users/${ORG_USERS_ADMIN}/
 	mkdir -p ${USER_HOME}
 	CAMSPDIR=${USER_HOME}/msp
 
 	# Enroll with CA server
 	set -x 
-	fabric-ca-client enroll -M "$CAMSPDIR" -u https://${ORG_USERS_ADMIN}:${ORG_USERS_ADMIN_PW}@"${CA_ENDPOINT}" --caname "${CA_NAME}"-users --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"${ORG_NAME}".domain.com
+	fabric-ca-client enroll -M "$CAMSPDIR" -u https://${ORG_USERS_ADMIN}:${ORG_USERS_ADMIN_PW}@"${CA_ENDPOINT}" --caname "${CA_NAME}"-users --tls.certfiles "$TLS_ROOTCERT_PATH" --csr.hosts localhost,"${ORG_NAME}".dt4h.com
 	res=$?
 	set +x
 	verifyResult "$res" "enrollUsersAdmin - Failed to enroll ${TYPE} to CA Server"

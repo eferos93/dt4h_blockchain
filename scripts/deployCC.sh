@@ -47,16 +47,16 @@ deployChaincode() {
 
 	./peer.sh package -s ${CC_NAME}
 	for org in $peerOrgs; do
-		./peer.sh install -n peer0."$org".domain.com -A
-		./peer.sh install -n peer1."$org".domain.com -A
-		./peer.sh queryinstalled -n peer0."$org".domain.com -A
-		./peer.sh approve -n peer0."$org".domain.com -A
-		./peer.sh queryapproved -n peer0."$org".domain.com -A
-		./peer.sh checkreadiness -n peer0."$org".domain.com -A
+		./peer.sh install -n peer0."$org".dt4h.com -A
+		./peer.sh install -n peer1."$org".dt4h.com -A
+		./peer.sh queryinstalled -n peer0."$org".dt4h.com -A
+		./peer.sh approve -n peer0."$org".dt4h.com -A
+		./peer.sh queryapproved -n peer0."$org".dt4h.com -A
+		./peer.sh checkreadiness -n peer0."$org".dt4h.com -A
 	done
 
-	./peer.sh commit -n peer0."$mainOrg".domain.com -A
-	./peer.sh querycommitted -n peer0."$mainOrg".domain.com -A
+	./peer.sh commit -n peer0."$mainOrg".dt4h.com -A
+	./peer.sh querycommitted -n peer0."$mainOrg".dt4h.com -A
 	sleep 3
 
 	# chaincodeInit $mainOrg

@@ -65,13 +65,13 @@ getCRL() {
 #              to the blockchain.
 updateChannelConfig() {
 	# Fetch the channel configuration
-	./peer.sh fetchconfig -n peer0.${ORG_NAME}.domain.com
+	./peer.sh fetchconfig -n peer0.${ORG_NAME}.dt4h.com
 	
 	# Update the CRL in the channel configuration
 	./peer.sh crlupdate -O ${ORG_MSPID}
 
 	# Push the updated channel configuration to the blockchain
-	./peer.sh channelupdate -n peer0.${ORG_NAME}.domain.com -A
+	./peer.sh channelupdate -n peer0.${ORG_NAME}.dt4h.com -A
 	res=$?
 	# Verify if the channel update was successful
 	verifyResult "$res" "updateChannelConfig - Error computing channel update"

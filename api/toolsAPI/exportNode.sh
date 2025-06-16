@@ -15,11 +15,11 @@ printExportNodeHelp() {
 	echo -e "Arguments:"
 	echo -e "	orgName -- The name of the organization, e.g. myorg"
 	echo -e "	orgType -- The type of the organization, peer/orderer"
-	echo -e "	nodeName -- The name of the node, e.g peer0.org1.domain.com"
+	echo -e "	nodeName -- The name of the node, e.g peer0.org1.dt4h.com"
 	echo -e "	is_client -- True if the member is a client (non node)"
 	echo ""
 	echo "Example:"
-	echo -e "	./tools.sh exportNode ordererorg orderer orderer0.ordererorg.domain.com"
+	echo -e "	./tools.sh exportNode ordererorg orderer orderer0.ordererorg.dt4h.com"
 	echo -e "	./tools.sh exportNode org peer blockclient true"
 	echo
 }
@@ -38,7 +38,7 @@ exportNode() {
 
 	# Paths
 	tarDest=${nodeName}.tar.gz
-	orgPath=organizations/"$orgType"Organizations/${org}.domain.com
+	orgPath=organizations/"$orgType"Organizations/${org}.dt4h.com
 	if "$USERS"; then
 		nodePath=$orgPath/$org-users/users/$nodeName
 	elif "$is_client"; then

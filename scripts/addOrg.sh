@@ -31,17 +31,17 @@ createNodes() {
 	./clientCA.sh enroll -t client -u "$blockclient" -o "$ORG_NAME" -s "$blockclientpw"
 
 	./clientCA.sh regen_ops -t client -u "$prometheus" -o "$ORG_NAME" -s "$prometheuspw"
-	PROMETHEUS_PATH=organizations/peerOrganizations/${ORG_NAME}.domain.com/users/prometheus
+	PROMETHEUS_PATH=organizations/peerOrganizations/${ORG_NAME}.dt4h.com/users/prometheus
 	tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 }
 
 startNodes() {
-	./peer.sh start -t peer -n peer0."$ORG_NAME".domain.com -p 10070 -D 7100
+	./peer.sh start -t peer -n peer0."$ORG_NAME".dt4h.com -p 10070 -D 7100
 }
 
 docker container rm -vf tlsca_${ORG_NAME} ca_${ORG_NAME}
 sudo rm -rf organizations/fabric-ca/${ORG_NAME}
-sudo rm -rf organizations/peerOrganizations/${ORG_NAME}.domain.com
+sudo rm -rf organizations/peerOrganizations/${ORG_NAME}.dt4h.com
 cp -r ${FABRIC_CA_CFG_PATH}/${ORG_NAME}/* ${FABRIC_CA_CFG_PATH}/
 
 createOrg 
@@ -50,16 +50,16 @@ startNodes
 
 ######### TRANSFERS ORG DEFINITION TO AN ORG ALREADY JOINED 
 ######### FOLLOWING IS FROM ANOTHER ORG
-./peer.sh fetchconfig -n peer0.orgexample.domain.com -o orgexample
+./peer.sh fetchconfig -n peer0.orgexample.dt4h.com -o orgexample
 
 # Modify the configuration to append the new org
 ./peer.sh addorgupdate -O $(echo "${ORG_NAME:0:1}" | tr '[:lower:]' '[:upper:]')${ORG_NAME:1}MSP
 
-./peer.sh signconfigtx -n peer0.tex.domain.com -A
-./peer.sh channelupdate -n peer0.orgexample.domain.com -A
+./peer.sh signconfigtx -n peer0.tex.dt4h.com -A
+./peer.sh channelupdate -n peer0.orgexample.dt4h.com -A
 
 ######### New Org
-./peer.sh fetchconfig -n peer0.${ORG_NAME}.domain.com -o ${ORG_NAME}
+./peer.sh fetchconfig -n peer0.${ORG_NAME}.dt4h.com -o ${ORG_NAME}
 ./peer.sh updateanchorpeers -o ${ORG_NAME} -O ${ORG_NAME}^MSP
-./peer.sh channelupdate -n peer0.${ORG_NAME}.domain.com -A
+./peer.sh channelupdate -n peer0.${ORG_NAME}.dt4h.com -A
 

@@ -28,8 +28,8 @@ exportOrg() {
 	orgType=$2
 
 	# Name of Dir
-	orgDir=${org}.domain.com
-	orgPath=organizations/"$orgType"Organizations/${org}.domain.com
+	orgDir=${org}.dt4h.com
+	orgPath=organizations/"$orgType"Organizations/${org}.dt4h.com
 
 	if [ ! "$orgType" == $PEER ] && [ ! "$orgType" == $ORDERER ]; then
 		echo "Wrong type of organization: $orgType"

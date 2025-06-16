@@ -306,7 +306,7 @@ csr:
         OU: 
    hosts:
      - localhost
-     - ${ORG}.domain.com
+     - ${ORG}.dt4h.com
      - tlsca_${ORG}
    ca:
       expiry: 131400h

@@ -68,7 +68,7 @@ On their configuration files specify the hosts in the following section:
 csr:
    hosts:
      - localhost
-     - lynkeus.domain.com
+     - lynkeus.dt4h.com
      - your.host
 ```
 
@@ -110,7 +110,7 @@ The Channel MSP of each organization will be used to configure the genesis block
 From the fabric directory:
 ```bash
 sudo ./tools.sh exportOrg [orgName] [peer or orderer]
-scp [orgname].domain.com.tar.gz OrdererHostname@IP:~/workspace/fabric
+scp [orgname].dt4h.com.tar.gz OrdererHostname@IP:~/workspace/fabric
 or rsync
 ```
 
@@ -152,7 +152,7 @@ See the manual for exportNode
 
 ```bash
 ./tools.sh exportNode [ORG_NAME] [ORG TYPE] [NODE NAME]
-./tools.sh exportNode org1 orderer orderer0.org1.domain.com
+./tools.sh exportNode org1 orderer orderer0.org1.dt4h.com
 scp or rsync to orderer2IP
 ```
 
@@ -213,13 +213,13 @@ However, adjusting the arguments from configCC.sh is recommended so they persist
 # Block should be stored as $FABRIC_HOME/channel-artifacts/${CHANNEL_NAME}.block
 
 ```bash
-./peer.sh joinchannel -p peer0.org.domain.com -A
+./peer.sh joinchannel -p peer0.org.dt4h.com -A
 ```
 
 # Verify
 
 ```bash
-./peer.sh listchannel -p peer0.org.domain.com
+./peer.sh listchannel -p peer0.org.dt4h.com
 ```
 
 # If anchor peers are not updated on the step5 phase, then run 
@@ -252,44 +252,44 @@ OR
 # Install chaincode to peers (2 org)
 
 ```bash
-./peer.sh install -n peer0.org.domain.com
-./peer.sh install -n peer1.org.domain.com
+./peer.sh install -n peer0.org.dt4h.com
+./peer.sh install -n peer1.org.dt4h.com
 ```
 
 # Verify installation
 
 ```bash
-./peer.sh queryinstalled -n peer0.org.domain.com
+./peer.sh queryinstalled -n peer0.org.dt4h.com
 ```
 
 # Approve chaincode as org (2 org)
 
 ```bash
-./peer.sh approve -n peer0.org.domain.com
+./peer.sh approve -n peer0.org.dt4h.com
 ```
 
 # Verify
 
 ```bash
-./peer.sh queryapproved -n peer0.org.domain.com
+./peer.sh queryapproved -n peer0.org.dt4h.com
 ```
 
 # Check if chaincode is approved by sufficient orgs (1 org)
 
 ```bash
-./peer.sh checkreadiness -n peer0.org.domain.com
+./peer.sh checkreadiness -n peer0.org.dt4h.com
 ```
 
 # Commit chaincode to channel (1 org)
 
 ```bash
-./peer.sh commit -n peer0.org.domain.com
+./peer.sh commit -n peer0.org.dt4h.com
 ```
 
 # Verify commit (2 orgs)
 
 ```bash
-./peer.sh querycommitted -n peer0.org.domain.com
+./peer.sh querycommitted -n peer0.org.dt4h.com
 ```
 
 

@@ -65,7 +65,7 @@ createNodes() {
 		# Enroll an Operations Client to monitor nodes securely
 		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
 
-		# PROMETHEUS_PATH=organizations/ordererOrganizations/${org}.domain.com/users/prometheus
+		# PROMETHEUS_PATH=organizations/ordererOrganizations/${org}.dt4h.com/users/prometheus
 		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 	done
 
@@ -94,7 +94,7 @@ createNodes() {
 		# Enroll an Operations Client to monitor nodes securely
 		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
 
-		# PROMETHEUS_PATH=organizations/peerOrganizations/${org}.domain.com/users/prometheus
+		# PROMETHEUS_PATH=organizations/peerOrganizations/${org}.dt4h.com/users/prometheus
 		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
 	done
 
@@ -127,7 +127,7 @@ startNodes() {
 		setPorts "$org"
 		for orderer in $ORDERER_IDS; do
 			set -x
-			./peer.sh start -t orderer -n "$orderer"."$org".domain.com -p "${PORT_MAP[${orderer}]}"
+			./peer.sh start -t orderer -n "$orderer"."$org".dt4h.com -p "${PORT_MAP[${orderer}]}"
 			set +x
 		done
 	done
@@ -137,7 +137,7 @@ startNodes() {
 		setPorts "$org"
 		for peer in $PEER_IDS; do
 			set -x
-			./peer.sh start -t peer -n "$peer"."$org".domain.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
+			./peer.sh start -t peer -n "$peer"."$org".dt4h.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
 			set +x
 			((COUNT++))
 		done
@@ -171,17 +171,17 @@ exportMSPs() {
 
     # Copying MSPs for Peer Orgs.
     for org in $PEER_ORGS; do
-        # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
-        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".domain.com/users/registrar0/. "$APP_ID_DEST"/"$org"Registrar/
+        # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_ID_DEST"/"$org"Registrar/
     done
 
     # Copying specific organization data.
-    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_DEST"/blockClient/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/blockclient/. "$APP_ID_DEST"/blockClient/
-    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_DEST"/peer0bsc/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/peers/peer0.bsc.domain.com/. "$APP_ID_DEST"/peer0bsc/
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_DEST"/blockClient/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_ID_DEST"/blockClient/
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/peers/peer0.bsc.dt4h.com/. "$APP_DEST"/peer0bsc/
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/peers/peer0.bsc.dt4h.com/. "$APP_ID_DEST"/peer0bsc/
 
-    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.domain.com/users/prometheus .
+    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/prometheus .
     # sudo chmod 755 -R ${APP_DEST}
     sudo chmod 755 -R ${APP_ID_DEST}
 }

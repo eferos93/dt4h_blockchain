@@ -21,9 +21,9 @@ export ORG_2=ub
 export ORG_3=bsc
 
 # Auto set orderer of Org 1
-export ORDERER_HOSTNAME=orderer0.${ORG_1}.domain.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.domain.com/mspConfig/tlscacerts/ca.crt
-export ORDERER=orderer0.athenaorderer.domain.com:9051
+export ORDERER_HOSTNAME=orderer0.${ORG_1}.dt4h.com
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/ca.crt
+export ORDERER=orderer0.athenaorderer.dt4h.com:9051
 
 # -- USER INPUT - Set Organizations
 [[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3}"
@@ -154,18 +154,18 @@ xx.xx.xx.xx tlsca_${ORG_2}orderer
 # endCAs
 
 # Peers
-xx.xx.xx.xx peer0.${ORG_1}.domain.com
-xx.xx.xx.xx peer1.${ORG_1}.domain.com
+xx.xx.xx.xx peer0.${ORG_1}.dt4h.com
+xx.xx.xx.xx peer1.${ORG_1}.dt4h.com
 
-xx.xx.xx.xx peer0.${ORG_2}.domain.com
-xx.xx.xx.xx peer1.${ORG_2}.domain.com
+xx.xx.xx.xx peer0.${ORG_2}.dt4h.com
+xx.xx.xx.xx peer1.${ORG_2}.dt4h.com
 
 # endPeers
 
 # Orderers
-xx.xx.xx.xx orderer0.${ORG_1}orderer.domain.com
-xx.xx.xx.xx orderer0.${ORG_2}orderer.domain.com
-xx.xx.xx.xx orderer1.${ORG_1}orderer.domain.com
+xx.xx.xx.xx orderer0.${ORG_1}orderer.dt4h.com
+xx.xx.xx.xx orderer0.${ORG_2}orderer.dt4h.com
+xx.xx.xx.xx orderer1.${ORG_1}orderer.dt4h.com
 
 # endOrderers
 

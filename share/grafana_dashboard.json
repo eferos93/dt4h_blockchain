@@ -89,7 +89,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "fabric_version{instance=\"peer0.tex.domain.com:9450\"}",
+          "expr": "fabric_version{instance=\"peer0.tex.dt4h.com:9450\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{version}}",

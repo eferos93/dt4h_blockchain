@@ -25,8 +25,8 @@ This project provides tools automating the creation of an HLF network while prov
 
 In development mode, setting up a complete network is easy. You can use the **network.sh** script as the entry point to perform the operations required to set up a network in distinct steps, based on the configurations given in configGlobals.sh (general config) and configCC.sh (for channel and chaincode). The steps are listed below:
 
-1. Setup the Certificate Authorities (CA). At this step, each organization creates a CA, a TLS CA, and a TLS Ops CA (for operations). The required admins, peers, and orderers are registered and enrolled to these servers and the MSPs are generated and saved at organizations/org_name.domain.com
-2. Setup Node MSPs. As the CAs are created and the nodes are registered, the next step is to create the node MSPs to start them operating. Every node is enrolled on their respective CAs and an MSP is created under organizations/org_name.domain.com/peers/peer_id.org_name.domain.com
+1. Setup the Certificate Authorities (CA). At this step, each organization creates a CA, a TLS CA, and a TLS Ops CA (for operations). The required admins, peers, and orderers are registered and enrolled to these servers and the MSPs are generated and saved at organizations/org_name.dt4h.com
+2. Setup Node MSPs. As the CAs are created and the nodes are registered, the next step is to create the node MSPs to start them operating. Every node is enrolled on their respective CAs and an MSP is created under organizations/org_name.dt4h.com/peers/peer_id.org_name.dt4h.com
 3. Create the genesis block configuration. Created using the configuration at configtx.yaml and a selected profile, it is required and used when setting up a new channel.
 4. Start the nodes. Bring up all docker containers of the nodes so they start operating and communicating.
 5. Create a channel. At this point, a new channel is created using the genesis configuration. Each peer of the organizations is joined to the channel (using an Admin's MSP).

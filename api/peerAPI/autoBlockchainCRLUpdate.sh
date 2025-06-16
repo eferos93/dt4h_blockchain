@@ -54,5 +54,5 @@ invokeUpdateCRL() {
 	funcCall='{"Args":["ManagementContract:UpdateCRL","'"${CRL_STRING}"\"]}
 	
 	# Use the peer.sh script to invoke the update on the blockchain
-	./peer.sh invoke -x "${funcCall}" -n peer0.${ORG_NAME}.domain.com
+	./peer.sh invoke -x "${funcCall}" -n peer0.${ORG_NAME}.dt4h.com
 }

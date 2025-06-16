@@ -59,15 +59,15 @@ setPeers() {
     peer0Org3="--peerAddresses localhost:9051"
     peer1Org3="--peerAddresses localhost:9061"
   else
-    peer0Org2="--peerAddresses peer0.${ORG_2}.domain.com:${CCP_PEER_PORT}"
-    peer1Org2="--peerAddresses peer1.${ORG_2}.domain.com:${CCP_PEER_PORT}"
+    peer0Org2="--peerAddresses peer0.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
+    peer1Org2="--peerAddresses peer1.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
 
-    peer0Org3="--peerAddresses peer0.${ORG_3}.domain.com:${CCP_PEER_PORT}"
-    peer1Org3="--peerAddresses peer1.${ORG_3}.domain.com:${CCP_PEER_PORT}"
+    peer0Org3="--peerAddresses peer0.${ORG_3}.dt4h.com:${CCP_PEER_PORT}"
+    peer1Org3="--peerAddresses peer1.${ORG_3}.dt4h.com:${CCP_PEER_PORT}"
   fi
 
-  export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.domain.com/mspConfig/tlscacerts/ca.crt
-  export TLS_ROOTCERT_ORG3=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_3}.domain.com/mspConfig/tlscacerts/ca.crt
+  export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.dt4h.com/mspConfig/tlscacerts/ca.crt
+  export TLS_ROOTCERT_ORG3=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_3}.dt4h.com/mspConfig/tlscacerts/ca.crt
 
   tlsOrg2="--tlsRootCertFiles ${TLS_ROOTCERT_ORG2}"
   tlsOrg3="--tlsRootCertFiles ${TLS_ROOTCERT_ORG3}"
@@ -87,7 +87,7 @@ setPeer() {
   setPorts "$org"
 
   # Set hostname depending on deployed or localhost version
-  [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.domain.com
+  [ ${STAGE} == 'dev' ] && hostname=localhost || hostname=${nodeID}.${org}.dt4h.com
 
   # Check config existence
   # if [ ! -f ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ]; then
@@ -100,14 +100,14 @@ setPeer() {
     # Case Orderer
 
     # OSN configuration
-    export PEER_HOME=${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${nodeID}.${org}.domain.com
+    export PEER_HOME=${FABRIC_HOME}/organizations/ordererOrganizations/${org}.dt4h.com/orderers/${nodeID}.${org}.dt4h.com
     export OSN_TLS_CA_ROOT_CERT=${PEER_HOME}/tls/tlscacerts/ca.crt
     export ORDERER_ADMIN_TLS_SIGN_CERT=${PEER_HOME}/tls/signcerts/cert.pem
     export ORDERER_ADMIN_TLS_PRIVATE_KEY=${PEER_HOME}/tls/keystore/key.pem
 
   else
     # Case Peer
-    export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${nodeID}.${org}.domain.com
+    export PEER_HOME=${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${nodeID}.${org}.dt4h.com
     export CORE_PEER_LOCALMSPID=$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}MSP
     # cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
   fi
@@ -259,7 +259,7 @@ services:
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${TLS_ADMIN}
       - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${TLS_ADMINPW}
-      - FABRIC_CA_SERVER_CSR_HOSTS=tlsca_${org},${org}.domain.com,${tlsHost}
+      - FABRIC_CA_SERVER_CSR_HOSTS=tlsca_${org},${org}.dt4h.com,${tlsHost}
       - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CSR_NAMES_0_OU=${org}-tls
       - FABRIC_CA_SERVER_PORT=${tlsPort}
@@ -313,7 +313,7 @@ services:
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CSR_NAMES_0_OU=${org}-tlsops
-      - FABRIC_CA_SERVER_CSR_HOSTS=tlsopsca_${org},${org}.domain.com,${tlsHost}
+      - FABRIC_CA_SERVER_CSR_HOSTS=tlsopsca_${org},${org}.dt4h.com,${tlsHost}
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_PROFILES_TLS_EXPIRY=${TLS_DEFAULT_EXPIRY}
       ${ops_listenaddress}
@@ -370,7 +370,7 @@ services:
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_NAME=${CA_ADMIN}
       - FABRIC_CA_SERVER_REGISTRY_IDENTITIES_0_PASS=${CA_ADMINPW}
-      - FABRIC_CA_SERVER_CSR_HOSTS=ca_${org},${org}.domain.com,${caHost}
+      - FABRIC_CA_SERVER_CSR_HOSTS=ca_${org},${org}.dt4h.com,${caHost}
       - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_TLS_DEFAULT_EXPIRY=${CA_DEFAULT_EXPIRY}
@@ -413,15 +413,15 @@ createDockerOrderer() {
 version: '3'
 
 volumes:
-  ${ordererId}.${org}.domain.com:
+  ${ordererId}.${org}.dt4h.com:
 
 networks:
   ${STAGE}:
 
 services:
 
-  ${ordererId}.${org}.domain.com:
-    container_name: ${ordererId}.${org}.domain.com
+  ${ordererId}.${org}.dt4h.com:
+    container_name: ${ordererId}.${org}.dt4h.com
     image: hyperledger/fabric-orderer:${FABRIC_TAG}
     dns_search: .
     # deploy:
@@ -479,10 +479,10 @@ services:
     volumes:
       - ${FABRIC_HOME}/config/orderer.yaml:/etc/hyperledger/fabric/orderer.yaml
       - ${FABRIC_HOME}/system-genesis-block/${CHANNEL_NAME}.block:/var/hyperledger/orderer/${CHANNEL_NAME}.block
-      - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/msp:/var/hyperledger/orderer/msp
-      - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tls:/var/hyperledger/orderer/tls
-      - ${ordererId}.${org}.domain.com:/var/hyperledger/production/orderer
-      # - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.domain.com/orderers/${ordererId}.${org}.domain.com/tlsops:/var/hyperledger/orderer/tlsops
+      - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.dt4h.com/orderers/${ordererId}.${org}.dt4h.com/msp:/var/hyperledger/orderer/msp
+      - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.dt4h.com/orderers/${ordererId}.${org}.dt4h.com/tls:/var/hyperledger/orderer/tls
+      - ${ordererId}.${org}.dt4h.com:/var/hyperledger/production/orderer
+      # - ${FABRIC_HOME}/organizations/ordererOrganizations/${org}.dt4h.com/orderers/${ordererId}.${org}.dt4h.com/tlsops:/var/hyperledger/orderer/tlsops
       - ${CHANNEL_ARTIFACTS}:/var/hyperledger/orderer/channel-artifacts
     ports:
       - ${CLUSTER_PORT}:${CLUSTER_PORT}
@@ -520,15 +520,15 @@ createDockerPeer() {
 version: '3'
 
 volumes:
-  ${peerId}.${org}.domain.com:
+  ${peerId}.${org}.dt4h.com:
 
 networks:
   ${STAGE}:
 
 services:
 
-  ${peerId}.${org}.domain.com:
-    container_name: ${peerId}.${org}.domain.com
+  ${peerId}.${org}.dt4h.com:
+    container_name: ${peerId}.${org}.dt4h.com
     image: hyperledger/fabric-peer:${FABRIC_TAG}
     dns_search: .
     # deploy:
@@ -557,14 +557,14 @@ services:
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw  
 
       #### PEER ADDRESSES CONFIG
-      - CORE_PEER_ID=${peerId}.${org}.domain.com
-      - CORE_PEER_ADDRESS=${peerId}.${org}.domain.com:${peerPort}
+      - CORE_PEER_ID=${peerId}.${org}.dt4h.com
+      - CORE_PEER_ADDRESS=${peerId}.${org}.dt4h.com:${peerPort}
       - CORE_PEER_LISTENADDRESS=0.0.0.0:${peerPort}
-      - CORE_PEER_CHAINCODEADDRESS=${peerId}.${org}.domain.com:${chaincodePort}
+      - CORE_PEER_CHAINCODEADDRESS=${peerId}.${org}.dt4h.com:${chaincodePort}
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:${chaincodePort}
       - CORE_PEER_LOCALMSPID=$(echo "${org:0:1}" | tr '[:lower:]' '[:upper:]')${org:1}MSP
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerId}.${org}.domain.com:${peerPort}
-      - CORE_PEER_GOSSIP_BOOTSTRAP=${peerId}.${org}.domain.com:${peerPort}
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peerId}.${org}.dt4h.com:${peerPort}
+      - CORE_PEER_GOSSIP_BOOTSTRAP=${peerId}.${org}.dt4h.com:${peerPort}
 
       #### OPERATIONS CONFIG
       # - CORE_OPERATIONS_TLS_ENABLED=true
@@ -580,10 +580,10 @@ services:
     volumes:
       - ${FABRIC_HOME}/config/core.yaml:/etc/hyperledger/fabric/core.yaml
       - /var/run/:/host/var/run/
-      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/msp:/etc/hyperledger/fabric/msp
-      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls:/etc/hyperledger/fabric/tls
-      # - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tlsops:/etc/hyperledger/fabric/tlsops
-      - ${peerId}.${org}.domain.com:/var/hyperledger/production
+      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/msp:/etc/hyperledger/fabric/msp
+      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls:/etc/hyperledger/fabric/tls
+      # - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tlsops:/etc/hyperledger/fabric/tlsops
+      - ${peerId}.${org}.dt4h.com:/var/hyperledger/production
     ports:
       - "${peerPort}:${peerPort}"
       ${ops_port}
@@ -612,16 +612,16 @@ echo  "
       - FABRIC_LOGGING_SPEC=INFO
       # - FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_ID=${peerId}cli.${org}  
-      # - CORE_PEER_ADDRESS=${peerId}.${org}.domain.com:${peerPort}
+      # - CORE_PEER_ADDRESS=${peerId}.${org}.dt4h.com:${peerPort}
       - CORE_PEER_TLS_ENABLED=true
       - envPath=/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/envCli.sh
       # - CORE_PEER_TLS_CLIENTAUTHREQUIRED=true
-      # - CORE_PEER_TLS_CLIENTKEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls/keystore/key.pem
-      # - CORE_PEER_TLS_CLIENTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls/signcerts/cert.pem
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls/signcerts/cert.pem
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls/keystore/key.pem
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls/tlscacerts/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/msp
+      # - CORE_PEER_TLS_CLIENTKEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/keystore/key.pem
+      # - CORE_PEER_TLS_CLIENTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/signcerts/cert.pem
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/tlscacerts/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/msp
       # COUCHDB CONFIG 
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${peerId}couchDB${org}:5984
       - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
@@ -635,13 +635,13 @@ echo  "
       - ${FABRIC_HOME}/chaincode/:/opt/gopath/src/github.com/chaincode
       - ${FABRIC_HOME}/organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
       - ${FABRIC_HOME}/scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
-      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/msp:/etc/hyperledger/fabric/msp
-      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tls:/etc/hyperledger/fabric/tls
+      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/msp:/etc/hyperledger/fabric/msp
+      - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls:/etc/hyperledger/fabric/tls
       # - ${FABRIC_HOME}/channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
-      # - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.domain.com/peers/${peerId}.${org}.domain.com/tlsops:/etc/hyperledger/fabric/tlsops      
-      - ${peerId}.${org}.domain.com:/var/hyperledger/production
+      # - ${FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tlsops:/etc/hyperledger/fabric/tlsops      
+      - ${peerId}.${org}.dt4h.com:/var/hyperledger/production
     depends_on:
-      - ${peerId}.${org}.domain.com
+      - ${peerId}.${org}.dt4h.com
     networks:
       - ${STAGE}" >> docker/docker-compose-${peerId}-${org}.yaml
 
@@ -702,8 +702,8 @@ services:
       - --config.file=/etc/prometheus/prometheus.yaml       
     volumes: 
         - ${FABRIC_HOME}/config/prometheus.yaml:/etc/prometheus/prometheus.yaml
-        - ${FABRIC_HOME}/organizations/peerOrganizations/lynkeus.domain.com/users/prometheus/tlsops:/etc/prometheus/lynkeus.domain.com/tlsops
-        - ${FABRIC_HOME}/organizations/peerOrganizations/tex.domain.com/users/prometheus/tlsops:/etc/prometheus/tex.domain.com/tlsops
+        - ${FABRIC_HOME}/organizations/peerOrganizations/lynkeus.dt4h.com/users/prometheus/tlsops:/etc/prometheus/lynkeus.dt4h.com/tlsops
+        - ${FABRIC_HOME}/organizations/peerOrganizations/tex.dt4h.com/users/prometheus/tlsops:/etc/prometheus/tex.dt4h.com/tlsops
     networks: 
         - ${STAGE}" > "$FABRIC_HOME"/docker/prometheus.yaml
 

@@ -4,7 +4,7 @@ Organizations:
   - &Org3
     Name: Org3MSP
     ID: Org3MSP
-    MSPDir: ../organizations/peerOrganizations/org3.domain.com/mspConfig
+    MSPDir: ../organizations/peerOrganizations/org3.dt4h.com/mspConfig
     Policies:
       Readers:
         Type: Signature
@@ -20,5 +20,5 @@ Organizations:
         Rule: "OR('Org3MSP.peer')"
 
     AnchorPeers:
-      - Host: peer0.org3.domain.com
+      - Host: peer0.org3.dt4h.com
         Port: 10070
