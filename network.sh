@@ -319,9 +319,7 @@ networkUp() {
 	deployCC
 	exportMSPs
 	# setupMonitor
-
-	docker ps -a
-}
+    }
 
 
 if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ -z "$1" ]; then
