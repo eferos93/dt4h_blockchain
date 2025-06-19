@@ -229,7 +229,7 @@ networkDown() {
 	docker container rm -vf explorer.mynetwork.com explorerdb.mynetwork.com
 
 	printInfo "Removing DB and App data"
-	cleanApp
+	# cleanApp
 
 	# Init Chaincode Sequence and Version on configCC.sh
 	sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
@@ -298,7 +298,7 @@ removeAllExceptCA() {
     sudo rm -rf "$FABRIC_HOME"/organizations/peerOrganizations/*/usersmsp
 
     # Clean up application data and reset config.
-    cleanApp
+    # cleanApp
     sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
     sed -i -E "/^export CC_VERSION/s/=.*$/=\"1.0\"/g" "${FABRIC_HOME}"/configCC.sh
     
