@@ -542,7 +542,6 @@ services:
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - grpc=debug:info
       - FABRIC_LOGGING_SPEC=INFO
-      # - FABRIC_LOGGING_SPEC=DEBUG
 
       #### TLS
       - CORE_PEER_TLS_ENABLED=true
