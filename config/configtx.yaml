@@ -92,7 +92,7 @@ Organizations:
                 Rule: "OR('UbMSP.peer')"
         AnchorPeers:
             - Host: peer0.ub.dt4h.com
-              Port: 8080
+              Port: 8081
 
     - &Bsc
         Name: BscMSP

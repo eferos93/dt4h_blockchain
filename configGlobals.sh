@@ -44,7 +44,7 @@ setPorts() {
     PORT_MAP[orderer0]=7070
     PORT_MAP[orderer1]=7080
   elif [ "$org" == "${ORG_2}" ]; then
-    PORT_MAP[peer0]=8080
+    PORT_MAP[peer0]=8081
     PORT_MAP[peer1]=8090
   elif [ "$org" == "${ORG_3}" ]; then
     PORT_MAP[peer0]=9051
@@ -70,7 +70,7 @@ setParams() {
     typeOfOrg=peer
     caPort=8055
     tlsPort=8054
-    peerPort=8080  
+    peerPort=8081  
     tlsOpsPort=8020
   elif [ "$org" == "${ORG_3}" ]; then
     typeOfOrg=peer

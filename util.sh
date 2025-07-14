@@ -53,7 +53,7 @@ fi
 setPeers() {
 
   if [ ${STAGE} == 'dev' ]; then
-    peer0Org2="--peerAddresses localhost:8080"
+    peer0Org2="--peerAddresses localhost:8081"
     peer1Org2="--peerAddresses localhost:8090"
 
     peer0Org3="--peerAddresses localhost:9051"
@@ -363,7 +363,7 @@ services:
     #   restart_policy:
     #     condition: on-failure
     environment:
-      - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_LOGGING_SPEC=DEBUG
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca-${org}
       - FABRIC_CA_SERVER_PORT=${CA_PORT}
