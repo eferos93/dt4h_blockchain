@@ -173,8 +173,10 @@ exportMSPs() {
     for org in $PEER_ORGS; do
         # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
         cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_ID_DEST"/"$org"Registrar/
+        cp -a "${FABRIC_HOME}"/organizations/fabric-ca/"$org"/fabric-ca-client-"$org"/tls-root-cert/tls-ca-cert.pem "$APP_ID_DEST"/"$org"TLS-root-cert/tls-ca-cert.pem
     done
 
+    
     # Copying specific organization data.
     # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_DEST"/blockClient/
     cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_ID_DEST"/blockClient/
