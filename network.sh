@@ -169,19 +169,32 @@ exportMSPs() {
     # mkdir -p "$APP_DEST"
     mkdir -p "$APP_ID_DEST"
 
-    # Copying MSPs for Peer Orgs.
+    # Copying MSPs for Peer Orgs - Create org folders with identity subfolders
     for org in $PEER_ORGS; do
-        # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_DEST"/"$org"Registrar/
-        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_ID_DEST"/"$org"Registrar/
-        cp -a "${FABRIC_HOME}"/organizations/fabric-ca/"$org"/fabric-ca-client-"$org"/tls-root-cert/. "$APP_ID_DEST"/"$org"TLS-root-cert/
+        setParams "$org"
+        
+        # Create organization folder
+        mkdir -p "$APP_ID_DEST"/"$org"
+        
+        # Copy registrar identity with enrollment ID as folder name
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/registrar0/. "$APP_ID_DEST"/"$org"/registrar0/
+        
+        # Copy admin identity with enrollment ID as folder name
+        cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/"$org".dt4h.com/users/admin0/. "$APP_ID_DEST"/"$org"/admin0/
+        
+        # Keep TLS root certs in the same location as before
+        cp -a "${FABRIC_HOME}"/organizations/fabric-ca/"$org"/fabric-ca-client-"$org"/tls-root-cert/. "$APP_ID_DEST"/"$org"/"$org"TLS-root-cert/
     done
 
     
-    # Copying specific organization data.
-    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_DEST"/blockClient/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_ID_DEST"/blockClient/
-    # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/peers/peer0.bsc.dt4h.com/. "$APP_DEST"/peer0bsc/
-    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/peers/peer0.bsc.dt4h.com/. "$APP_ID_DEST"/peer0bsc/
+    # Copying specific organization data for bsc org
+    mkdir -p "$APP_ID_DEST"/bsc
+    
+    # Copy blockclient identity with enrollment ID as folder name
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/blockclient/. "$APP_ID_DEST"/bsc/blockclient/
+    
+    # Copy peer identity with enrollment ID as folder name
+    cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/peers/peer0.bsc.dt4h.com/. "$APP_ID_DEST"/bsc/peer0/
 
     # cp -a "${FABRIC_HOME}"/organizations/peerOrganizations/bsc.dt4h.com/users/prometheus .
     # sudo chmod 755 -R ${APP_DEST}
