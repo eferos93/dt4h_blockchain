@@ -334,6 +334,8 @@ networkUp() {
 	deployCC
 	exportMSPs
 	# setupMonitor
+    
+    printSuccess "Network is up and running"
     }
 
 
