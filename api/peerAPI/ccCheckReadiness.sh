@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# -----------------------------------------------------------------------------
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-# -----------------------------------------------------------------------------
-
 # Description: This script contains a function to check the commit readiness 
 #              of a specific chaincode on the Hyperledger Fabric network.
 

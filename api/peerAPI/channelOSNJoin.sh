@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# -----------------------------------------------------------------------------
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-# -----------------------------------------------------------------------------
 
 # Description: This script provides functionality to join an OSN (Ordering Service Node) 
 #              to a channel in a Hyperledger Fabric network.

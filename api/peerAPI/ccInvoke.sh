@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# -----------------------------------------------------------------------------
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-# -----------------------------------------------------------------------------
 
 # Description: This script contains a function to invoke a transaction 
 #              on a Hyperledger Fabric chaincode.

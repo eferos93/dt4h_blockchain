@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# -----------------------------------------------------------------------------
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-# -----------------------------------------------------------------------------
-
 # Description: This functionality is used to export a node MSP to a tar.gz file to be transferred across VMs easily
 
 printExportNodeHelp() {

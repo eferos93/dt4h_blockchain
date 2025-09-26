@@ -1,9 +1,5 @@
 #!/bin/bash
-#
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+
 
 ##########################
 # Enroll a node in the Hyperledger Fabric network.

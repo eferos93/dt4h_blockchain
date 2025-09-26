@@ -279,9 +279,6 @@ Application: &ApplicationDefaults
         Admins:
             Type: Signature
             Rule: "AND('BscMSP.admin', 'UbMSP.admin')"
-        # BlockReaders:
-        #     Type: Signature
-        #     Rule: "OR('AthenaMSP.client', 'AthenaMSP.admin', 'AthenaMSP.peer', 'AgoraMSP.peer', 'AgoraMSP.admin', 'AgoraMSP.client')"
         CCInvokers:
             Type: ImplicitMeta
             Rule: "ANY Writers"
@@ -679,22 +676,6 @@ Profiles:
     #                   <<: *SampleOrgPolicies
     #                   Admins:
     #                       Type: Signature
-
-    # AgoraChannel:
-    #     <<: *ChannelDefaults
-    #     Orderer:
-    #         <<: *OrdererDefaults
-    #         Organizations:
-    #             - *AgoraOrderer
-    #             - *AthenaOrderer
-
-    #     Application:
-    #         <<: *ApplicationDefaults
-    #         Organizations:
-    #             - *Athena
-    #             - *AthenaUsers
-    #             - *Agora
-    #             - *AgoraUsers
 
     dt4h:
         <<: *ChannelDefaults

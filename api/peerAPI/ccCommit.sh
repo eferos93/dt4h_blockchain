@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# -----------------------------------------------------------------------------
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-# -----------------------------------------------------------------------------
 
 # Description: This script contains a function to commit the chaincode definition 
 #              on a Hyperledger Fabric channel for a specific chaincode.

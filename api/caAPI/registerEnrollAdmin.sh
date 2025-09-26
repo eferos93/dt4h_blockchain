@@ -1,9 +1,5 @@
 #!/bin/bash
-#
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+
 
 # Function: registerOrgAdmin
 # Description: Register the organization's admin with the TLS and CA servers.

@@ -23,4 +23,4 @@ fi
 # invoke the transaction using the typescript application
 # just one input "validate". Find where the rest can be reached.
 
-node application-typescript/app.js validate peer0.athena.com agora myCC management_contract isAuthorizedMSP '{"mspId":"Org1MSP"}'
+node application-typescript/app.js validate peer0.athena.com dt4h myCC management_contract isAuthorizedMSP '{"mspId":"Org1MSP"}'

@@ -44,16 +44,16 @@ export CCP_CA_PORT=7055
 setPorts() {
   org=$1
   declare -Ag PORT_MAP
-  if [ "$org" == "agora" ]; then
+  if [ "$org" == "ub" ]; then
     PORT_MAP[peer0]=7070
     PORT_MAP[peer1]=7070
   elif [ "$org" == "athena" ]; then
     PORT_MAP[peer0]=7070
     PORT_MAP[peer1]=7070
-  elif [ "$org" == "agoraorderer" ]; then
+  elif [ "$org" == "bsc" ]; then
     PORT_MAP[orderer0]=9051
     PORT_MAP[orderer1]=9051
-  elif [ "$org" == "athenaorderer" ]; then
+  elif [ "$org" == "athena" ]; then
     PORT_MAP[orderer0]=9051
   elif [ "$org" == "org3" ]; then
     PORT_MAP[peer0]=9051
@@ -82,7 +82,7 @@ setParams() {
 
   ##### ORG TYPE #####
   typeOfOrg=peer
-  if [ "$org" == "athenaorderer" ] || [ "$org" == "agoraorderer" ]; then
+  if [ "$org" == "bsc" ] || [ "$org" == "athena" ]; then
     typeOfOrg=orderer
   fi
 

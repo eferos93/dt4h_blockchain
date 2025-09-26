@@ -1,9 +1,5 @@
 #!/bin/bash
-#
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+
 
 # Bring up the CA Server
 # Starting the server reconfigures the csr parameters from the imported

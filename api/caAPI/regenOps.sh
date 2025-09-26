@@ -1,9 +1,4 @@
 #!/bin/bash
-#
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
 
 # Register a client to Operations TLS and CA servers.
 # Validates the input, prepares necessary attributes and performs the registration.

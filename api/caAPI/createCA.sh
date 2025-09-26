@@ -1,9 +1,5 @@
 #!/bin/bash
-#
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+
 
 # Create and Initialize the CA Server for a given ORG_NAME.
 createCAServer() {

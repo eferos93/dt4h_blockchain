@@ -1,9 +1,5 @@
 #!/bin/bash
-#
-# Copyright Agora Labs. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+
 
 ##########################
 # Reenroll the node to obtain the MSP (Membership Service Provider) credentials.
