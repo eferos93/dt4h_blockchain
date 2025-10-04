@@ -131,7 +131,7 @@ registry:
   identities:
      - name: ${TLSCA_ADMIN}
        pass: ${TLSCA_ADMINPW}
-       type: client
+       type: admin
        affiliation: ""
        attrs:
           hf.Registrar.Roles: "*"
