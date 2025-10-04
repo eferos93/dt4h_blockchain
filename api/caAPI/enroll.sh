@@ -85,7 +85,7 @@ enroll() {
 		set +x
 		verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to TLS Server"
 		mv "$TLSMSPDIR"/keystore/* "$TLSMSPDIR"/keystore/key.pem
-		mv "$TLSMSPDIR"/tlscacerts/* "$TLSMSPDIR"/tlscacerts/ca.crt
+		mv "$TLSMSPDIR"/tlscacerts/* "$TLSMSPDIR"/tlscacerts/cert.pem
 	fi
 
 	##### CA #####
@@ -110,7 +110,7 @@ enroll() {
 	# 	set +x
 	# 	verifyResult "$res" "enroll - Failed to enroll $TYPE $USERNAME to TLS CA Operations Server"
 	# 	mv "$TLSOPSDIR"/keystore/* "$TLSOPSDIR"/keystore/key.pem
-	# 	mv "$TLSOPSDIR"/tlscacerts/* "$TLSOPSDIR"/tlscacerts/ca.crt
+	# 	mv "$TLSOPSDIR"/tlscacerts/* "$TLSOPSDIR"/tlscacerts/cert.pem
 	# fi
 
 	# Create config.yaml on MSP folder for NODE OUs

@@ -22,7 +22,7 @@ export ORG_3=bsc
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}.dt4h.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/ca.crt
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/cert.pem
 export ORDERER=orderer0.athenaorderer.dt4h.com:9051
 
 # -- USER INPUT - Set Organizations

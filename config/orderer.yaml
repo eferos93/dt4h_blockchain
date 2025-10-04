@@ -31,7 +31,7 @@ General:
         # It is not required to be set, but can be used to augment the set of TLS CA certificates
         # available from the MSPs of each channel’s configuration.
         RootCAs:
-          - tls/ca.crt
+          - tls/cert.pem
         # Require client certificates / mutual TLS for inbound connections.
         ClientAuthRequired: false
         # If mutual TLS is enabled, ClientRootCAs contains a list of additional root certificates

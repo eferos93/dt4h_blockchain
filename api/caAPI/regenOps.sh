@@ -76,7 +76,7 @@ enrollClientOps() {
 
 	# Arrange the keys and certificates in proper directories
 	mv "$TLSOPSDIR"/keystore/* "$TLSOPSDIR"/keystore/key.pem
-	mv "$TLSOPSDIR"/tlscacerts/* "$TLSOPSDIR"/tlscacerts/ca.crt
+	mv "$TLSOPSDIR"/tlscacerts/* "$TLSOPSDIR"/tlscacerts/cert.pem
 
 	printSuccess "enrollClientOps - ${ORG_NAME} $TYPE $USERNAME enrolled successfully"
 }

@@ -266,11 +266,11 @@ peer:
             file: /etc/hyperledger/fabric/tls/keystore/key.pem
         # Trusted root certificate chain for tls.cert
         rootcert:
-            file: /etc/hyperledger/fabric/tls/tlscacerts/ca.crt
+            file: /etc/hyperledger/fabric/tls/tlscacerts/cert.pem
         # Set of root certificate authorities used to verify client certificates
         clientRootCAs:
             files:
-              - /etc/hyperledger/fabric/tls/tlscacerts/ca.crt
+              - /etc/hyperledger/fabric/tls/tlscacerts/cert.pem
         # Private key used for TLS when making client connections.  If
         # not set, peer.tls.key.file will be used instead
         clientKey:
@@ -470,7 +470,7 @@ vm:
         tls:
             enabled: false
             ca:
-                file: docker/ca.crt
+                file: docker/cert.pem
             cert:
                 file: docker/tls.crt
             key:

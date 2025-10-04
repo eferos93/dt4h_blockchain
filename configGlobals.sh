@@ -17,7 +17,7 @@ export ORG_3=bsc
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}.dt4h.com
-export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/ca.crt
+export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/cert.pem
 export ORDERER=localhost:7070
 
 [[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3}"

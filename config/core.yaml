@@ -289,14 +289,14 @@ peer:
         # It is not required to be set, but can be used to augment the set of TLS CA certificates
         # available from the MSPs of each channel’s configuration.
         rootcert:
-            file: tls/ca.crt
+            file: tls/cert.pem
         # If mutual TLS is enabled, clientRootCAs.files contains a list of additional root certificates
         # used for verifying certificates of client connections.
         # It augments the set of TLS CA certificates available from the MSPs of each channel’s configuration.
         # Minimally, set your organization's TLS CA root certificate so that the peer can receive join channel requests.
         clientRootCAs:
             files:
-              - tls/ca.crt
+              - tls/cert.pem
         # Private key used for TLS when making client connections.
         # If not set, peer.tls.key.file will be used instead
         clientKey:
@@ -521,7 +521,7 @@ vm:
         tls:
             enabled: false
             ca:
-                file: docker/ca.crt
+                file: docker/cert.pem
             cert:
                 file: docker/tls.crt
             key:

@@ -73,8 +73,8 @@ reenroll() {
         if [ -z ${REUSE_KEY} ]; then
             rm "$TLSMSPDIR"/keystore/key.pem
             mv "$TLSMSPDIR"/keystore/* "$TLSMSPDIR"/keystore/key.pem
-            rm "$TLSMSPDIR"/tlscacerts/ca.crt
-            mv "$TLSMSPDIR"/tlscacerts/* "$TLSMSPDIR"/tlscacerts/ca.crt
+            rm "$TLSMSPDIR"/tlscacerts/cert.pem
+            mv "$TLSMSPDIR"/tlscacerts/* "$TLSMSPDIR"/tlscacerts/cert.pem
         fi
     fi
 

@@ -66,8 +66,8 @@ setPeers() {
     peer1Org3="--peerAddresses peer1.${ORG_3}.dt4h.com:${CCP_PEER_PORT}"
   fi
 
-  export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.dt4h.com/mspConfig/tlscacerts/ca.crt
-  export TLS_ROOTCERT_ORG3=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_3}.dt4h.com/mspConfig/tlscacerts/ca.crt
+  export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.dt4h.com/mspConfig/tlscacerts/cert.pem
+  export TLS_ROOTCERT_ORG3=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_3}.dt4h.com/mspConfig/tlscacerts/cert.pem
 
   tlsOrg2="--tlsRootCertFiles ${TLS_ROOTCERT_ORG2}"
   tlsOrg3="--tlsRootCertFiles ${TLS_ROOTCERT_ORG3}"
@@ -101,7 +101,7 @@ setPeer() {
 
     # OSN configuration
     export PEER_HOME=${FABRIC_HOME}/organizations/ordererOrganizations/${org}.dt4h.com/orderers/${nodeID}.${org}.dt4h.com
-    export OSN_TLS_CA_ROOT_CERT=${PEER_HOME}/tls/tlscacerts/ca.crt
+    export OSN_TLS_CA_ROOT_CERT=${PEER_HOME}/tls/tlscacerts/cert.pem
     export ORDERER_ADMIN_TLS_SIGN_CERT=${PEER_HOME}/tls/signcerts/cert.pem
     export ORDERER_ADMIN_TLS_PRIVATE_KEY=${PEER_HOME}/tls/keystore/key.pem
 
@@ -112,7 +112,7 @@ setPeer() {
     # cp ${FABRIC_CFG_PATH}/${nodeID}-${org}.yaml ${FABRIC_CFG_PATH}/core.yaml
   fi
 
-  export CORE_PEER_TLS_ROOTCERT_FILE=${PEER_HOME}/tls/tlscacerts/ca.crt
+  export CORE_PEER_TLS_ROOTCERT_FILE=${PEER_HOME}/tls/tlscacerts/cert.pem
   export CORE_PEER_TLS_CERT=${PEER_HOME}/tls/signcerts/cert.pem
   export CORE_PEER_TLS_KEY=${PEER_HOME}/tls/keystore/key.pem
   
@@ -437,15 +437,15 @@ services:
       - ORDERER_GENERAL_TLS_ENABLED=true
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
-      - ORDERER_GENERAL_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
-      - ORDERER_GENERAL_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/cert.pem
+      - ORDERER_GENERAL_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/cert.pem
       - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
       - ORDERER_GENERAL_CLUSTER_LISTENPORT=${CLUSTER_PORT}
       - ORDERER_GENERAL_CLUSTER_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_CLUSTER_SERVERCERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
       - ORDERER_GENERAL_CLUSTER_SERVERPRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
-      - ORDERER_GENERAL_CLUSTER_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/cert.pem
       - ORDERER_GENERAL_BOOTSTRAPFILE=/var/hyperledger/orderer/${CHANNEL_NAME}.block
       - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
       - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
@@ -456,8 +456,8 @@ services:
       - ORDERER_ADMIN_TLS_ENABLED=true
       - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/signcerts/cert.pem
       - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/keystore/key.pem
-      - ORDERER_ADMIN_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
-      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/ca.crt
+      - ORDERER_ADMIN_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/cert.pem
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/cert.pem
       - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:${ADMIN_PORT}
       
       #### FOR CERT ROTATION
@@ -469,7 +469,7 @@ services:
       # - ORDERER_OPERATIONS_TLS_ENABLED=true
       # - ORDERER_OPERATIONS_TLS_CERTIFICATE=/var/hyperledger/orderer/tlsops/signcerts/cert.pem
       # - ORDERER_OPERATIONS_TLS_PRIVATEKEY=/var/hyperledger/orderer/tlsops/keystore/key.pem
-      # - ORDERER_OPERATIONS_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tlsops/tlscacerts/ca.crt
+      # - ORDERER_OPERATIONS_TLS_CLIENTROOTCAS=/var/hyperledger/orderer/tlsops/tlscacerts/cert.pem
       # - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=true
       # - ORDERER_METRICS_PROVIDER=prometheus
       # ${ops_listenaddress}
@@ -547,8 +547,8 @@ services:
       - CORE_PEER_TLS_ENABLED=true
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/signcerts/cert.pem
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/keystore/key.pem
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/tlscacerts/ca.crt
-      - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tls/tlscacerts/ca.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/tlscacerts/cert.pem
+      - CORE_PEER_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tls/tlscacerts/cert.pem
 
       #### COUCHDB CONFIG 
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${peerId}couchDB${org}:5984
@@ -569,7 +569,7 @@ services:
       # - CORE_OPERATIONS_TLS_ENABLED=true
       # - CORE_OPERATIONS_TLS_CERT_FILE=/etc/hyperledger/fabric/tlsops/signcerts/cert.pem
       # - CORE_OPERATIONS_TLS_KEY_FILE=/etc/hyperledger/fabric/tlsops/keystore/key.pem
-      # - CORE_OPERATIONS_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tlsops/tlscacerts/ca.crt
+      # - CORE_OPERATIONS_TLS_CLIENTROOTCAS_FILES=/etc/hyperledger/fabric/tlsops/tlscacerts/cert.pem
       # ${ops_listenaddress}
       # #### METRICS CONFIG
       # - CORE_METRICS_PROVIDER=prometheus 
@@ -619,7 +619,7 @@ echo  "
       # - CORE_PEER_TLS_CLIENTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/signcerts/cert.pem
       - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/signcerts/cert.pem
       - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/keystore/key.pem
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/tlscacerts/ca.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/tls/tlscacerts/cert.pem
       - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations/peerOrganizations/${org}.dt4h.com/peers/${peerId}.${org}.dt4h.com/msp
       # COUCHDB CONFIG 
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=${peerId}couchDB${org}:5984

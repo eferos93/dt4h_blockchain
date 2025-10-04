@@ -104,7 +104,7 @@ enrollOrgAdmin() {
 	# to be included in the channel configuration, else the TLS connections 
 	# will fail.
 	[ -d "${CAMSPDIR}"/tlscacerts ] && rm -rf "${CAMSPDIR}"/tlscacerts
-	mkdir "${CAMSPDIR}"/tlscacerts && cp "${TLSMSPDIR}"/tlscacerts/cacert.pem "${CAMSPDIR}"/tlscacerts/ca.crt 
+	mkdir "${CAMSPDIR}"/tlscacerts && cp "${TLSMSPDIR}"/tlscacerts/cacert.pem "${CAMSPDIR}"/tlscacerts/cert.pem 
 	
 	res=$?
 	verifyResult "$res" "enrollOrgAdmin - Failed to copy TLS Root-Cert to ${ORG_NAME} MSP"

@@ -68,6 +68,7 @@ createTLSClient() {
 	verifyResult $res "createTLSClient - Failed to enroll identity ${TLS_ADMIN}"
 
 	mv "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore/* "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/keystore/key.pem
+	# mv "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/signcerts/* "$FABRIC_CA_CLIENT_HOME"/tls-ca/${TLS_ADMIN}/msp/signcerts/ca.crt
 	verifyResult "$?" "createTLSClient - Failed to rename key"
 
 	cd "$FABRIC_HOME" || exit 1
