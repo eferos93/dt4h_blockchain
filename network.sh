@@ -184,6 +184,9 @@ exportMSPs() {
         
         # Keep TLS root certs in the same location as before
         cp -a "${FABRIC_HOME}"/organizations/fabric-ca/"$org"/fabric-ca-client-"$org"/tls-root-cert/. "$APP_ID_DEST"/"$org"/"$org"TLS-root-cert/
+
+        # Copy admin tls certs 
+        cp -a "${FABRIC_HOME}"/organizations/fabric-ca/"$org"/fabric-ca-client-"$org"/tls-ca/tlsadmin/. "$APP_ID_DEST"/"$org"/tlsadmin/
     done
 
     
