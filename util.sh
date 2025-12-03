@@ -270,13 +270,13 @@ services:
       - FABRIC_CA_SERVER_CSR_HOSTS=tlsca_${org},${org}.dt4h.com,${tlsHost}
       - FABRIC_CA_SERVER_CSR_NAMES_0_O=${org}
       - FABRIC_CA_SERVER_CSR_NAMES_0_OU=${org}-tls
-      - FABRIC_CA_SERVER_PORT=${tlsPort}
+      - FABRIC_CA_SERVER_PORT=${TLS_PORT}
       - FABRIC_CA_SERVER_TLS_CLIENTAUTH_CERTFILES=ca-cert.pem
       - FABRIC_CA_SERVER_CA_REENROLLIGNORECERTEXPIRY=true
       - FABRIC_CA_SERVER_SIGNING_PROFILES_TLS_EXPIRY=${TLS_DEFAULT_EXPIRY}
       ${ops_listenaddress}
     ports:
-      - ${tlsPort}:${tlsPort}
+      - ${TLS_PORT}:${TLS_PORT}
     extra_hosts:
       - \"tlsca_${org}:127.0.0.1\"
       # - \"tlsca_${org}:${tlsHost}\"

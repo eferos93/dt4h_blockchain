@@ -120,7 +120,7 @@ Organizations:
         Name: AthenaPeersMSP
         SkipAsForeign: false
         ID: AthenaPeersMSP
-        MSPDir: ../organizations/peerOrganizations/athenaPeers.dt4h.com/mspConfig
+        MSPDir: ../organizations/peerOrganizations/athenapeers.dt4h.com/mspConfig
         Policies: &AthenaPeersMSPPolicies
             Readers:
                 Type: Signature
@@ -288,19 +288,19 @@ Application: &ApplicationDefaults
     Policies: &ApplicationDefaultPolicies
         LifecycleEndorsement:
             Type: Signature
-            Rule: "AND('BscMSP.peer', 'UbMSP.peer')"
+            Rule: "AND('BscMSP.peer', 'UbMSP.peer', 'AthenaPeersMSP.peer')"
         Endorsement:
             Type: Signature
-            Rule: "AND('BscMSP.peer', 'UbMSP.peer')"
+            Rule: "AND('BscMSP.peer', 'UbMSP.peer', 'AthenaPeersMSP.peer')"
         Readers:
             Type: Signature
-            Rule: "OR('BscMSP.client', 'UbMSP.admin', 'BscMSP.peer', 'UbMSP.peer', 'BscMSP.admin', 'UbMSP.client')"
+            Rule: "OR('BscMSP.client', 'UbMSP.admin', 'AthenaPeersMSP.client', 'BscMSP.peer', 'UbMSP.peer', 'AthenaPeersMSP.peer', 'BscMSP.admin', 'UbMSP.client', 'AthenaPeersMSP.admin')"
         Writers:
             Type: ImplicitMeta
             Rule: "ANY Writers"
         Admins:
             Type: Signature
-            Rule: "AND('BscMSP.admin', 'UbMSP.admin')"
+            Rule: "AND('BscMSP.admin', 'UbMSP.admin', 'AthenaPeersMSP.admin')"
         CCInvokers:
             Type: ImplicitMeta
             Rule: "ANY Writers"
@@ -443,7 +443,7 @@ Orderer: &OrdererDefaults
             Rule: "ANY Writers"
         Admins:
             Type: Signature
-            Rule: "AND('BscMSP.admin', 'UbMSP.admin')"
+            Rule: "AND('BscMSP.admin', 'UbMSP.admin', 'AthenaPeersMSP.admin')"
         # BlockValidation specifies what signatures must be included in the block
         # from the orderer for the peer to validate it.
         BlockValidation:

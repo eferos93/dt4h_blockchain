@@ -14,7 +14,7 @@ export CONSORTIUM_NAME=BasicConsortium
 export ORG_1=athena # orderer organization
 export ORG_2=ub
 export ORG_3=bsc
-export ORG_4=athenaPeers
+export ORG_4=athenapeers
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}.dt4h.com
