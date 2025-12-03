@@ -58,21 +58,29 @@ setPeers() {
 
     peer0Org3="--peerAddresses localhost:9051"
     peer1Org3="--peerAddresses localhost:9061"
+
+    peer0Org4="--peerAddresses localhost:11051"
+    peer1Org4="--peerAddresses localhost:11061"
   else
     peer0Org2="--peerAddresses peer0.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
     peer1Org2="--peerAddresses peer1.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
 
     peer0Org3="--peerAddresses peer0.${ORG_3}.dt4h.com:${CCP_PEER_PORT}"
     peer1Org3="--peerAddresses peer1.${ORG_3}.dt4h.com:${CCP_PEER_PORT}"
+
+    peer0Org4="--peerAddresses peer0.${ORG_4}.dt4h.com:${CCP_PEER_PORT}"
+    peer1Org4="--peerAddresses peer1.${ORG_4}.dt4h.com:${CCP_PEER_PORT}"
   fi
 
   export TLS_ROOTCERT_ORG2=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_2}.dt4h.com/mspConfig/tlscacerts/cert.pem
   export TLS_ROOTCERT_ORG3=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_3}.dt4h.com/mspConfig/tlscacerts/cert.pem
+  export TLS_ROOTCERT_ORG4=${FABRIC_HOME}/organizations/peerOrganizations/${ORG_4}.dt4h.com/mspConfig/tlscacerts/cert.pem
 
   tlsOrg2="--tlsRootCertFiles ${TLS_ROOTCERT_ORG2}"
   tlsOrg3="--tlsRootCertFiles ${TLS_ROOTCERT_ORG3}"
+  tlsOrg4="--tlsRootCertFiles ${TLS_ROOTCERT_ORG4}"
 
-  PEERS="$peer0Org2 $tlsOrg2 $peer1Org2 $tlsOrg2 $peer0Org3 $tlsOrg3 $peer1Org3 $tlsOrg3"
+  PEERS="$peer0Org2 $tlsOrg2 $peer1Org2 $tlsOrg2 $peer0Org3 $tlsOrg3 $peer1Org3 $tlsOrg3 $peer0Org4 $tlsOrg4 $peer1Org4 $tlsOrg4"
 }
 
 # Set peer parameters for the peer cli 

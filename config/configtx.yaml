@@ -115,6 +115,28 @@ Organizations:
         AnchorPeers:
             - Host: peer0.bsc.dt4h.com
               Port: 9051
+
+    - &AthenaPeers
+        Name: AthenaPeersMSP
+        SkipAsForeign: false
+        ID: AthenaPeersMSP
+        MSPDir: ../organizations/peerOrganizations/athenaPeers.dt4h.com/mspConfig
+        Policies: &AthenaPeersMSPPolicies
+            Readers:
+                Type: Signature
+                Rule: "OR('AthenaPeersMSP.admin', 'AthenaPeersMSP.peer', 'AthenaPeersMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('AthenaPeersMSP.admin', 'AthenaPeersMSP.peer', 'AthenaPeersMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('AthenaPeersMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('AthenaPeersMSP.peer')"
+        AnchorPeers:
+            - Host: peer0.athenaPeers.dt4h.com
+              Port: 11051
 ################################################################################
 #
 #   CAPABILITIES
@@ -689,3 +711,4 @@ Profiles:
                 # - *Athena
                 - *Ub
                 - *Bsc
+                - *AthenaPeers

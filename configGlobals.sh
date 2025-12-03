@@ -14,21 +14,22 @@ export CONSORTIUM_NAME=BasicConsortium
 export ORG_1=athena # orderer organization
 export ORG_2=ub
 export ORG_3=bsc
+export ORG_4=athenaPeers
 
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}.dt4h.com
 export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/cert.pem
 export ORDERER=localhost:7070
 
-[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3}"
-[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_2} ${ORG_3}"
+[[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3} ${ORG_4}"
+[[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_2} ${ORG_3} ${ORG_4}"
 [[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}"
 
 export PEER_IDS="peer0 peer1"
 export ORDERER_IDS="orderer0 orderer1"
 
 # -- USER INPUT - Set CouchDB Ports
-export COUCHDB_PORTS=("5100" "5200" "6100" "6200")
+export COUCHDB_PORTS=("5100" "5200" "6100" "6200" "7100" "7200")
 
 # -- ORG ADMINS USERNAMES AND PASSWORDS --
 export ADMIN_USER=admin0
@@ -49,6 +50,9 @@ setPorts() {
   elif [ "$org" == "${ORG_3}" ]; then
     PORT_MAP[peer0]=9051
     PORT_MAP[peer1]=9061
+  elif [ "$org" == "${ORG_4}" ]; then
+    PORT_MAP[peer0]=11051
+    PORT_MAP[peer1]=11061
   fi
 }
 
@@ -78,6 +82,12 @@ setParams() {
     caPort=10055
     tlsPort=10054
     peerPort=10070
+  elif [ "$org" == "${ORG_4}" ]; then
+    typeOfOrg=peer
+    tlsOpsPort=11020
+    caPort=11055
+    tlsPort=11054
+    peerPort=11070
   fi
   
   # CA 
