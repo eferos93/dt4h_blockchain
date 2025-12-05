@@ -47,12 +47,25 @@ deployChaincode() {
 
 	./peer.sh package -s ${CC_NAME}
 	for org in $peerOrgs; do
-		./peer.sh install -n peer0."$org".dt4h.com -A
-		./peer.sh install -n peer1."$org".dt4h.com -A
-		./peer.sh queryinstalled -n peer0."$org".dt4h.com -A
-		./peer.sh approve -n peer0."$org".dt4h.com -A
-		./peer.sh queryapproved -n peer0."$org".dt4h.com -A
-		./peer.sh checkreadiness -n peer0."$org".dt4h.com -A
+        if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
+             printInfo "Installing Chaincode on REMOTE $org..."
+             # Sync package
+             rsync -azP ${CC_NAME}.tar.gz ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/
+             
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh install -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh install -n peer1.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh queryinstalled -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh approve -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh queryapproved -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh checkreadiness -n peer0.$org.dt4h.com -A"
+        else
+            ./peer.sh install -n peer0."$org".dt4h.com -A
+            ./peer.sh install -n peer1."$org".dt4h.com -A
+            ./peer.sh queryinstalled -n peer0."$org".dt4h.com -A
+            ./peer.sh approve -n peer0."$org".dt4h.com -A
+            ./peer.sh queryapproved -n peer0."$org".dt4h.com -A
+            ./peer.sh checkreadiness -n peer0."$org".dt4h.com -A
+        fi
 	done
 
 	./peer.sh commit -n peer0."$mainOrg".dt4h.com -A

@@ -37,8 +37,21 @@ createChannelA() {
 		# ./peer.sh updateanchorpeers -o "$org" -O "$ORG_MSP"
 		# sleep 3
 		# ./peer.sh channelupdate -n peer0.$org.dt4h.com -A
-		./peer.sh joinchannel -n peer0."$org".dt4h.com -A 
-		./peer.sh joinchannel -n peer1."$org".dt4h.com -A 
+        if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
+             printInfo "Joining Channel on REMOTE $org..."
+             # Sync genesis block
+             rsync -azP system-genesis-block ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/
+             
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh joinchannel -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh joinchannel -n peer1.$org.dt4h.com -A"
+
+             # Sync genesis block back to local
+             printInfo "Syncing genesis block back from REMOTE..."
+             rsync -azP ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/system-genesis-block/ system-genesis-block/
+        else
+		    ./peer.sh joinchannel -n peer0."$org".dt4h.com -A 
+		    ./peer.sh joinchannel -n peer1."$org".dt4h.com -A 
+        fi
 	done
 
 }

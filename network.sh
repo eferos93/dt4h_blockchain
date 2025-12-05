@@ -7,6 +7,14 @@
 
 # Import required scripts.
 . util.sh  # Utility functions for logging and error handling
+
+# Check for --prod flag in arguments
+for arg in "$@"; do
+    if [ "$arg" == "--prod" ]; then
+        export STAGE="prod"
+    fi
+done
+
 . configGlobals.sh # User configuration on the network specifics
 . configCC.sh # Chaincode configuration
 . scripts/createChannel.sh
@@ -36,9 +44,26 @@ createOrgs() {
     # Setup for peer organizations.
     for org in $PEER_ORGS; do
         setParams "$org"
-        ./clientCA.sh setup_orgca -o "$org"
-        ./clientCA.sh setup_orgmsp -o "$org" -t "peer"
-        # ./clientCA.sh setup_orgops -o "$org"
+        
+        if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
+             printInfo "Setting up $org on REMOTE ($REMOTE_SSH)..."
+             # Sync scripts to remote
+            #  rsync -azP --exclude 'organizations' --exclude 'docker' --exclude 'channel-artifacts' . ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/
+             # Sync Orderer Crypto to remote (needed for transactions)
+             rsync -azP organizations/ordererOrganizations ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/organizations/
+             
+             # Run CA setup remotely
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh setup_orgca -o $org"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh setup_orgmsp -o $org -t peer"
+             
+             # Sync MSP back to local (needed for genesis block)
+             mkdir -p organizations/peerOrganizations
+             rsync -azP ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/organizations/peerOrganizations/${org}.dt4h.com organizations/peerOrganizations/
+        else
+            ./clientCA.sh setup_orgca -o "$org"
+            ./clientCA.sh setup_orgmsp -o "$org" -t "peer"
+            # ./clientCA.sh setup_orgops -o "$org"
+        fi
     done
 
     printSuccess "Organizations created successfully"
@@ -72,30 +97,51 @@ createNodes() {
 	for org in $PEER_ORGS; do
 		setParams "$org"
 
-		# Register enroll peers
-		for peer in $PEER_IDS; do
-			./clientCA.sh register -t peer -u "$peer" -o "$org" -s "$peerpw"
-			./clientCA.sh enroll -t peer -u "$peer" -o "$org" -s "$peerpw"
-		done
+        if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
+             printInfo "Registering nodes for $org on REMOTE..."
+             
+             # Register enroll peers
+             for peer in $PEER_IDS; do
+                ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh register -t peer -u $peer -o $org -s $peerpw"
+                ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh enroll -t peer -u $peer -o $org -s $peerpw"
+             done
+             
+             # Register admins
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh register -t admin -u $ADMIN_USER -o $org -s $ADMIN_USER_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh enroll -t admin -u $ADMIN_USER -o $org -s $ADMIN_USER_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh register -t admin -u $ORG_REGISTRAR -o $org -s $ORG_REGISTRAR_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh enroll -t admin -u $ORG_REGISTRAR -o $org -s $ORG_REGISTRAR_PW"
+             
+             # Block client
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh register -t client -u $blockclient -o $org -s $blockclientpw"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./clientCA.sh enroll -t client -u $blockclient -o $org -s $blockclientpw"
 
-		# Register registar admins
-		./clientCA.sh register -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
-		./clientCA.sh enroll -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
-		./clientCA.sh register -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
-		./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
+        else
+            # Register enroll peers
+            for peer in $PEER_IDS; do
+                ./clientCA.sh register -t peer -u "$peer" -o "$org" -s "$peerpw"
+                ./clientCA.sh enroll -t peer -u "$peer" -o "$org" -s "$peerpw"
+            done
 
-		# Create Org-Users Admin which will be used to register users in the app as a registrar
-		# ./clientCA.sh setup_orgusersca -o "$org" -t admin
+            # Register registar admins
+            ./clientCA.sh register -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
+            ./clientCA.sh enroll -t admin -u "$ADMIN_USER" -o "$org" -s "$ADMIN_USER_PW"
+            ./clientCA.sh register -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
+            ./clientCA.sh enroll -t admin -u "$ORG_REGISTRAR" -o "$org" -s "$ORG_REGISTRAR_PW"
 
-		# Create a block listener client for the app
-		./clientCA.sh register -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
-		./clientCA.sh enroll -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
+            # Create Org-Users Admin which will be used to register users in the app as a registrar
+            # ./clientCA.sh setup_orgusersca -o "$org" -t admin
 
-		# Enroll an Operations Client to monitor nodes securely
-		# ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
+            # Create a block listener client for the app
+            ./clientCA.sh register -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
+            ./clientCA.sh enroll -t client -u "$blockclient" -o "$org" -s "$blockclientpw"
 
-		# PROMETHEUS_PATH=organizations/peerOrganizations/${org}.dt4h.com/users/prometheus
-		# tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
+            # Enroll an Operations Client to monitor nodes securely
+            # ./clientCA.sh regen_ops -t client -u "$prometheus" -o "$org" -s "$prometheuspw"
+
+            # PROMETHEUS_PATH=organizations/peerOrganizations/${org}.dt4h.com/users/prometheus
+            # tar -czvf "$FABRIC_HOME"/prometheus.tar.gz "$PROMETHEUS_PATH"
+        fi
 	done
 
 	printSuccess "Orderers and peers enrolled"
@@ -136,9 +182,14 @@ startNodes() {
 	for org in $PEER_ORGS; do
 		setPorts "$org"
 		for peer in $PEER_IDS; do
-			set -x
-			./peer.sh start -t peer -n "$peer"."$org".dt4h.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
-			set +x
+            if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
+                 printInfo "Starting $peer for $org on REMOTE..."
+                 ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh start -t peer -n $peer.$org.dt4h.com -p ${PORT_MAP[${peer}]} -D ${COUCHDB_PORTS[${COUNT}]}"
+            else
+			     set -x
+			     ./peer.sh start -t peer -n "$peer"."$org".dt4h.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
+			     set +x
+            fi
 			((COUNT++))
 		done
 	done
@@ -222,7 +273,12 @@ setupMonitor() {
 networkDown() {
 	printHead "Bringing down the network"
 	
-	# Remove all fabric containers / volumes / images
+    if [ "$STAGE" == "prod" ] && [ "$1" != "--local-only" ]; then
+         printInfo "Bringing down REMOTE network on $REMOTE_SSH..."
+         ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./network.sh down --prod --local-only"
+    fi
+
+    # Remove all fabric containers / volumes / images
 	printInfo "Removing docker containers-images-volumes..."
 	yes | docker container rm -vf $(docker ps -f network=${COMPOSE_PROJECT_NAME}_${STAGE} -f network=chaincode-docker-devmode_default -aq)
 	yes | docker volume rm $(docker volume ls -f name=fabric* | awk '($2 ~ /fabric*/){print $2}')
@@ -253,17 +309,17 @@ networkDown() {
 	sed -i -E "/^export CC_SEQUENCE/s/=.*$/=1/g" "${FABRIC_HOME}"/configCC.sh
 	sed -i -E "/^export CC_VERSION/s/=.*$/=\"1.0\"/g" "${FABRIC_HOME}"/configCC.sh
 
-	printSuccess "Network is down"
+    printSuccess "Network is down"
 }
 
 # Clean application data
-cleanApp() {
-	printInfo "Deleting DB and App folders"
-	pushd ${APP_PATH} || exit
-	./clean.sh
-	popd || exit
+# cleanApp() {
+# 	printInfo "Deleting DB and App folders"
+# 	pushd ${APP_PATH} || exit
+# 	./clean.sh
+# 	popd || exit
 
-}
+# }
 
 # Delete any images that were generated as a part of this setup
 # specifically the following images are often left behind:

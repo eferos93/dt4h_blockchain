@@ -1,6 +1,14 @@
 #!/bin/bash
 
-export STAGE=dev
+export STAGE=${STAGE:-dev}
+
+# -- REMOTE DEPLOYMENT CONFIG --
+# Set STAGE=prod to enable remote deployment for the configured organization
+export REMOTE_ORG="bsc"
+export REMOTE_USER="ubuntu"
+export REMOTE_HOST="bscbc" # Using SSH Config Host Alias
+export REMOTE_SSH="${REMOTE_HOST}" # SSH command will use the alias directly
+export REMOTE_FABRIC_HOME="/home/${REMOTE_USER}/fabric"
 
 # Profile used from configtx.yaml
 export CHANNEL_PROFILE=dt4h
