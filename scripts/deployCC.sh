@@ -52,12 +52,12 @@ deployChaincode() {
              # Sync package
              rsync -azP ${CC_NAME}.tar.gz ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/
              
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh install -n peer0.$org.dt4h.com -A"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh install -n peer1.$org.dt4h.com -A"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh queryinstalled -n peer0.$org.dt4h.com -A"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh approve -n peer0.$org.dt4h.com -A"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh queryapproved -n peer0.$org.dt4h.com -A"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh checkreadiness -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh install -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh install -n peer1.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh queryinstalled -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh approve -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh queryapproved -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh checkreadiness -n peer0.$org.dt4h.com -A"
         else
             ./peer.sh install -n peer0."$org".dt4h.com -A
             ./peer.sh install -n peer1."$org".dt4h.com -A

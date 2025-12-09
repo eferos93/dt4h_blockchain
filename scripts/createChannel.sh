@@ -42,8 +42,8 @@ createChannelA() {
              # Sync genesis block
              rsync -azP system-genesis-block ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/
              
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh joinchannel -n peer0.$org.dt4h.com -A"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && ./peer.sh joinchannel -n peer1.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh joinchannel -n peer0.$org.dt4h.com -A"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh joinchannel -n peer1.$org.dt4h.com -A"
 
              # Sync genesis block back to local
              printInfo "Syncing genesis block back from REMOTE..."
