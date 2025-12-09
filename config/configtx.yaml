@@ -708,7 +708,6 @@ Profiles:
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                # - *Athena
                 - *Ub
                 - *Bsc
                 - *AthenaPeers
