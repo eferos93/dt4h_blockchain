@@ -1,0 +1,44 @@
+# Name of the workflow as it appears in the GitHub Actions tab
+name: CD Pipeline
+
+# Triggers for the workflow
+on:
+  # 'workflow_dispatch' allows manual triggering from the GitHub UI
+  workflow_dispatch:
+
+jobs:
+  # Define a job named 'deploy'
+  deploy:
+    # The runner environment to execute the job (a fresh Ubuntu VM)
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Use a pre-built action to handle SSH connections
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          # Connection details stored in GitHub Secrets for security
+          host: ${{ secrets.DEPLOY_HOST }}      # Server IP address
+          username: ${{ secrets.DEPLOY_USER }}  # SSH Username
+          key: ${{ secrets.DEPLOY_KEY }}        # Private SSH Key
+          port: ${{ secrets.DEPLOY_PORT }}      # SSH Port (optional)
+          
+          # The script to run on the remote server after connecting
+          script: |
+            # 'set -e' ensures the script stops immediately if any command fails
+            set -e
+
+            # Navigate to the project directory on the server
+            # TODO: Update this path to match where your project is located on the server
+            cd ~/workspace/dt4h_blockchain
+
+            # Pull the latest code changes from the 'main' branch
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            # Run deployment commands
+            # TODO: Add your specific deployment commands here
+            # Example:
+            # ./network.sh deploy
+            # docker-compose up -d
+            
+            echo "Deployment completed successfully!"
