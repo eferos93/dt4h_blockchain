@@ -481,7 +481,7 @@ services:
       # - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=true
       # - ORDERER_METRICS_PROVIDER=prometheus
       # ${ops_listenaddress}
-      ${cl_lAddress}
+      # ${cl_lAddress}
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
@@ -496,7 +496,7 @@ services:
       - ${CLUSTER_PORT}:${CLUSTER_PORT}
       - ${ordererPort}:${ordererPort}
       - ${ADMIN_PORT}:${ADMIN_PORT}
-      ${ops_port}
+      # ${ops_port}
     networks:
       - ${STAGE}
 " > docker/docker-compose-${ordererId}-${org}.yaml
@@ -599,7 +599,7 @@ services:
       - ${peerId}.${org}.dt4h.com:/var/hyperledger/production
     ports:
       - "${peerPort}:${peerPort}"
-      ${ops_port}
+      # ${ops_port}
     networks:
       - ${STAGE}" > docker/docker-compose-${peerId}-${org}.yaml
 
