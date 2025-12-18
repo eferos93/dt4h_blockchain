@@ -184,7 +184,7 @@ startNodes() {
         for peer in $PEER_IDS; do
             if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
                  printInfo "Starting $peer for $org on REMOTE..."
-                 ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./peer.sh start -t peer -n $peer.$org.dt4h.com -p ${PORT_MAP[${peer}]} -D ${COUCHDB_PORTS[${COUNT}]}"
+                 ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo ./peer.sh start -t peer -n $peer.$org.dt4h.com -p ${PORT_MAP[${peer}]} -D ${COUCHDB_PORTS[${COUNT}]}"
             else
 			     set -x
 			     ./peer.sh start -t peer -n "$peer"."$org".dt4h.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
