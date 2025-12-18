@@ -90,10 +90,10 @@ setParams() {
     tlsOpsPort=11020
   elif [ "$org" == "${ORG_3}" ]; then
     typeOfOrg=peer
-    tlsOpsPort=10020
-    caPort=10055
-    tlsPort=10054
-    peerPort=10070
+    tlsOpsPort=8030 #10020
+    caPort=8025 # 10055
+    tlsPort=8024 # 10054
+    peerPort=8001
   fi
   
   # CA 
