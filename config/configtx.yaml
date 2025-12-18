@@ -114,7 +114,7 @@ Organizations:
                 Rule: "OR('BscMSP.peer')"
         AnchorPeers:
             - Host: peer0.bsc.dt4h.com
-              Port: 9051
+              Port: 8001
 
     - &AthenaPeers
         Name: AthenapeersMSP

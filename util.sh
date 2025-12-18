@@ -56,8 +56,8 @@ setPeers() {
     peer0Org2="--peerAddresses localhost:8081"
     peer1Org2="--peerAddresses localhost:8090"
 
-    peer0Org3="--peerAddresses localhost:9051"
-    peer1Org3="--peerAddresses localhost:9061"
+    peer0Org3="--peerAddresses localhost:8001"
+    peer1Org3="--peerAddresses localhost:8011"
 
     peer0Org4="--peerAddresses localhost:11051"
     peer1Org4="--peerAddresses localhost:11061"

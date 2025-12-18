@@ -56,8 +56,8 @@ setPorts() {
     PORT_MAP[peer0]=8081
     PORT_MAP[peer1]=8090
   elif [ "$org" == "${ORG_3}" ]; then
-    PORT_MAP[peer0]=9051
-    PORT_MAP[peer1]=9061
+    PORT_MAP[peer0]=8001
+    PORT_MAP[peer1]=8011
   elif [ "$org" == "${ORG_4}" ]; then
     PORT_MAP[peer0]=11051
     PORT_MAP[peer1]=11061
