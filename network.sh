@@ -53,8 +53,8 @@ createOrgs() {
              rsync -azP organizations/ordererOrganizations ${REMOTE_SSH}:${REMOTE_FABRIC_HOME}/organizations/
              
              # Run CA setup remotely
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh setup_orgca -o $org"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh setup_orgmsp -o $org -t peer"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh setup_orgca -o $org"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh setup_orgmsp -o $org -t peer"
              
              # Sync MSP back to local (needed for genesis block)
              mkdir -p organizations/peerOrganizations
@@ -102,19 +102,19 @@ createNodes() {
              
              # Register enroll peers
              for peer in $PEER_IDS; do
-                ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh register -t peer -u $peer -o $org -s $peerpw"
-                ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh enroll -t peer -u $peer -o $org -s $peerpw"
+                ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh register -t peer -u $peer -o $org -s $peerpw"
+                ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh enroll -t peer -u $peer -o $org -s $peerpw"
              done
              
              # Register admins
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh register -t admin -u $ADMIN_USER -o $org -s $ADMIN_USER_PW"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh enroll -t admin -u $ADMIN_USER -o $org -s $ADMIN_USER_PW"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh register -t admin -u $ORG_REGISTRAR -o $org -s $ORG_REGISTRAR_PW"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh enroll -t admin -u $ORG_REGISTRAR -o $org -s $ORG_REGISTRAR_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh register -t admin -u $ADMIN_USER -o $org -s $ADMIN_USER_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh enroll -t admin -u $ADMIN_USER -o $org -s $ADMIN_USER_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh register -t admin -u $ORG_REGISTRAR -o $org -s $ORG_REGISTRAR_PW"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh enroll -t admin -u $ORG_REGISTRAR -o $org -s $ORG_REGISTRAR_PW"
              
              # Block client
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh register -t client -u $blockclient -o $org -s $blockclientpw"
-             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && sudo ./clientCA.sh enroll -t client -u $blockclient -o $org -s $blockclientpw"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh register -t client -u $blockclient -o $org -s $blockclientpw"
+             ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./clientCA.sh enroll -t client -u $blockclient -o $org -s $blockclientpw"
 
         else
             # Register enroll peers
@@ -184,7 +184,7 @@ startNodes() {
         for peer in $PEER_IDS; do
             if [ "$STAGE" == "prod" ] && [ "$org" == "$REMOTE_ORG" ]; then
                  printInfo "Starting $peer for $org on REMOTE..."
-                 ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo ./peer.sh start -t peer -n $peer.$org.dt4h.com -p ${PORT_MAP[${peer}]} -D ${COUCHDB_PORTS[${COUNT}]}"
+                 ssh ${REMOTE_SSH} "cd ${REMOTE_FABRIC_HOME} && export STAGE=prod && sudo -E ./peer.sh start -t peer -n $peer.$org.dt4h.com -p ${PORT_MAP[${peer}]} -D ${COUCHDB_PORTS[${COUNT}]}"
             else
 			     set -x
 			     ./peer.sh start -t peer -n "$peer"."$org".dt4h.com -p "${PORT_MAP[${peer}]}" -D "${COUCHDB_PORTS[${COUNT}]}"
