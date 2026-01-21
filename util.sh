@@ -53,14 +53,14 @@ fi
 setPeers() {
 
   if [ ${STAGE} == 'dev' ]; then
-    peer0Org2="--peerAddresses localhost:8081"
-    peer1Org2="--peerAddresses localhost:8090"
+    peer0Org2="--peerAddresses localhost:8010"
+    peer1Org2="--peerAddresses localhost:8013"
 
-    peer0Org3="--peerAddresses localhost:8001"
-    peer1Org3="--peerAddresses localhost:8011"
-
-    peer0Org4="--peerAddresses localhost:11051"
-    peer1Org4="--peerAddresses localhost:11061"
+    peer0Org3="--peerAddresses localhost:8020"
+    peer1Org3="--peerAddresses localhost:8023"
+    
+    peer0Org4="--peerAddresses localhost:8030"
+    peer1Org4="--peerAddresses localhost:8033"
   else
     peer0Org2="--peerAddresses peer0.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
     peer1Org2="--peerAddresses peer1.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"

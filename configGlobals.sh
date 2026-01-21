@@ -27,7 +27,7 @@ export ORG_4=athenapeers
 # Auto set orderer of Org 1
 export ORDERER_HOSTNAME=orderer0.${ORG_1}.dt4h.com
 export ORDERER_CAFILE=${FABRIC_HOME}/organizations/ordererOrganizations/${ORG_1}.dt4h.com/mspConfig/tlscacerts/cert.pem
-export ORDERER=localhost:7070
+export ORDERER=localhost:8000
 
 [[ -z $ORGS ]] && export ORGS="${ORG_1} ${ORG_2} ${ORG_3} ${ORG_4}"
 [[ -z $PEER_ORGS ]] && export PEER_ORGS="${ORG_2} ${ORG_3} ${ORG_4}"
@@ -50,17 +50,17 @@ setPorts() {
   org=$1
   declare -Ag PORT_MAP
   if [ "$org" == "${ORG_1}" ]; then
-    PORT_MAP[orderer0]=7070
-    PORT_MAP[orderer1]=7080
+    PORT_MAP[orderer0]=8000
+    PORT_MAP[orderer1]=8003
   elif [ "$org" == "${ORG_2}" ]; then
-    PORT_MAP[peer0]=8081
-    PORT_MAP[peer1]=8090
+    PORT_MAP[peer0]=8010
+    PORT_MAP[peer1]=8013
   elif [ "$org" == "${ORG_3}" ]; then
-    PORT_MAP[peer0]=8001
-    PORT_MAP[peer1]=8011
+    PORT_MAP[peer0]=8020
+    PORT_MAP[peer1]=8023
   elif [ "$org" == "${ORG_4}" ]; then
-    PORT_MAP[peer0]=11051
-    PORT_MAP[peer1]=11061
+    PORT_MAP[peer0]=8030
+    PORT_MAP[peer1]=8033
   fi
 }
 
@@ -82,20 +82,20 @@ setParams() {
     typeOfOrg=peer
     caPort=8055
     tlsPort=8054
-    peerPort=8081  
+    peerPort=8010  
     tlsOpsPort=8020
   elif [ "$org" == "${ORG_3}" ]; then
     typeOfOrg=peer
     tlsOpsPort=10020
     caPort=10055
     tlsPort=10054
-    peerPort=10070
+    peerPort=8020
   elif [ "$org" == "${ORG_4}" ]; then
     typeOfOrg=peer
     tlsOpsPort=11020
     caPort=11055
     tlsPort=11054
-    peerPort=11070
+    peerPort=8030
   fi
   
   # CA 

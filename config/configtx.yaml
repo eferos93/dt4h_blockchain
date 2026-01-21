@@ -69,8 +69,8 @@ Organizations:
         #     - Host: orderer0.athena.dt4h.com
         #       Port: 8080
         OrdererEndpoints:
-             - orderer0.athena.dt4h.com:7070
-             - orderer1.athena.dt4h.com:7080
+             - orderer0.athena.dt4h.com:8000
+             - orderer1.athena.dt4h.com:8003
 
     - &Ub
         Name: UbMSP
@@ -92,7 +92,7 @@ Organizations:
                 Rule: "OR('UbMSP.peer')"
         AnchorPeers:
             - Host: peer0.ub.dt4h.com
-              Port: 8081
+              Port: 8010
 
     - &Bsc
         Name: BscMSP
@@ -114,7 +114,7 @@ Organizations:
                 Rule: "OR('BscMSP.peer')"
         AnchorPeers:
             - Host: peer0.bsc.dt4h.com
-              Port: 8001
+              Port: 8020
 
     - &AthenaPeers
         Name: AthenapeersMSP
@@ -136,7 +136,7 @@ Organizations:
                 Rule: "OR('AthenapeersMSP.peer')"
         AnchorPeers:
             - Host: peer0.athenaPeers.dt4h.com
-              Port: 11051
+              Port: 8030
 ################################################################################
 #
 #   CAPABILITIES
@@ -331,8 +331,8 @@ Orderer: &OrdererDefaults
     # as TLS validation.  The preferred way to specify orderer addresses is now
     # to include the OrdererEndpoints item in your org definition
     Addresses:
-        - orderer0.athena.dt4h.com:7070
-        - orderer1.athena.dt4h.com:7080
+        - orderer0.athena.dt4h.com:8000
+        - orderer1.athena.dt4h.com:8003
 
     # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
@@ -393,11 +393,11 @@ Orderer: &OrdererDefaults
         # replicated under the Orderer.Addresses key above.
         Consenters:
             - Host: orderer0.athena.dt4h.com
-              Port: 7071
+              Port: 8000
               ClientTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer0.athena.dt4h.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer0.athena.dt4h.com/tls/signcerts/cert.pem
             - Host: orderer1.athena.dt4h.com
-              Port: 7081
+              Port: 8003
               ClientTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer1.athena.dt4h.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer1.athena.dt4h.com/tls/signcerts/cert.pem
 
