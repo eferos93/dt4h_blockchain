@@ -393,11 +393,11 @@ Orderer: &OrdererDefaults
         # replicated under the Orderer.Addresses key above.
         Consenters:
             - Host: orderer0.athena.dt4h.com
-              Port: 8000
+              Port: 8001
               ClientTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer0.athena.dt4h.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer0.athena.dt4h.com/tls/signcerts/cert.pem
             - Host: orderer1.athena.dt4h.com
-              Port: 8003
+              Port: 8004
               ClientTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer1.athena.dt4h.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer1.athena.dt4h.com/tls/signcerts/cert.pem
 
