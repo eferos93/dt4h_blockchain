@@ -3,6 +3,7 @@ package dt4h
 import (
 	"fmt"
 	"log"
+	"slices"
 )
 
 // BeforeTransaction is the hook executed before every chaincode function.
@@ -31,10 +32,8 @@ func BeforeTransaction(ctx TransactionContextInterface) error {
 // assertAuthorizedMSP rejects callers whose MSP is not in the allow-list.
 func assertAuthorizedMSP(ctx TransactionContextInterface) error {
 	msp := ctx.GetMspID()
-	for _, allowed := range AUTHORIZED_MSPS {
-		if msp == allowed {
-			return nil
-		}
+	if slices.Contains(AUTHORIZED_MSPS, msp) {
+		return nil
 	}
 	return fmt.Errorf("unauthorized MSP: %s", msp)
 }
