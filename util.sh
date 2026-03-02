@@ -53,14 +53,14 @@ fi
 setPeers() {
 
   if [ ${STAGE} == 'dev' ]; then
-    peer0Org2="--peerAddresses localhost:8081"
-    peer1Org2="--peerAddresses localhost:8090"
+    peer0Org2="--peerAddresses localhost:8010"
+    peer1Org2="--peerAddresses localhost:8013"
 
-    peer0Org3="--peerAddresses localhost:9051"
-    peer1Org3="--peerAddresses localhost:9061"
-
-    peer0Org4="--peerAddresses localhost:11051"
-    peer1Org4="--peerAddresses localhost:11061"
+    peer0Org3="--peerAddresses localhost:8020"
+    peer1Org3="--peerAddresses localhost:8023"
+    
+    peer0Org4="--peerAddresses localhost:8030"
+    peer1Org4="--peerAddresses localhost:8033"
   else
     peer0Org2="--peerAddresses peer0.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
     peer1Org2="--peerAddresses peer1.${ORG_2}.dt4h.com:${CCP_PEER_PORT}"
@@ -481,7 +481,7 @@ services:
       # - ORDERER_OPERATIONS_TLS_CLIENTAUTHREQUIRED=true
       # - ORDERER_METRICS_PROVIDER=prometheus
       # ${ops_listenaddress}
-      ${cl_lAddress}
+      # ${cl_lAddress}
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
@@ -496,7 +496,7 @@ services:
       - ${CLUSTER_PORT}:${CLUSTER_PORT}
       - ${ordererPort}:${ordererPort}
       - ${ADMIN_PORT}:${ADMIN_PORT}
-      ${ops_port}
+      # ${ops_port}
     networks:
       - ${STAGE}
 " > docker/docker-compose-${ordererId}-${org}.yaml
@@ -599,7 +599,7 @@ services:
       - ${peerId}.${org}.dt4h.com:/var/hyperledger/production
     ports:
       - "${peerPort}:${peerPort}"
-      ${ops_port}
+      # ${ops_port}
     networks:
       - ${STAGE}" > docker/docker-compose-${peerId}-${org}.yaml
 
