@@ -583,7 +583,13 @@ services:
       # - CORE_METRICS_PROVIDER=prometheus 
 
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: peer node start
+    command: >
+      bash -c '
+        while ! >/dev/tcp/${peerId}couchDB${org}/5984; do 
+          sleep 1; 
+        done; 
+        peer node start
+      '
     volumes:
       - ${FABRIC_HOME}/config/core.yaml:/etc/hyperledger/fabric/core.yaml
       - /var/run/:/host/var/run/
@@ -687,6 +693,11 @@ services:
       - ${dbPort}:5984
     networks:
       - ${STAGE}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5984/_up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 " > docker/docker-couchDB-${peerId}-${org}.yaml
 }
 
