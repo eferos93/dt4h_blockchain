@@ -71,6 +71,7 @@ Organizations:
         OrdererEndpoints:
              - orderer0.athena.dt4h.com:8000
              - orderer1.athena.dt4h.com:8003
+             - orderer2.athena.dt4h.com:8006
 
     - &Ub
         Name: UbMSP
@@ -333,6 +334,7 @@ Orderer: &OrdererDefaults
     Addresses:
         - orderer0.athena.dt4h.com:8000
         - orderer1.athena.dt4h.com:8003
+        - orderer2.athena.dt4h.com:8006
 
     # Batch Timeout: The amount of time to wait before creating a batch.
     BatchTimeout: 2s
@@ -400,6 +402,10 @@ Orderer: &OrdererDefaults
               Port: 8004
               ClientTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer1.athena.dt4h.com/tls/signcerts/cert.pem
               ServerTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer1.athena.dt4h.com/tls/signcerts/cert.pem
+            - Host: orderer2.athena.dt4h.com
+              Port: 8007
+              ClientTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer2.athena.dt4h.com/tls/signcerts/cert.pem
+              ServerTLSCert: ../organizations/ordererOrganizations/athena.dt4h.com/orderers/orderer2.athena.dt4h.com/tls/signcerts/cert.pem
 
         # Options to be specified for all the etcd/raft nodes. The values here
         # are the defaults for all new channels and can be modified on a

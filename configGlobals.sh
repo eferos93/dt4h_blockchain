@@ -16,7 +16,7 @@ export CHANNEL_PROFILE=dt4h
 # Consortium name as written in configtx.yaml
 export CONSORTIUM_NAME=BasicConsortium
 
-# Set ORDERER global variables 
+# Set ORDERER global variables
 
 # -- USER INPUT - Sest Organization Names
 export ORG_1=athena # orderer organization
@@ -34,7 +34,7 @@ export ORDERER=localhost:8000
 [[ -z $ORDERER_ORGS ]] && export ORDERER_ORGS="${ORG_1}"
 
 export PEER_IDS="peer0 peer1"
-export ORDERER_IDS="orderer0 orderer1"
+export ORDERER_IDS="orderer0 orderer1 orderer2"
 
 # -- USER INPUT - Set CouchDB Ports
 export COUCHDB_PORTS=("5100" "5200" "6100" "6200" "7100" "7200")
@@ -52,6 +52,7 @@ setPorts() {
   if [ "$org" == "${ORG_1}" ]; then
     PORT_MAP[orderer0]=8000
     PORT_MAP[orderer1]=8003
+    PORT_MAP[orderer2]=8006
   elif [ "$org" == "${ORG_2}" ]; then
     PORT_MAP[peer0]=8010
     PORT_MAP[peer1]=8013
@@ -82,7 +83,7 @@ setParams() {
     typeOfOrg=peer
     caPort=8055
     tlsPort=8054
-    peerPort=8010  
+    peerPort=8010
     tlsOpsPort=8020
   elif [ "$org" == "${ORG_3}" ]; then
     typeOfOrg=peer
@@ -97,8 +98,8 @@ setParams() {
     tlsPort=11054
     peerPort=8030
   fi
-  
-  # CA 
+
+  # CA
   caHost=localhost
   caName=ca-${org}
   caendpoint=$caHost:$caPort
@@ -118,7 +119,7 @@ setParams() {
   export USERSCA_ADMIN=$userscaadmin
   export USERSCA_ADMINPW=$userscaadminpw
 
-  # TLS 
+  # TLS
   tlsadmin=tlsadmin
   tlsadminpw=tlsadminpw
   tlsHost=localhost
@@ -144,14 +145,14 @@ setParams() {
   export ORG_USERS_ADMIN=admin0
   export ORG_USERS_ADMIN_PW=admin0
 
-  # Block Client 
+  # Block Client
   blockclient=blockclient
   blockclientpw=blockclientpw
 
   # Peer
   # peer=peer
   peerpw=peerpw
-  
+
   # Orderer
   # orderer=orderer
   ordererpw=ordererpw
